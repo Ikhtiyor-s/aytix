@@ -2,70 +2,58 @@
 
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { productsService, Product } from '@/services/products'
+import { projectsService, Project } from '@/services/adminApi'
 import BannerSlider from '@/components/BannerSlider'
 import CategoriesSidebar from '@/components/CategoriesSidebar'
-import ProductCard from '@/components/ProductCard'
+import ProjectCard from '@/components/ProjectCard'
 import Loading from '@/components/ui/Loading'
 
 export default function MarketplacePage() {
   const searchParams = useSearchParams()
-  const [products, setProducts] = useState<Product[]>([])
-  const [selectedCategory, setSelectedCategory] = useState<number | undefined>()
+  const [projects, setProjects] = useState<Project[]>([])
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>()
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | undefined>()
   const [search, setSearch] = useState(searchParams.get('search') || '')
   const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    loadProducts()
+    loadProjects()
   }, [page, selectedCategory, selectedSubcategory, search])
 
-  const loadProducts = async () => {
+  const loadProjects = async () => {
     setLoading(true)
     try {
-      // Agar subcategory tanlangan bo'lsa, search query'ga qo'shamiz
-      // Agar "Barchasi" tanlangan bo'lsa (selectedSubcategory undefined), faqat kategoriya filtri qo'llanadi
       const searchQuery = selectedSubcategory
         ? `${search} ${selectedSubcategory}`.trim()
         : search || undefined
 
-      const data = await productsService.getProducts(
-        page,
-        20,
-        selectedCategory,
-        searchQuery
-      )
-      setProducts(data.items)
-      setTotalPages(data.pages)
+      const data = await projectsService.getProjects({
+        skip: (page - 1) * 20,
+        limit: 20,
+        category: selectedCategory,
+        search: searchQuery,
+        status: 'active',
+      })
+      setProjects(data)
     } catch (error) {
-      console.error('Failed to load products', error)
+      console.error('Failed to load projects', error)
+      setProjects([])
     } finally {
       setLoading(false)
     }
   }
 
-  const handleCategorySelect = (categoryId: number | undefined) => {
-    setSelectedCategory(categoryId)
+  const handleCategorySelect = (categoryName: string | undefined) => {
+    setSelectedCategory(categoryName)
     setSelectedSubcategory(undefined)
     setPage(1)
   }
 
-  const handleSubcategorySelect = (categoryId: number, subcategory: string) => {
-    setSelectedCategory(categoryId)
-    // Agar "Barchasi" tanlangan bo'lsa (subcategory bo'sh string), faqat kategoriya filtri qo'llanadi
+  const handleSubcategorySelect = (categoryName: string, subcategory: string) => {
+    setSelectedCategory(categoryName)
     setSelectedSubcategory(subcategory || undefined)
     setPage(1)
-  }
-
-  const getProductBadge = (product: Product): 'TOP' | 'PREMIUM' | 'YANGI' | 'MASHHUR' | undefined => {
-    // Mock logic - can be based on product data
-    if (product.id % 4 === 0) return 'TOP'
-    if (product.id % 4 === 1) return 'PREMIUM'
-    if (product.id % 4 === 2) return 'YANGI'
-    if (product.id % 4 === 3) return 'MASHHUR'
-    return undefined
   }
 
   return (
@@ -84,22 +72,26 @@ export default function MarketplacePage() {
             onSubcategorySelect={handleSubcategorySelect}
           />
 
-          {/* Products Grid */}
+          {/* Projects Grid */}
           <main className="flex-1">
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-slate-900">Barcha loyihalar</h2>
-              <span className="text-slate-600">{products.length} ta loyiha</span>
+              <h2 className="text-2xl font-bold text-slate-900">
+                {selectedCategory ? selectedCategory : 'Barcha loyihalar'}
+              </h2>
+              <span className="text-slate-600">{projects.length} ta loyiha</span>
             </div>
 
             {loading ? (
-              <Loading text="Mahsulotlar yuklanmoqda..." />
-            ) : products.length === 0 ? (
+              <Loading text="Loyihalar yuklanmoqda..." />
+            ) : projects.length === 0 ? (
               <div className="text-center py-12 text-slate-500">
-                <p className="mb-4">Mahsulotlar topilmadi</p>
+                <div className="text-6xl mb-4">📭</div>
+                <p className="mb-4">Loyihalar topilmadi</p>
                 <button
                   onClick={() => {
                     setSearch('')
                     setSelectedCategory(undefined)
+                    setSelectedSubcategory(undefined)
                   }}
                   className="text-indigo-600 hover:text-indigo-500"
                 >
@@ -109,16 +101,12 @@ export default function MarketplacePage() {
             ) : (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {products.map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      badge={getProductBadge(product)}
-                    />
+                  {projects.map((project) => (
+                    <ProjectCard key={project.id} project={project} />
                   ))}
                 </div>
 
-                {totalPages > 1 && (
+                {projects.length >= 20 && (
                   <div className="mt-8 flex justify-center gap-2">
                     <button
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
@@ -127,13 +115,10 @@ export default function MarketplacePage() {
                     >
                       Oldingi
                     </button>
-                    <span className="px-4 py-2">
-                      {page} / {totalPages}
-                    </span>
+                    <span className="px-4 py-2">Sahifa {page}</span>
                     <button
-                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                      disabled={page === totalPages}
-                      className="px-4 py-2 border rounded-md disabled:opacity-50 hover:bg-slate-50"
+                      onClick={() => setPage((p) => p + 1)}
+                      className="px-4 py-2 border rounded-md hover:bg-slate-50"
                     >
                       Keyingi
                     </button>
@@ -147,7 +132,3 @@ export default function MarketplacePage() {
     </div>
   )
 }
-
-
-
-
