@@ -1,16 +1,39 @@
-import axios from 'axios'
+/**
+ * Admin API Service - Kategoriyalar va Loyihalar uchun API.
+ *
+ * Bu modul admin backenddan ma'lumotlarni olish uchun ishlatiladi:
+ * - Kategoriyalar va subkategoriyalar
+ * - Loyihalar (filtrlash, qidirish)
+ */
 
-// API URL - marketplace backend (project-kategoriyalar va loyihalar)
-const ADMIN_API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
+import axios, { AxiosInstance } from 'axios'
 
-const adminApi = axios.create({
-  baseURL: ADMIN_API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+// =============================================================================
+// KONFIGURATSIYA
+// =============================================================================
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'
+
+const adminApi: AxiosInstance = axios.create({
+  baseURL: API_URL,
+  headers: { 'Content-Type': 'application/json' }
 })
 
-// Category types
+/**
+ * Rasm URL-ni to'liq formatga o'zgartirish.
+ * /uploads/... -> http://localhost:8000/uploads/...
+ */
+export const getImageUrl = (url: string | null): string | null => {
+  if (!url) return null
+  if (url.startsWith('http')) return url
+  return `${BACKEND_URL}${url}`
+}
+
+// =============================================================================
+// TYPES - Kategoriyalar
+// =============================================================================
+
 export interface CategoryProject {
   id: number
   name_uz: string
@@ -38,7 +61,10 @@ export interface SubcategoryProject {
   updated_at: string | null
 }
 
-// Project types
+// =============================================================================
+// TYPES - Loyihalar
+// =============================================================================
+
 export interface Project {
   id: number
   name_uz: string
@@ -54,6 +80,8 @@ export interface Project {
   integrations: string[] | null
   color: string
   image_url: string | null
+  images: string[] | null
+  video_url: string | null
   views: number
   favorites: number
   status: 'active' | 'inactive'
@@ -63,45 +91,79 @@ export interface Project {
   updated_at: string | null
 }
 
-// Category services
-export const categoryProjectsService = {
-  getCategories: async (isActive?: boolean): Promise<CategoryProject[]> => {
-    const params = isActive !== undefined ? { is_active: isActive } : {}
-    const response = await adminApi.get('/project-categories/', { params })
-    return response.data
-  },
-
-  getCategory: async (id: number): Promise<CategoryProject> => {
-    const response = await adminApi.get(`/project-categories/${id}`)
-    return response.data
-  },
-
-  getSubcategories: async (categoryId: number, isActive?: boolean): Promise<SubcategoryProject[]> => {
-    const params = isActive !== undefined ? { is_active: isActive } : {}
-    const response = await adminApi.get(`/project-categories/${categoryId}/subcategories`, { params })
-    return response.data
-  },
+export interface ProjectsParams {
+  skip?: number
+  limit?: number
+  category?: string
+  status?: string
+  is_top?: boolean
+  is_new?: boolean
+  search?: string
 }
 
-// Project services
-export const projectsService = {
-  getProjects: async (params?: {
-    skip?: number
-    limit?: number
-    category?: string
-    status?: string
-    is_top?: boolean
-    is_new?: boolean
-    search?: string
-  }): Promise<Project[]> => {
-    const response = await adminApi.get('/projects/', { params })
-    return response.data
+// =============================================================================
+// KATEGORIYALAR SERVISI
+// =============================================================================
+
+export const categoryProjectsService = {
+  /**
+   * Barcha kategoriyalarni olish.
+   * @param isActive - Faqat faol kategoriyalar (ixtiyoriy)
+   */
+  async getCategories(isActive?: boolean): Promise<CategoryProject[]> {
+    const params = isActive !== undefined ? { is_active: isActive } : {}
+    const { data } = await adminApi.get<CategoryProject[]>('/project-categories/', { params })
+    return data
   },
 
-  getProject: async (id: number): Promise<Project> => {
-    const response = await adminApi.get(`/projects/${id}`)
-    return response.data
+  /**
+   * Bitta kategoriyani olish.
+   */
+  async getCategory(id: number): Promise<CategoryProject> {
+    const { data } = await adminApi.get<CategoryProject>(`/project-categories/${id}`)
+    return data
   },
+
+  /**
+   * Kategoriyaning subkategoriyalarini olish.
+   */
+  async getSubcategories(categoryId: number, isActive?: boolean): Promise<SubcategoryProject[]> {
+    const params = isActive !== undefined ? { is_active: isActive } : {}
+    const { data } = await adminApi.get<SubcategoryProject[]>(
+      `/project-categories/${categoryId}/subcategories`,
+      { params }
+    )
+    return data
+  }
+}
+
+// =============================================================================
+// LOYIHALAR SERVISI
+// =============================================================================
+
+export const projectsService = {
+  /**
+   * Loyihalar ro'yxatini olish.
+   *
+   * Filtrlash:
+   * - category: Kategoriya nomi
+   * - status: active/inactive
+   * - is_top: TOP loyihalar
+   * - is_new: Yangi loyihalar
+   * - search: Qidirish
+   */
+  async getProjects(params?: ProjectsParams): Promise<Project[]> {
+    const { data } = await adminApi.get<Project[]>('/projects/', { params })
+    return data
+  },
+
+  /**
+   * Bitta loyihani olish.
+   */
+  async getProject(id: number): Promise<Project> {
+    const { data } = await adminApi.get<Project>(`/projects/${id}`)
+    return data
+  }
 }
 
 export default adminApi

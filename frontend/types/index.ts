@@ -5,6 +5,9 @@ export interface User {
   email: string
   username: string
   full_name?: string
+  first_name?: string
+  last_name?: string
+  profile_image?: string
   role: 'user' | 'seller' | 'admin'
   is_active: boolean
   created_at: string

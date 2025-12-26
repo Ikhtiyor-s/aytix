@@ -56,8 +56,8 @@ def login(email: str = Form(...), password: str = Form(...), db: Session = Depen
         )
     
     # Create tokens
-    access_token = create_access_token(data={"sub": user.id, "username": user.username})
-    refresh_token = create_refresh_token(data={"sub": user.id, "username": user.username})
+    access_token = create_access_token(data={"sub": str(user.id), "username": user.username})
+    refresh_token = create_refresh_token(data={"sub": str(user.id), "username": user.username})
     
     return {
         "access_token": access_token,
@@ -89,8 +89,8 @@ def refresh_token(token_data: RefreshTokenRequest, db: Session = Depends(get_db)
         )
     
     # Create new tokens
-    access_token = create_access_token(data={"sub": user.id, "username": user.username})
-    refresh_token = create_refresh_token(data={"sub": user.id, "username": user.username})
+    access_token = create_access_token(data={"sub": str(user.id), "username": user.username})
+    refresh_token = create_refresh_token(data={"sub": str(user.id), "username": user.username})
     
     return {
         "access_token": access_token,

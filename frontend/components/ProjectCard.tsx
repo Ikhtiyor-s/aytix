@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { Project } from '@/services/adminApi'
+import { Project, getImageUrl } from '@/services/adminApi'
 
 interface ProjectCardProps {
   project: Project
@@ -33,7 +33,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       <div className="relative h-48 overflow-hidden">
         {project.image_url ? (
           <img
-            src={project.image_url}
+            src={getImageUrl(project.image_url) || ''}
             alt={project.name_uz}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
           />

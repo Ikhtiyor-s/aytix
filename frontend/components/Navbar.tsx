@@ -1,25 +1,16 @@
 'use client'
 
-import Link from 'next/link'
 import { useState } from 'react'
-import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import Logo from './Logo'
 import LanguageSelector from './LanguageSelector'
 import NotificationsDropdown from './NotificationsDropdown'
 import FavoritesDropdown from './FavoritesDropdown'
+import ProfileDropdown from './ProfileDropdown'
 
 export default function Navbar() {
-  const { user, logout, isAuthenticated } = useAuth()
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
-  const [showNotifications, setShowNotifications] = useState(false)
-  const [favoritesCount, setFavoritesCount] = useState(0)
-
-  const handleLogout = () => {
-    logout()
-    router.push('/login')
-  }
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -63,50 +54,10 @@ export default function Navbar() {
 
             <FavoritesDropdown />
 
-            {isAuthenticated ? (
-              <div className="flex items-center gap-3 px-3 h-10 rounded-full bg-slate-100 cursor-pointer hover:bg-slate-200 transition-all">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
-                  <img
-                    src="/aytix_logo.png"
-                    alt="User Avatar"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div className="hidden md:block text-left">
-                  <div className="text-sm font-semibold text-slate-900">{user?.username}</div>
-                  <div className="text-xs text-slate-500">Akkauntingiz</div>
-                </div>
-                <button
-                  onClick={handleLogout}
-                  className="ml-2 text-sm text-red-600 hover:text-red-700"
-                >
-                  Chiqish
-                </button>
-              </div>
-            ) : (
-              <Link
-                href="/login"
-                className="flex items-center gap-3 px-3 h-10 rounded-full bg-slate-100 cursor-pointer hover:bg-slate-200 transition-all"
-              >
-                <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
-                  <img
-                    src="/aytix_logo.png"
-                    alt="Login"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div className="hidden md:block text-left">
-                  <div className="text-sm font-semibold text-slate-900">Kirish</div>
-                  <div className="text-xs text-slate-500">Akkauntingiz</div>
-                </div>
-              </Link>
-            )}
+            <ProfileDropdown />
           </div>
         </div>
       </div>
     </header>
   )
 }
-
-
-
