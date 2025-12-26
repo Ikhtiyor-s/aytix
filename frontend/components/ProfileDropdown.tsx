@@ -65,7 +65,6 @@ export default function ProfileDropdown() {
         </div>
         <div className="hidden md:block text-left">
           <div className="text-sm font-semibold text-slate-900">Kirish</div>
-          <div className="text-xs text-slate-500">Akkauntingiz</div>
         </div>
       </Link>
     )
@@ -100,7 +99,6 @@ export default function ProfileDropdown() {
           <div className="text-sm font-semibold text-slate-900">
             {user?.first_name || user?.username || 'Foydalanuvchi'}
           </div>
-          <div className="text-xs text-slate-500">Akkauntingiz</div>
         </div>
         {/* Chevron icon */}
         <svg

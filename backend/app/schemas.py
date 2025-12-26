@@ -345,6 +345,7 @@ class BannerBase(BaseModel):
     description_en: Optional[str] = None
     image_url: Optional[str] = None
     link_url: Optional[str] = None
+    project_id: Optional[int] = None
     order: Optional[int] = 0
     status: Optional[ContentStatus] = ContentStatus.ACTIVE
 
@@ -362,6 +363,7 @@ class BannerUpdate(BaseModel):
     description_en: Optional[str] = None
     image_url: Optional[str] = None
     link_url: Optional[str] = None
+    project_id: Optional[int] = None
     order: Optional[int] = None
     status: Optional[ContentStatus] = None
 

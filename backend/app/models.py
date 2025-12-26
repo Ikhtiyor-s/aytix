@@ -278,6 +278,9 @@ class Banner(Base):
     # Link
     link_url = Column(String, nullable=True)
 
+    # Project ID for linking to a project
+    project_id = Column(Integer, nullable=True)
+
     # Order/priority
     order = Column(Integer, default=0)
 
