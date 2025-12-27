@@ -96,7 +96,7 @@ export default function FavoritesDropdown() {
       </button>
 
       {showDropdown && (
-        <div className="fixed inset-x-2 top-14 sm:inset-auto sm:absolute sm:right-0 sm:top-full sm:mt-2 w-auto sm:w-80 bg-white rounded-xl sm:rounded-2xl shadow-2xl border border-slate-100 z-50 max-h-[70vh] sm:max-h-[500px] overflow-hidden flex flex-col">
+        <div className="fixed right-0 top-14 w-[40%] max-w-[400px] bg-white rounded-l-xl shadow-2xl border border-slate-100 z-50 max-h-[80vh] overflow-hidden flex flex-col">
           <div className="p-3 sm:p-4 border-b border-slate-100 flex items-center justify-between">
             <h3 className="font-semibold text-sm sm:text-base text-slate-800">Sevimli loyihalar</h3>
             <button

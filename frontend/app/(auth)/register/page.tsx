@@ -69,6 +69,8 @@ export default function RegisterPage() {
       const email = `${formData.phone}@aytix.uz`
       const fullName = `${formData.firstName} ${formData.lastName}`
       const username = `user_${formData.phone}`
+      // Telefon raqamini to'liq formatda saqlash (mamlakat kodi bilan)
+      const fullPhone = `${selectedCountry.dialCode}${formData.phone}`
       await authService.register({
         email,
         username,
@@ -76,6 +78,7 @@ export default function RegisterPage() {
         full_name: fullName,
         first_name: formData.firstName,
         last_name: formData.lastName,
+        phone: fullPhone,
       })
       // Muvaffaqiyatli ro'yxatdan o'tildi
       setSuccess(true)

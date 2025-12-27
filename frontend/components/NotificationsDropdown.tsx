@@ -1,24 +1,45 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-
-interface Notification {
-  id: number
-  type: 'success' | 'info' | 'warning'
-  title: string
-  message: string
-  time: string
-  read: boolean
-}
+import { notificationsService, FormattedNotification } from '@/services/notifications'
 
 export default function NotificationsDropdown() {
   const [showDropdown, setShowDropdown] = useState(false)
-  const [notifications, setNotifications] = useState<Notification[]>([
-    { id: 1, type: 'success', title: 'Yangi xabar', message: 'Admin sizga javob yozdi', time: '5 daqiqa oldin', read: false },
-    { id: 2, type: 'info', title: 'Yangi loyiha', message: 'AI Chatbot Pro loyihasi qo\'shildi', time: '1 soat oldin', read: false },
-    { id: 3, type: 'warning', title: 'Eslatma', message: 'Obuna muddati tugaydi', time: '2 soat oldin', read: false },
-  ])
+  const [notifications, setNotifications] = useState<FormattedNotification[]>([])
+  const [loading, setLoading] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Bildirishnomalarni yuklash
+  const loadNotifications = async () => {
+    setLoading(true)
+    try {
+      const data = await notificationsService.getNotifications()
+      setNotifications(data)
+    } catch (error) {
+      console.error('Failed to load notifications', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Komponent mount bo'lganda yuklash
+  useEffect(() => {
+    if (mounted) {
+      loadNotifications()
+    }
+  }, [mounted])
+
+  // Dropdown ochilganda qayta yuklash
+  useEffect(() => {
+    if (showDropdown) {
+      loadNotifications()
+    }
+  }, [showDropdown])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -39,11 +60,27 @@ export default function NotificationsDropdown() {
   const unreadCount = notifications.filter(n => !n.read).length
 
   const markAsRead = (id: number) => {
+    notificationsService.markAsRead(id)
     setNotifications(notifications.map(n => n.id === id ? { ...n, read: true } : n))
   }
 
   const markAllAsRead = () => {
+    const allIds = notifications.map(n => n.id)
+    notificationsService.markAllAsRead(allIds)
     setNotifications(notifications.map(n => ({ ...n, read: true })))
+  }
+
+  // Server-side rendering - placeholder
+  if (!mounted) {
+    return (
+      <div className="relative">
+        <button className="relative p-2 sm:p-3 hover:bg-slate-100 rounded-full transition-all">
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+        </button>
+      </div>
+    )
   }
 
   return (
@@ -63,7 +100,7 @@ export default function NotificationsDropdown() {
       </button>
 
       {showDropdown && (
-        <div className="fixed inset-x-2 top-14 sm:inset-auto sm:absolute sm:right-0 sm:top-full sm:mt-2 w-auto sm:w-80 bg-white rounded-xl sm:rounded-2xl shadow-2xl border border-slate-100 z-50 max-h-[70vh] sm:max-h-[500px] overflow-hidden flex flex-col">
+        <div className="fixed right-0 top-14 w-[40%] max-w-[400px] bg-white rounded-l-xl shadow-2xl border border-slate-100 z-50 max-h-[80vh] overflow-hidden flex flex-col">
           <div className="p-3 sm:p-4 border-b border-slate-100 flex items-center justify-between">
             <h3 className="font-semibold text-sm sm:text-base text-slate-800">Bildirishnomalar</h3>
             <button
@@ -76,7 +113,9 @@ export default function NotificationsDropdown() {
             </button>
           </div>
           <div className="overflow-y-auto flex-1">
-            {notifications.length === 0 ? (
+            {loading ? (
+              <div className="p-6 sm:p-8 text-center text-slate-500 text-sm">Yuklanmoqda...</div>
+            ) : notifications.length === 0 ? (
               <div className="p-6 sm:p-8 text-center text-slate-500 text-sm">Bildirishnomalar yo'q</div>
             ) : (
               notifications.map((notif) => (
@@ -119,4 +158,3 @@ export default function NotificationsDropdown() {
     </div>
   )
 }
-

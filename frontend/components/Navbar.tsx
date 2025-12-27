@@ -26,6 +26,9 @@ export default function Navbar() {
             <Logo />
           </div>
 
+          {/* Bo'sh joy - mobilda ham o'ng tomonga surish uchun */}
+          <div className="flex-1 lg:hidden" />
+
           {/* Qidiruv - markazda (faqat desktop) */}
           <div className="hidden lg:flex flex-1 justify-center min-w-0">
             <form onSubmit={handleSearch} className="relative flex w-full max-w-xl">
