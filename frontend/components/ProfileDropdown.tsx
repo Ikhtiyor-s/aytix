@@ -13,7 +13,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
 
 export default function ProfileDropdown() {
-  const { user, logout, isAuthenticated } = useAuth()
+  const { user, logout, isAuthenticated, loading } = useAuth()
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
   const [showLogoutModal, setShowLogoutModal] = useState(false)
@@ -55,8 +55,8 @@ export default function ProfileDropdown() {
     setShowLogoutModal(false)
   }
 
-  // Server-side - placeholder ko'rsatish
-  if (!mounted) {
+  // Server-side yoki loading - placeholder ko'rsatish
+  if (!mounted || loading) {
     return (
       <div className="flex items-center gap-3 px-3 h-10 rounded-full bg-slate-100">
         <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden bg-white">
@@ -65,6 +65,9 @@ export default function ProfileDropdown() {
             alt="AyTix"
             className="w-full h-full object-contain p-1"
           />
+        </div>
+        <div className="hidden md:block text-left">
+          <div className="text-sm font-semibold text-slate-400">...</div>
         </div>
       </div>
     )

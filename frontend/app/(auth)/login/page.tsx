@@ -42,7 +42,8 @@ export default function LoginPage() {
       // Phone number ni email formatiga o'zgartirish (backend email kutadi)
       const email = `${phone}@aytix.uz`
       await login(email, password)
-      router.push('/marketplace')
+      // Sahifani to'liq yangilash - barcha holatlarni reset qilish uchun
+      window.location.href = '/marketplace'
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Kirish muvaffaqiyatsiz')
     } finally {

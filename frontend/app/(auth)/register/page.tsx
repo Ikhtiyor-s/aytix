@@ -19,6 +19,7 @@ export default function RegisterPage() {
     passwordConfirm: '',
   })
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false)
@@ -76,7 +77,12 @@ export default function RegisterPage() {
         first_name: formData.firstName,
         last_name: formData.lastName,
       })
-      router.push('/login')
+      // Muvaffaqiyatli ro'yxatdan o'tildi
+      setSuccess(true)
+      // 2 soniyadan keyin login sahifasiga o'tish
+      setTimeout(() => {
+        router.push('/login')
+      }, 2000)
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Ro\'yxatdan o\'tishda xatolik')
     } finally {
@@ -206,12 +212,18 @@ export default function RegisterPage() {
               </div>
             )}
 
+            {success && (
+              <div className="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm text-center">
+                Muvaffaqiyatli ro'yxatdan o'tildi! Login sahifasiga yo'naltirilmoqda...
+              </div>
+            )}
+
             <button
               onClick={handleSubmit}
-              disabled={loading}
+              disabled={loading || success}
               className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold py-3 rounded-2xl transition-all hover:scale-105 mb-4 disabled:opacity-50"
             >
-              {loading ? 'Ro\'yxatdan o\'tilmoqda...' : 'Ro\'yxatdan o\'tish'}
+              {loading ? 'Ro\'yxatdan o\'tilmoqda...' : success ? 'Muvaffaqiyatli!' : 'Ro\'yxatdan o\'tish'}
             </button>
 
             <p className="text-center text-sm text-slate-600">

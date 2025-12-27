@@ -1,10 +1,5 @@
 /**
  * useAuth Hook - Autentifikatsiya bilan ishlash.
- *
- * Funksiyalar:
- * - Foydalanuvchi ma'lumotlarini olish
- * - Login/Logout
- * - Profil ma'lumotlarini yangilash
  */
 
 'use client'
@@ -15,26 +10,72 @@ import { User } from '@/types'
 
 const USER_STORAGE_KEY = 'user_profile'
 
+// LocalStorage'dan user olish
+const getStoredUser = (): User | null => {
+  if (typeof window === 'undefined') return null
+  try {
+    const stored = localStorage.getItem(USER_STORAGE_KEY)
+    return stored ? JSON.parse(stored) : null
+  } catch {
+    return null
+  }
+}
+
+// LocalStorage'ga user saqlash
+const setStoredUser = (user: User | null) => {
+  if (typeof window === 'undefined') return
+  if (user) {
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user))
+  } else {
+    localStorage.removeItem(USER_STORAGE_KEY)
+  }
+}
+
 export function useAuth() {
+  // Dastlab localStorage'dan user olish - tez yuklanadi
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    loadUser()
+    // 1. Avval localStorage'dan olish (tez)
+    const storedUser = getStoredUser()
+    if (storedUser && authService.isAuthenticated()) {
+      setUser(storedUser)
+      setLoading(false)
+      // Background'da yangilash
+      refreshUser()
+    } else if (authService.isAuthenticated()) {
+      // Token bor, lekin cached user yo'q - API dan olish
+      loadUser()
+    } else {
+      // Token yo'q
+      setLoading(false)
+    }
   }, [])
 
   const loadUser = async () => {
-    if (authService.isAuthenticated()) {
-      try {
-        // API dan foydalanuvchi ma'lumotlarini olish (barcha ma'lumotlar backend dan keladi)
-        const apiUser = await authService.getCurrentUser()
-        setUser(apiUser)
-      } catch {
-        authService.logout()
-        setUser(null)
-      }
+    try {
+      const apiUser = await authService.getCurrentUser()
+      setUser(apiUser)
+      setStoredUser(apiUser)
+    } catch (error) {
+      console.error('Failed to load user:', error)
+      setUser(null)
+      setStoredUser(null)
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
+  }
+
+  // Background'da user ma'lumotlarini yangilash
+  const refreshUser = async () => {
+    try {
+      const apiUser = await authService.getCurrentUser()
+      setUser(apiUser)
+      setStoredUser(apiUser)
+    } catch {
+      // Xato bo'lsa ham davom etamiz - cached user ishlatiladi
+    }
   }
 
   const login = async (email: string, password: string) => {
@@ -44,7 +85,7 @@ export function useAuth() {
 
   const logout = () => {
     authService.logout()
-    localStorage.removeItem(USER_STORAGE_KEY)
+    setStoredUser(null)
     setUser(null)
   }
 
@@ -53,7 +94,11 @@ export function useAuth() {
 
     const newUser = { ...user, ...updatedData }
     setUser(newUser)
+    setStoredUser(newUser)
   }
+
+  // isAuthenticated haqiqiy reaktiv qiymat - user yuklanganda yangilanadi
+  const isAuthenticated = !!user || authService.isAuthenticated()
 
   return {
     user,
@@ -61,7 +106,7 @@ export function useAuth() {
     login,
     logout,
     updateUser,
-    isAuthenticated: authService.isAuthenticated()
+    isAuthenticated
   }
 }
 
