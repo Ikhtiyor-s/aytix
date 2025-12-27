@@ -26,21 +26,21 @@ export default function Navbar() {
             <Logo />
           </div>
 
-          {/* Qidiruv - markazda */}
-          <div className="flex-1 flex justify-center min-w-0">
+          {/* Qidiruv - markazda (faqat desktop) */}
+          <div className="hidden lg:flex flex-1 justify-center min-w-0">
             <form onSubmit={handleSearch} className="relative flex w-full max-w-xl">
               <input
                 type="text"
                 placeholder="Qidirish..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-9 sm:h-10 pl-3 sm:pl-4 pr-10 sm:pr-12 bg-slate-100 border-2 border-transparent rounded-full text-slate-800 text-sm sm:text-base outline-none focus:bg-white focus:border-indigo-500 transition-all duration-300"
+                className="w-full h-10 pl-4 pr-12 bg-slate-100 border-2 border-transparent rounded-full text-slate-800 text-base outline-none focus:bg-white focus:border-indigo-500 transition-all duration-300"
               />
               <button
                 type="submit"
-                className="absolute right-1 top-1/2 -translate-y-1/2 p-1 sm:p-1.5 bg-indigo-500 hover:bg-indigo-600 rounded-full transition-all duration-300"
+                className="absolute right-1 top-1/2 -translate-y-1/2 p-1.5 bg-indigo-500 hover:bg-indigo-600 rounded-full transition-all duration-300"
               >
-                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                 </svg>
               </button>
