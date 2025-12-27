@@ -49,7 +49,7 @@ export default function Navbar() {
 
           {/* O'ng tomon elementlari */}
           <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 flex-shrink-0">
-            <a href="https://t.me/Ikhtiyor_sb" target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 text-xs lg:text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 rounded-full transition-all hidden lg:block">
+            <a href="/login" className="px-3 py-1.5 text-xs lg:text-sm font-medium text-slate-700 hover:text-indigo-600 hover:bg-slate-100 rounded-full transition-all hidden lg:block">
               Adminga murojaat
             </a>
 
