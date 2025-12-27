@@ -88,7 +88,7 @@ export default function CategoriesSidebar({
 
   if (loading) {
     return (
-      <aside className="hidden lg:block w-72 flex-shrink-0 sticky top-[72px] h-[calc(100vh-80px)]">
+      <aside className="hidden lg:block w-72 flex-shrink-0 sticky top-16 h-[calc(100vh-72px)]">
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden h-full max-h-full flex flex-col">
           <div className="p-4 border-b border-slate-100 flex-shrink-0">
             <h2 className="font-bold text-slate-800 flex items-center gap-2">
@@ -105,7 +105,7 @@ export default function CategoriesSidebar({
   }
 
   return (
-    <aside className="hidden lg:block w-72 flex-shrink-0 sticky top-[72px] h-[calc(100vh-80px)]">
+    <aside className="hidden lg:block w-72 flex-shrink-0 sticky top-16 h-[calc(100vh-72px)]">
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden h-full max-h-full flex flex-col">
         <div className="p-4 border-b border-slate-100 flex-shrink-0">
           <h2 className="font-bold text-slate-800 flex items-center gap-2">
