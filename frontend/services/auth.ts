@@ -29,8 +29,8 @@ export const authService = {
       },
     })
     const { access_token, refresh_token } = response.data
-    Cookies.set('access_token', access_token)
-    Cookies.set('refresh_token', refresh_token)
+    Cookies.set('access_token', access_token, { path: '/' })
+    Cookies.set('refresh_token', refresh_token, { path: '/' })
     return response.data
   },
 

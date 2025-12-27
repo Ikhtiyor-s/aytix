@@ -328,3 +328,141 @@ class Notification(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
 
+class MessageStatus(str, enum.Enum):
+    NEW = "new"
+    READ = "read"
+    REPLIED = "replied"
+    ARCHIVED = "archived"
+
+
+class Message(Base):
+    """Xabarlar - Contact messages from users"""
+    __tablename__ = "messages"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    # Sender info
+    name = Column(String, nullable=False)
+    email = Column(String, nullable=False)
+    phone = Column(String, nullable=True)
+
+    # Message content
+    subject = Column(String, nullable=False)
+    message = Column(Text, nullable=False)
+
+    # Status
+    status = Column(SQLEnum(MessageStatus), default=MessageStatus.NEW)
+
+    # Admin reply
+    reply = Column(Text, nullable=True)
+    replied_at = Column(DateTime(timezone=True), nullable=True)
+
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+class PartnerStatus(str, enum.Enum):
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+    PENDING = "pending"
+
+
+class Partner(Base):
+    """Hamkorlar - Partners/Clients"""
+    __tablename__ = "partners"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    # Partner info
+    name = Column(String, nullable=False)
+    logo_url = Column(String, nullable=True)
+    website = Column(String, nullable=True)
+
+    # Description
+    description_uz = Column(Text, nullable=True)
+    description_ru = Column(Text, nullable=True)
+    description_en = Column(Text, nullable=True)
+
+    # Type (client, technology partner, etc)
+    partner_type = Column(String, nullable=True)
+
+    # Order/priority
+    order = Column(Integer, default=0)
+
+    # Status
+    status = Column(SQLEnum(PartnerStatus), default=PartnerStatus.ACTIVE)
+
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+class IntegrationStatus(str, enum.Enum):
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+    COMING_SOON = "coming_soon"
+
+
+class Integration(Base):
+    """Integratsiyalar - Available integrations"""
+    __tablename__ = "integrations"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    # Integration info
+    name = Column(String, nullable=False)
+    icon = Column(String, nullable=True)
+
+    # Description
+    description_uz = Column(Text, nullable=True)
+    description_ru = Column(Text, nullable=True)
+    description_en = Column(Text, nullable=True)
+
+    # Category (payment, crm, analytics, etc)
+    category = Column(String, nullable=True)
+
+    # Documentation/API link
+    docs_url = Column(String, nullable=True)
+
+    # Status
+    status = Column(SQLEnum(IntegrationStatus), default=IntegrationStatus.ACTIVE)
+
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+class AIFeature(Base):
+    """AI xususiyatlari - AI Features and capabilities"""
+    __tablename__ = "ai_features"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    # Feature info
+    name_uz = Column(String, nullable=False)
+    name_ru = Column(String, nullable=True)
+    name_en = Column(String, nullable=True)
+
+    # Description
+    description_uz = Column(Text, nullable=True)
+    description_ru = Column(Text, nullable=True)
+    description_en = Column(Text, nullable=True)
+
+    # Icon/emoji
+    icon = Column(String, nullable=True)
+
+    # Category (chatbot, analytics, automation, etc)
+    category = Column(String, nullable=True)
+
+    # Is it available
+    is_available = Column(Boolean, default=True)
+
+    # Order
+    order = Column(Integer, default=0)
+
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+

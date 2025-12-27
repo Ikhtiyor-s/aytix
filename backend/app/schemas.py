@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime
-from app.models import UserRole, OrderStatus, ProductStatus, ProjectStatus, ContentStatus, TargetAudience
+from app.models import UserRole, OrderStatus, ProductStatus, ProjectStatus, ContentStatus, TargetAudience, MessageStatus, PartnerStatus, IntegrationStatus
 
 
 # User Schemas
@@ -415,6 +415,150 @@ class NotificationUpdate(BaseModel):
 
 
 class NotificationResponse(NotificationBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+# Message Schemas
+class MessageBase(BaseModel):
+    name: str
+    email: str
+    phone: Optional[str] = None
+    subject: str
+    message: str
+
+
+class MessageCreate(MessageBase):
+    pass
+
+
+class MessageUpdate(BaseModel):
+    status: Optional[MessageStatus] = None
+    reply: Optional[str] = None
+
+
+class MessageResponse(MessageBase):
+    id: int
+    status: MessageStatus
+    reply: Optional[str] = None
+    replied_at: Optional[datetime] = None
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+# Partner Schemas
+class PartnerBase(BaseModel):
+    name: str
+    logo_url: Optional[str] = None
+    website: Optional[str] = None
+    description_uz: Optional[str] = None
+    description_ru: Optional[str] = None
+    description_en: Optional[str] = None
+    partner_type: Optional[str] = None
+    order: Optional[int] = 0
+    status: Optional[PartnerStatus] = PartnerStatus.ACTIVE
+
+
+class PartnerCreate(PartnerBase):
+    pass
+
+
+class PartnerUpdate(BaseModel):
+    name: Optional[str] = None
+    logo_url: Optional[str] = None
+    website: Optional[str] = None
+    description_uz: Optional[str] = None
+    description_ru: Optional[str] = None
+    description_en: Optional[str] = None
+    partner_type: Optional[str] = None
+    order: Optional[int] = None
+    status: Optional[PartnerStatus] = None
+
+
+class PartnerResponse(PartnerBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+# Integration Schemas
+class IntegrationBase(BaseModel):
+    name: str
+    icon: Optional[str] = None
+    description_uz: Optional[str] = None
+    description_ru: Optional[str] = None
+    description_en: Optional[str] = None
+    category: Optional[str] = None
+    docs_url: Optional[str] = None
+    status: Optional[IntegrationStatus] = IntegrationStatus.ACTIVE
+
+
+class IntegrationCreate(IntegrationBase):
+    pass
+
+
+class IntegrationUpdate(BaseModel):
+    name: Optional[str] = None
+    icon: Optional[str] = None
+    description_uz: Optional[str] = None
+    description_ru: Optional[str] = None
+    description_en: Optional[str] = None
+    category: Optional[str] = None
+    docs_url: Optional[str] = None
+    status: Optional[IntegrationStatus] = None
+
+
+class IntegrationResponse(IntegrationBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+# AI Feature Schemas
+class AIFeatureBase(BaseModel):
+    name_uz: str
+    name_ru: Optional[str] = None
+    name_en: Optional[str] = None
+    description_uz: Optional[str] = None
+    description_ru: Optional[str] = None
+    description_en: Optional[str] = None
+    icon: Optional[str] = None
+    category: Optional[str] = None
+    is_available: Optional[bool] = True
+    order: Optional[int] = 0
+
+
+class AIFeatureCreate(AIFeatureBase):
+    pass
+
+
+class AIFeatureUpdate(BaseModel):
+    name_uz: Optional[str] = None
+    name_ru: Optional[str] = None
+    name_en: Optional[str] = None
+    description_uz: Optional[str] = None
+    description_ru: Optional[str] = None
+    description_en: Optional[str] = None
+    icon: Optional[str] = None
+    category: Optional[str] = None
+    is_available: Optional[bool] = None
+    order: Optional[int] = None
+
+
+class AIFeatureResponse(AIFeatureBase):
     id: int
     created_at: datetime
     updated_at: Optional[datetime] = None

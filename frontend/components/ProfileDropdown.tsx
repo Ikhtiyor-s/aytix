@@ -161,7 +161,6 @@ export default function ProfileDropdown() {
                     ? `${user.first_name} ${user.last_name}`
                     : user?.username || 'Foydalanuvchi'}
                 </div>
-                <div className="text-sm text-slate-500">{user?.email}</div>
               </div>
             </div>
           </div>

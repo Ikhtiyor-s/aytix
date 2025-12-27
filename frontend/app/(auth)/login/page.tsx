@@ -40,7 +40,7 @@ export default function LoginPage() {
 
     try {
       // Phone number ni email formatiga o'zgartirish (backend email kutadi)
-      const email = `${phone}@temp.uz`
+      const email = `${phone}@aytix.uz`
       await login(email, password)
       router.push('/marketplace')
     } catch (err: any) {

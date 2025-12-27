@@ -107,50 +107,50 @@ export default function MobileCategoryFilter({
       {/* Modal */}
       <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[80vh] flex flex-col animate-slide-up">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-100">
-          <h2 className="font-bold text-lg text-slate-800 flex items-center gap-2">
-            <span>📂</span>
+        <div className="flex items-center justify-between p-3 border-b border-slate-100">
+          <h2 className="font-semibold text-sm text-slate-800 flex items-center gap-2">
+            <span className="text-base">📂</span>
             Kategoriyalar
           </h2>
           <button
             onClick={onClose}
-            className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors"
           >
-            <svg className="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-y-auto p-3">
           {loading ? (
-            <div className="text-center text-slate-500 py-8">
+            <div className="text-center text-slate-500 py-6 text-xs">
               Yuklanmoqda...
             </div>
           ) : categories.length === 0 ? (
-            <div className="text-center text-slate-500 py-8">
+            <div className="text-center text-slate-500 py-6 text-xs">
               Kategoriyalar topilmadi
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {categories.map((cat) => (
                 <div key={cat.id}>
                   <button
                     onClick={() => handleCategoryClick(cat)}
-                    className={`w-full text-left px-4 py-3 rounded-xl hover:bg-indigo-50 transition-all flex items-center justify-between ${
+                    className={`w-full text-left px-3 py-2.5 rounded-lg hover:bg-indigo-50 transition-all flex items-center justify-between ${
                       selectedCategory === cat.name_uz
-                        ? 'bg-indigo-100 text-indigo-700 font-semibold'
+                        ? 'bg-indigo-100 text-indigo-700 font-medium'
                         : 'text-slate-700 bg-slate-50'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl">{getCategoryIcon(cat)}</span>
-                      <span>{cat.name_uz}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">{getCategoryIcon(cat)}</span>
+                      <span className="text-sm">{cat.name_uz}</span>
                     </div>
                     {cat.subcategories.length > 0 && (
                       <svg
-                        className={`w-5 h-5 transition-transform ${
+                        className={`w-4 h-4 transition-transform ${
                           expandedCategory === cat.id ? 'rotate-180' : ''
                         }`}
                         fill="none"
@@ -169,14 +169,14 @@ export default function MobileCategoryFilter({
 
                   {/* Subcategories */}
                   {expandedCategory === cat.id && cat.subcategories.length > 0 && (
-                    <div className="ml-6 mt-2 space-y-1">
+                    <div className="ml-5 mt-1.5 space-y-1">
                       <button
                         onClick={() => {
                           onCategorySelect(cat.name_uz)
                           onSubcategorySelect(cat.name_uz, '')
                           onClose()
                         }}
-                        className={`w-full text-left px-4 py-2.5 rounded-lg hover:bg-indigo-50 transition-all ${
+                        className={`w-full text-left px-3 py-2 rounded-lg hover:bg-indigo-50 transition-all text-xs ${
                           selectedCategory === cat.name_uz && !selectedSubcategory
                             ? 'bg-indigo-50 text-indigo-600 font-medium'
                             : 'text-slate-600'
@@ -188,7 +188,7 @@ export default function MobileCategoryFilter({
                         <button
                           key={sub.id}
                           onClick={() => handleSubcategoryClick(cat.name_uz, sub.name_uz)}
-                          className={`w-full text-left px-4 py-2.5 rounded-lg hover:bg-indigo-50 transition-all ${
+                          className={`w-full text-left px-3 py-2 rounded-lg hover:bg-indigo-50 transition-all text-xs ${
                             selectedCategory === cat.name_uz && selectedSubcategory === sub.name_uz
                               ? 'bg-indigo-50 text-indigo-600 font-medium'
                               : 'text-slate-600'
@@ -206,12 +206,13 @@ export default function MobileCategoryFilter({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-100">
+        <div className="p-3 border-t border-slate-100">
           <button
             onClick={handleClearFilter}
-            className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 font-medium transition-all"
+            className="w-full px-3 py-2.5 border border-slate-200 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 text-sm font-medium transition-all flex items-center justify-center gap-2"
           >
-            🔄 Filtrni tozalash
+            <span className="text-base">🔄</span>
+            Filtrni tozalash
           </button>
         </div>
       </div>
