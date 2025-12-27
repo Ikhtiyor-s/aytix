@@ -97,9 +97,9 @@ export default function MobileCategoryFilter({
   if (!isOpen) return null
 
   return (
-    <div className="lg:hidden absolute left-0 top-0 z-40">
-      {/* Left Side Panel - absolute position, doesn't affect layout */}
-      <div className="w-[40vw] min-w-[160px] max-w-[280px] bg-white flex flex-col shadow-xl border-r border-slate-200 animate-slide-left max-h-[70vh] overflow-hidden">
+    <div className="lg:hidden fixed left-0 top-[100px] z-40">
+      {/* Left Side Panel - fixed position, header + mobile menu ostida */}
+      <div className="w-[50vw] min-w-[200px] max-w-[300px] bg-white flex flex-col shadow-xl border-r border-slate-200 animate-slide-left overflow-hidden" style={{ maxHeight: 'calc(100vh - 110px)' }}>
         {/* Header */}
         <div className="flex items-center justify-between p-3 border-b border-slate-100">
           <h2 className="font-semibold text-xs text-slate-800 flex items-center gap-1.5">

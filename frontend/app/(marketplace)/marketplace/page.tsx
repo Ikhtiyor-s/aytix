@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { projectsService, Project } from '@/services/adminApi'
 import BannerSlider from '@/components/BannerSlider'
@@ -20,6 +20,10 @@ export default function MarketplacePage() {
   const [showMobileFilter, setShowMobileFilter] = useState(false)
   const [showMobileSearch, setShowMobileSearch] = useState(false)
   const [mobileSearchValue, setMobileSearchValue] = useState('')
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [sidebarBottom, setSidebarBottom] = useState<number | null>(null)
+  const bannerRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
 
   // URL parametrlari o'zgarganda search state'ni yangilash
   useEffect(() => {
@@ -27,6 +31,35 @@ export default function MarketplacePage() {
     setSearch(searchQuery)
     setPage(1)
   }, [searchParams])
+
+  // Banner va footer scroll holatini kuzatish
+  useEffect(() => {
+    const handleScroll = () => {
+      if (bannerRef.current) {
+        const bannerBottom = bannerRef.current.getBoundingClientRect().bottom
+        setIsScrolled(bannerBottom <= 56) // 56px = header height
+      }
+
+      // Footer bilan to'qnashuvni tekshirish
+      if (contentRef.current) {
+        const contentRect = contentRef.current.getBoundingClientRect()
+        const viewportHeight = window.innerHeight
+        const headerHeight = 56
+
+        // Agar content pastki qismi viewport ichida bo'lsa
+        if (contentRect.bottom < viewportHeight) {
+          // Sidebar content bilan birga to'xtashi kerak
+          setSidebarBottom(viewportHeight - contentRect.bottom)
+        } else {
+          setSidebarBottom(null)
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    handleScroll() // Initial check
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   useEffect(() => {
     loadProjects()
@@ -70,10 +103,12 @@ export default function MarketplacePage() {
   return (
     <div className="bg-slate-50 min-h-screen">
       {/* Banner Slider */}
-      <BannerSlider />
+      <div ref={bannerRef}>
+        <BannerSlider />
+      </div>
 
-      {/* Mobile Hamburger Menu - banner tagida */}
-      <div className="lg:hidden px-3 py-2 bg-white border-b border-slate-100">
+      {/* Mobile Hamburger Menu - header ostida fixed */}
+      <div className={`lg:hidden px-3 py-2 bg-white border-b border-slate-100 z-30 ${isScrolled ? 'fixed top-[56px] left-0 right-0' : ''}`}>
         <div className="flex items-center justify-between">
           {/* Kategoriyalar tugmasi */}
           <button
@@ -154,9 +189,12 @@ export default function MarketplacePage() {
         )}
       </div>
 
+      {/* Spacer for fixed mobile menu */}
+      {isScrolled && <div className="lg:hidden h-[44px]" />}
+
       {/* Main Content with Mobile Sidebar */}
       <div className="w-full px-3 sm:px-4 py-4 sm:py-8 relative">
-        {/* Mobile Category Filter - absolute positioned sidebar */}
+        {/* Mobile Category Filter */}
         <MobileCategoryFilter
           isOpen={showMobileFilter}
           onClose={() => setShowMobileFilter(false)}
@@ -166,15 +204,30 @@ export default function MarketplacePage() {
           onSubcategorySelect={handleSubcategorySelect}
         />
 
-        <div className="flex gap-4 lg:gap-8 items-start">
-
-          {/* Sidebar Categories - sticky (faqat desktop) */}
-          <CategoriesSidebar
-            selectedCategory={selectedCategory}
-            selectedSubcategory={selectedSubcategory}
-            onCategorySelect={handleCategorySelect}
-            onSubcategorySelect={handleSubcategorySelect}
-          />
+        <div ref={contentRef} className="flex gap-4 lg:gap-8">
+          {/* Sidebar Categories (faqat desktop) */}
+          <div className="hidden lg:block w-72 flex-shrink-0">
+            <div
+              className={`w-72 overflow-y-auto transition-all duration-200 ${
+                isScrolled ? 'fixed' : 'relative'
+              }`}
+              style={{
+                top: isScrolled ? '56px' : 'auto',
+                bottom: sidebarBottom !== null ? `${sidebarBottom}px` : 'auto',
+                height: isScrolled && sidebarBottom === null ? 'calc(100vh - 56px)' : 'auto',
+                maxHeight: isScrolled ? 'calc(100vh - 56px)' : 'calc(100vh - 200px)'
+              }}
+            >
+              <div className={isScrolled ? 'py-4 pr-4' : ''}>
+                <CategoriesSidebar
+                  selectedCategory={selectedCategory}
+                  selectedSubcategory={selectedSubcategory}
+                  onCategorySelect={handleCategorySelect}
+                  onSubcategorySelect={handleSubcategorySelect}
+                />
+              </div>
+            </div>
+          </div>
 
           {/* Projects Grid */}
           <main className="flex-1 min-w-0">

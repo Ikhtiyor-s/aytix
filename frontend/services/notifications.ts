@@ -1,4 +1,6 @@
-import api from './api'
+import axios from 'axios'
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
 
 export interface Notification {
   id: number
@@ -56,8 +58,8 @@ export const notificationsService = {
    */
   async getNotifications(): Promise<FormattedNotification[]> {
     try {
-      // Public endpoint - admin yaratgan barcha faol xabarnomalar
-      const response = await api.get('/content/notifications/public')
+      // Public endpoint - admin yaratgan barcha faol xabarnomalar (token yubormasdan)
+      const response = await axios.get(`${API_URL}/content/notifications/public`)
       const notifications: Notification[] = response.data
 
       // LocalStorage dan o'qilgan xabarnomalarni olish
