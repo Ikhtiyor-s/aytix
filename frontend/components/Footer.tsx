@@ -43,9 +43,9 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-medium mb-1">Bog'lanish</h4>
             <div className="text-slate-400 leading-tight">
-              <div>@Ikhtiyor_sb</div>
-              <div>90 956 42 22</div>
-              <div>94 867 93 00</div>
+              <a href="https://t.me/Ikhtiyor_sb" target="_blank" rel="noopener noreferrer" className="hover:text-white block">@Ikhtiyor_sb</a>
+              <a href="tel:+998909564222" className="hover:text-white block">90 956 42 22</a>
+              <a href="tel:+998948679300" className="hover:text-white block">94 867 93 00</a>
             </div>
           </div>
         </div>
