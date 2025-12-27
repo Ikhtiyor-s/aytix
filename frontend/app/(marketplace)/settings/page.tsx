@@ -233,7 +233,7 @@ export default function SettingsPage() {
             </div>
 
             {/* Telefon raqam */}
-            {user?.phone && (
+            {(user?.phone || user?.email?.endsWith('@aytix.uz')) && (
               <div className="mt-2 sm:mt-3">
                 <label className="block text-[10px] sm:text-xs font-medium text-slate-700 mb-0.5 sm:mb-1">
                   Telefon raqam
@@ -242,7 +242,7 @@ export default function SettingsPage() {
                   <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
-                  <span>{user.phone}</span>
+                  <span>+998 {user.phone || user.email?.replace('@aytix.uz', '')}</span>
                 </div>
               </div>
             )}
