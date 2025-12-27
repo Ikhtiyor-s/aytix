@@ -141,6 +141,53 @@ export const categoryProjectsService = {
 // LOYIHALAR SERVISI
 // =============================================================================
 
+// =============================================================================
+// TYPES - Bannerlar
+// =============================================================================
+
+export interface Banner {
+  id: number
+  title_uz: string
+  title_ru: string | null
+  title_en: string | null
+  description_uz: string | null
+  description_ru: string | null
+  description_en: string | null
+  image_url: string | null
+  link_url: string | null
+  project_id: number | null
+  order: number
+  status: 'active' | 'inactive'
+  created_at: string
+  updated_at: string | null
+}
+
+// =============================================================================
+// BANNERLAR SERVISI
+// =============================================================================
+
+export const bannersService = {
+  /**
+   * Faol bannerlarni olish (public, autentifikatsiya kerak emas).
+   */
+  async getBanners(): Promise<Banner[]> {
+    const { data } = await adminApi.get<Banner[]>('/content/banners/public')
+    return data
+  },
+
+  /**
+   * Bitta bannerni olish.
+   */
+  async getBanner(id: number): Promise<Banner> {
+    const { data } = await adminApi.get<Banner>(`/content/banners/${id}`)
+    return data
+  }
+}
+
+// =============================================================================
+// LOYIHALAR SERVISI
+// =============================================================================
+
 export const projectsService = {
   /**
    * Loyihalar ro'yxatini olish.

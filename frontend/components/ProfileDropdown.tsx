@@ -17,7 +17,13 @@ export default function ProfileDropdown() {
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
   const [showLogoutModal, setShowLogoutModal] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Client-side mount
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Tashqariga bosilganda yopish
   useEffect(() => {
@@ -49,6 +55,21 @@ export default function ProfileDropdown() {
     setShowLogoutModal(false)
   }
 
+  // Server-side - placeholder ko'rsatish
+  if (!mounted) {
+    return (
+      <div className="flex items-center gap-3 px-3 h-10 rounded-full bg-slate-100">
+        <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden bg-white">
+          <img
+            src="/aytixlogo.png"
+            alt="AyTix"
+            className="w-full h-full object-contain p-1"
+          />
+        </div>
+      </div>
+    )
+  }
+
   // Agar autentifikatsiya bo'lmasa, login link ko'rsatish
   if (!isAuthenticated) {
     return (
@@ -58,7 +79,7 @@ export default function ProfileDropdown() {
       >
         <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
           <img
-            src="/aytix_logo.png"
+            src="/aytixlogo.png"
             alt="Login"
             className="w-full h-full object-contain"
           />
@@ -89,7 +110,7 @@ export default function ProfileDropdown() {
             />
           ) : (
             <img
-              src="/aytix_logo.png"
+              src="/aytixlogo.png"
               alt="AyTix"
               className="w-full h-full object-contain p-1"
             />
@@ -97,7 +118,9 @@ export default function ProfileDropdown() {
         </div>
         <div className="hidden md:block text-left">
           <div className="text-sm font-semibold text-slate-900">
-            {user?.first_name || user?.username || 'Foydalanuvchi'}
+            {user?.first_name && user?.last_name
+              ? `${user.first_name} ${user.last_name}`
+              : user?.first_name || 'Foydalanuvchi'}
           </div>
         </div>
         {/* Chevron icon */}
@@ -126,7 +149,7 @@ export default function ProfileDropdown() {
                   />
                 ) : (
                   <img
-                    src="/aytix_logo.png"
+                    src="/aytixlogo.png"
                     alt="AyTix"
                     className="w-full h-full object-contain p-1"
                   />

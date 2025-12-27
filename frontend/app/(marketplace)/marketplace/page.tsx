@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { projectsService, Project } from '@/services/adminApi'
 import BannerSlider from '@/components/BannerSlider'
 import CategoriesSidebar from '@/components/CategoriesSidebar'
+import MobileCategoryFilter from '@/components/MobileCategoryFilter'
 import ProjectCard from '@/components/ProjectCard'
 import Loading from '@/components/ui/Loading'
 
@@ -16,6 +17,14 @@ export default function MarketplacePage() {
   const [search, setSearch] = useState(searchParams.get('search') || '')
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
+  const [showMobileFilter, setShowMobileFilter] = useState(false)
+
+  // URL parametrlari o'zgarganda search state'ni yangilash
+  useEffect(() => {
+    const searchQuery = searchParams.get('search') || ''
+    setSearch(searchQuery)
+    setPage(1)
+  }, [searchParams])
 
   useEffect(() => {
     loadProjects()
@@ -62,9 +71,9 @@ export default function MarketplacePage() {
       <BannerSlider />
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="flex gap-6">
-          {/* Sidebar Categories */}
+      <div className="w-full px-3 sm:px-4 py-4 sm:py-8">
+        <div className="flex gap-4 lg:gap-8 items-start">
+          {/* Sidebar Categories - sticky (faqat desktop) */}
           <CategoriesSidebar
             selectedCategory={selectedCategory}
             selectedSubcategory={selectedSubcategory}
@@ -73,12 +82,40 @@ export default function MarketplacePage() {
           />
 
           {/* Projects Grid */}
-          <main className="flex-1">
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-slate-900">
+          <main className="flex-1 min-w-0">
+            {/* Mobile Filter Button */}
+            <div className="lg:hidden mb-4">
+              <button
+                onClick={() => setShowMobileFilter(true)}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-slate-700 font-medium hover:border-indigo-500 hover:text-indigo-600 transition-all"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                <span>Kategoriyalar</span>
+                {selectedCategory && (
+                  <span className="bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full text-xs">
+                    {selectedCategory}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {/* Mobile Category Filter Modal */}
+            <MobileCategoryFilter
+              isOpen={showMobileFilter}
+              onClose={() => setShowMobileFilter(false)}
+              selectedCategory={selectedCategory}
+              selectedSubcategory={selectedSubcategory}
+              onCategorySelect={handleCategorySelect}
+              onSubcategorySelect={handleSubcategorySelect}
+            />
+
+            <div className="mb-4 sm:mb-6 flex items-center justify-between">
+              <h2 className="text-lg sm:text-2xl font-bold text-slate-900">
                 {selectedCategory ? selectedCategory : 'Barcha loyihalar'}
               </h2>
-              <span className="text-slate-600">{projects.length} ta loyiha</span>
+              <span className="text-sm sm:text-base text-slate-600">{projects.length} ta loyiha</span>
             </div>
 
             {loading ? (
@@ -100,25 +137,25 @@ export default function MarketplacePage() {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {projects.map((project) => (
                     <ProjectCard key={project.id} project={project} />
                   ))}
                 </div>
 
                 {projects.length >= 20 && (
-                  <div className="mt-8 flex justify-center gap-2">
+                  <div className="mt-6 sm:mt-8 flex justify-center gap-2">
                     <button
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
                       disabled={page === 1}
-                      className="px-4 py-2 border rounded-md disabled:opacity-50 hover:bg-slate-50"
+                      className="px-3 sm:px-4 py-2 text-sm sm:text-base border rounded-md disabled:opacity-50 hover:bg-slate-50"
                     >
                       Oldingi
                     </button>
-                    <span className="px-4 py-2">Sahifa {page}</span>
+                    <span className="px-3 sm:px-4 py-2 text-sm sm:text-base">Sahifa {page}</span>
                     <button
                       onClick={() => setPage((p) => p + 1)}
-                      className="px-4 py-2 border rounded-md hover:bg-slate-50"
+                      className="px-3 sm:px-4 py-2 text-sm sm:text-base border rounded-md hover:bg-slate-50"
                     >
                       Keyingi
                     </button>

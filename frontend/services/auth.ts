@@ -12,6 +12,8 @@ export interface RegisterData {
   username: string
   password: string
   full_name?: string
+  first_name?: string
+  last_name?: string
 }
 
 export type { User }
@@ -39,6 +41,11 @@ export const authService = {
 
   async getCurrentUser(): Promise<User> {
     const response = await api.get('/users/me')
+    return response.data
+  },
+
+  async updateProfile(data: { first_name?: string; last_name?: string; profile_image?: string }): Promise<User> {
+    const response = await api.put('/users/me', data)
     return response.data
   },
 

@@ -6,9 +6,9 @@ export default function Logo() {
   return (
     <Link href="/marketplace" className="flex items-center gap-2 cursor-pointer flex-shrink-0">
       <img
-        src="/aytix_logo.png"
+        src="/aytixlogo.png"
         alt="AyTix Logo"
-        className="h-16 w-auto md:h-20"
+        className="h-8 w-auto sm:h-10 md:h-14 lg:h-16"
       />
     </Link>
   )

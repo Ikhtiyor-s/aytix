@@ -26,7 +26,6 @@ export default function ForgotPasswordPage() {
     setError('')
     setStep(2)
     startOTPTimer()
-    console.log('OTP yuborildi: 1234 (test uchun)')
   }
 
   // Step 2: OTP Verification

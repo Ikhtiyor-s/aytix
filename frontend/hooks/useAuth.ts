@@ -26,20 +26,9 @@ export function useAuth() {
   const loadUser = async () => {
     if (authService.isAuthenticated()) {
       try {
-        // API dan foydalanuvchi ma'lumotlarini olish
+        // API dan foydalanuvchi ma'lumotlarini olish (barcha ma'lumotlar backend dan keladi)
         const apiUser = await authService.getCurrentUser()
-
-        // localStorage dan qo'shimcha ma'lumotlarni olish (profil rasmi, ism, familiya)
-        const savedProfile = localStorage.getItem(USER_STORAGE_KEY)
-        const profileData = savedProfile ? JSON.parse(savedProfile) : {}
-
-        // Ma'lumotlarni birlashtirish - localStorage dagi ma'lumotlar ustunlik qiladi
-        const mergedUser = {
-          ...apiUser,
-          ...profileData
-        }
-
-        setUser(mergedUser)
+        setUser(apiUser)
       } catch {
         authService.logout()
         setUser(null)
@@ -64,16 +53,6 @@ export function useAuth() {
 
     const newUser = { ...user, ...updatedData }
     setUser(newUser)
-
-    // localStorage ga saqlash (profil ma'lumotlarni)
-    const profileData = {
-      first_name: newUser.first_name,
-      last_name: newUser.last_name,
-      username: newUser.username,
-      email: newUser.email,
-      profile_image: newUser.profile_image
-    }
-    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(profileData))
   }
 
   return {

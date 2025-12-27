@@ -11,25 +11,32 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
+import { authService } from '@/services/auth'
 
 export default function SettingsPage() {
   const router = useRouter()
   const { user, isAuthenticated, updateUser } = useAuth()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  const [mounted, setMounted] = useState(false)
   const [formData, setFormData] = useState({
     first_name: '',
-    last_name: '',
-    username: '',
-    email: ''
+    last_name: ''
   })
   const [profileImage, setProfileImage] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
 
+  // Client-side mount
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   // Autentifikatsiya tekshirish
   useEffect(() => {
+    if (!mounted) return
+
     if (!isAuthenticated) {
       router.push('/login')
       return
@@ -39,13 +46,11 @@ export default function SettingsPage() {
     if (user) {
       setFormData({
         first_name: user.first_name || '',
-        last_name: user.last_name || '',
-        username: user.username || '',
-        email: user.email || ''
+        last_name: user.last_name || ''
       })
       setProfileImage(user.profile_image || null)
     }
-  }, [isAuthenticated, user, router])
+  }, [mounted, isAuthenticated, user, router])
 
   const handleImageClick = () => {
     fileInputRef.current?.click()
@@ -84,24 +89,25 @@ export default function SettingsPage() {
     setMessage(null)
 
     try {
-      // TODO: Backend API ga so'rov yuborish
-      // Hozircha localStorage da saqlaymiz
+      // Backend API ga so'rov yuborish
+      const updateData: { first_name?: string; last_name?: string; profile_image?: string } = {}
 
-      const updatedUser = {
-        ...user,
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        username: formData.username,
-        email: formData.email,
-        profile_image: profileImage
+      if (formData.first_name) {
+        updateData.first_name = formData.first_name
+      }
+      if (formData.last_name) {
+        updateData.last_name = formData.last_name
+      }
+      if (profileImage) {
+        updateData.profile_image = profileImage
       }
 
-      // updateUser funksiyasi mavjud bo'lsa
+      // API ga yuborish
+      const updatedUserFromApi = await authService.updateProfile(updateData)
+
+      // Local state ni yangilash
       if (typeof updateUser === 'function') {
-        updateUser(updatedUser)
-      } else {
-        // Fallback: localStorage ga saqlash
-        localStorage.setItem('user', JSON.stringify(updatedUser))
+        updateUser(updatedUserFromApi)
       }
 
       setMessage({ type: 'success', text: 'Ma\'lumotlar muvaffaqiyatli saqlandi!' })
@@ -110,11 +116,22 @@ export default function SettingsPage() {
       setTimeout(() => {
         window.location.reload()
       }, 1000)
-    } catch (error) {
-      setMessage({ type: 'error', text: 'Xatolik yuz berdi. Qaytadan urinib ko\'ring.' })
+    } catch (error: any) {
+      console.error('Settings update error:', error)
+      const errorMessage = error.response?.data?.detail || error.message || 'Xatolik yuz berdi. Qaytadan urinib ko\'ring.'
+      setMessage({ type: 'error', text: errorMessage })
     } finally {
       setLoading(false)
     }
+  }
+
+  // Server-side yoki mount bo'lmagan holat - loading ko'rsatish
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+      </div>
+    )
   }
 
   if (!isAuthenticated) {
@@ -122,32 +139,32 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-8">
-      <div className="max-w-2xl mx-auto px-6">
+    <div className="min-h-screen bg-slate-50 py-6">
+      <div className="max-w-md mx-auto px-4">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6">
           <button
             onClick={() => router.back()}
-            className="text-slate-600 hover:text-slate-900 flex items-center gap-2 mb-4"
+            className="text-slate-600 hover:text-slate-900 flex items-center gap-2 mb-3 text-sm"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
             </svg>
             Orqaga
           </button>
-          <h1 className="text-3xl font-bold text-slate-900">Sozlamalar</h1>
-          <p className="text-slate-600 mt-2">Profil ma'lumotlaringizni tahrirlang</p>
+          <h1 className="text-2xl font-bold text-slate-900">Sozlamalar</h1>
+          <p className="text-slate-600 mt-1 text-sm">Profil ma'lumotlaringizni tahrirlang</p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Profil rasmi */}
-          <div className="bg-white rounded-2xl shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-slate-900 mb-4">Profil rasmi</h2>
-            <div className="flex items-center gap-6">
+          <div className="bg-white rounded-xl shadow-sm p-4">
+            <h2 className="text-sm font-semibold text-slate-900 mb-3">Profil rasmi</h2>
+            <div className="flex items-center gap-4">
               <div
                 onClick={handleImageClick}
-                className="w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden cursor-pointer hover:ring-4 hover:ring-indigo-100 transition-all"
+                className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden cursor-pointer hover:ring-2 hover:ring-indigo-100 transition-all"
               >
                 {profileImage ? (
                   <img
@@ -157,9 +174,9 @@ export default function SettingsPage() {
                   />
                 ) : (
                   <img
-                    src="/aytix_logo.png"
+                    src="/aytixlogo.png"
                     alt="AyTix"
-                    className="w-full h-full object-contain p-2"
+                    className="w-full h-full object-contain p-1"
                   />
                 )}
               </div>
@@ -167,11 +184,11 @@ export default function SettingsPage() {
                 <button
                   type="button"
                   onClick={handleImageClick}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors"
+                  className="px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors"
                 >
                   Rasm yuklash
                 </button>
-                <p className="text-sm text-slate-500 mt-2">
+                <p className="text-xs text-slate-500 mt-1">
                   JPEG, PNG yoki WEBP. Maksimum 5MB.
                 </p>
               </div>
@@ -186,11 +203,11 @@ export default function SettingsPage() {
           </div>
 
           {/* Shaxsiy ma'lumotlar */}
-          <div className="bg-white rounded-2xl shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-slate-900 mb-4">Shaxsiy ma'lumotlar</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white rounded-xl shadow-sm p-4">
+            <h2 className="text-sm font-semibold text-slate-900 mb-3">Shaxsiy ma'lumotlar</h2>
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-xs font-medium text-slate-700 mb-1">
                   Ism
                 </label>
                 <input
@@ -198,11 +215,11 @@ export default function SettingsPage() {
                   value={formData.first_name}
                   onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
                   placeholder="Ismingiz"
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-xs font-medium text-slate-700 mb-1">
                   Familiya
                 </label>
                 <input
@@ -210,38 +227,7 @@ export default function SettingsPage() {
                   value={formData.last_name}
                   onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
                   placeholder="Familiyangiz"
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Akkaunt ma'lumotlari */}
-          <div className="bg-white rounded-2xl shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-slate-900 mb-4">Akkaunt ma'lumotlari</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Foydalanuvchi nomi
-                </label>
-                <input
-                  type="text"
-                  value={formData.username}
-                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  placeholder="Foydalanuvchi nomi"
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="example@gmail.com"
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  className="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                 />
               </div>
             </div>
@@ -250,7 +236,7 @@ export default function SettingsPage() {
           {/* Xabar */}
           {message && (
             <div
-              className={`p-4 rounded-xl ${
+              className={`p-3 rounded-lg text-sm ${
                 message.type === 'success'
                   ? 'bg-green-50 text-green-700 border border-green-200'
                   : 'bg-red-50 text-red-700 border border-red-200'
@@ -265,7 +251,7 @@ export default function SettingsPage() {
             <button
               type="submit"
               disabled={loading}
-              className="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-6 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? 'Saqlanmoqda...' : 'Saqlash'}
             </button>

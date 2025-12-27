@@ -11,7 +11,6 @@ export default function LanguageSelector() {
     setCurrentLang(lang)
     setShowDropdown(false)
     // Here you would implement language switching logic
-    console.log('Language changed to:', lang.code)
   }
 
   return (

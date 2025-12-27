@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Project, getImageUrl } from '@/services/adminApi'
 
 interface ProjectCardProps {
@@ -11,10 +11,47 @@ interface ProjectCardProps {
 export default function ProjectCard({ project }: ProjectCardProps) {
   const [isFavorite, setIsFavorite] = useState(false)
 
+  // localStorage dan sevimlilarni tekshirish
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('favoriteProjects')
+    if (savedFavorites) {
+      try {
+        const favorites: Project[] = JSON.parse(savedFavorites)
+        setIsFavorite(favorites.some(f => f.id === project.id))
+      } catch (e) {
+        console.error('Failed to load favorites', e)
+      }
+    }
+  }, [project.id])
+
   const toggleFavorite = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
+
+    const savedFavorites = localStorage.getItem('favoriteProjects')
+    let favorites: Project[] = []
+
+    if (savedFavorites) {
+      try {
+        favorites = JSON.parse(savedFavorites)
+      } catch (e) {
+        console.error('Failed to parse favorites', e)
+      }
+    }
+
+    if (isFavorite) {
+      // Sevimlilardan olib tashlash
+      favorites = favorites.filter(f => f.id !== project.id)
+    } else {
+      // Sevimlilarga qo'shish
+      favorites.push(project)
+    }
+
+    localStorage.setItem('favoriteProjects', JSON.stringify(favorites))
     setIsFavorite(!isFavorite)
+
+    // Custom event yuborish - FavoritesDropdown yangilanishi uchun
+    window.dispatchEvent(new CustomEvent('favoritesUpdated'))
   }
 
   const getBadge = () => {
@@ -30,7 +67,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       href={`/projects/${project.id}`}
       className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer"
     >
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-40 sm:h-48 overflow-hidden">
         {project.image_url ? (
           <img
             src={getImageUrl(project.image_url) || ''}
@@ -73,32 +110,32 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </svg>
         </button>
       </div>
-      <div className="p-6">
-        <h3 className="text-lg font-bold text-slate-900 mb-2 line-clamp-2">{project.name_uz}</h3>
+      <div className="p-4 sm:p-6">
+        <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2 line-clamp-2">{project.name_uz}</h3>
         {project.description_uz && (
-          <p className="text-sm text-slate-600 mb-4 line-clamp-2">{project.description_uz}</p>
+          <p className="text-xs sm:text-sm text-slate-600 mb-3 sm:mb-4 line-clamp-2">{project.description_uz}</p>
         )}
 
         {/* Technologies */}
         {project.technologies && project.technologies.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-4">
+          <div className="flex flex-wrap gap-1 mb-3 sm:mb-4">
             {project.technologies.slice(0, 3).map((tech, index) => (
-              <span key={index} className="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-full">
+              <span key={index} className="px-2 py-0.5 sm:py-1 bg-slate-100 text-slate-600 text-xs rounded-full">
                 {tech}
               </span>
             ))}
             {project.technologies.length > 3 && (
-              <span className="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-full">
+              <span className="px-2 py-0.5 sm:py-1 bg-slate-100 text-slate-600 text-xs rounded-full">
                 +{project.technologies.length - 3}
               </span>
             )}
           </div>
         )}
 
-        <div className="pt-4 border-t border-slate-100">
+        <div className="pt-3 sm:pt-4 border-t border-slate-100">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-indigo-600 font-medium">{project.category}</span>
-            <div className="flex items-center gap-3 text-slate-500 text-sm">
+            <span className="text-xs sm:text-sm text-indigo-600 font-medium line-clamp-1">{project.category}</span>
+            <div className="flex items-center gap-2 sm:gap-3 text-slate-500 text-xs sm:text-sm">
               <span className="flex items-center gap-1">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
