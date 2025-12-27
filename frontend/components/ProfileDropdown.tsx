@@ -58,16 +58,16 @@ export default function ProfileDropdown() {
   // Server-side yoki loading - placeholder ko'rsatish
   if (!mounted || loading) {
     return (
-      <div className="flex items-center gap-3 px-3 h-10 rounded-full bg-slate-100">
-        <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden bg-white">
+      <div className="flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-2 h-8 sm:h-10 rounded-full bg-slate-100">
+        <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center overflow-hidden bg-white">
           <img
             src="/aytixlogo.png"
             alt="AyTix"
-            className="w-full h-full object-contain p-1"
+            className="w-full h-full object-contain p-0.5"
           />
         </div>
         <div className="hidden md:block text-left">
-          <div className="text-sm font-semibold text-slate-400">...</div>
+          <div className="text-xs sm:text-sm font-semibold text-slate-400">...</div>
         </div>
       </div>
     )
@@ -78,9 +78,9 @@ export default function ProfileDropdown() {
     return (
       <Link
         href="/login"
-        className="flex items-center gap-3 px-3 h-10 rounded-full bg-slate-100 cursor-pointer hover:bg-slate-200 transition-all"
+        className="flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-2 h-8 sm:h-10 rounded-full bg-slate-100 cursor-pointer hover:bg-slate-200 transition-all"
       >
-        <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
+        <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center overflow-hidden">
           <img
             src="/aytixlogo.png"
             alt="Login"
@@ -88,7 +88,7 @@ export default function ProfileDropdown() {
           />
         </div>
         <div className="hidden md:block text-left">
-          <div className="text-sm font-semibold text-slate-900">Kirish</div>
+          <div className="text-xs sm:text-sm font-semibold text-slate-900">Kirish</div>
         </div>
       </Link>
     )
@@ -102,9 +102,9 @@ export default function ProfileDropdown() {
       {/* Profil tugmasi */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 px-3 h-10 rounded-full bg-slate-100 cursor-pointer hover:bg-slate-200 transition-all"
+        className="flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-2 h-8 sm:h-10 rounded-full bg-slate-100 cursor-pointer hover:bg-slate-200 transition-all"
       >
-        <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden bg-white">
+        <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center overflow-hidden bg-white">
           {profileImage ? (
             <img
               src={profileImage}
@@ -115,12 +115,12 @@ export default function ProfileDropdown() {
             <img
               src="/aytixlogo.png"
               alt="AyTix"
-              className="w-full h-full object-contain p-1"
+              className="w-full h-full object-contain p-0.5"
             />
           )}
         </div>
         <div className="hidden md:block text-left">
-          <div className="text-sm font-semibold text-slate-900">
+          <div className="text-xs sm:text-sm font-semibold text-slate-900">
             {user?.first_name && user?.last_name
               ? `${user.first_name} ${user.last_name}`
               : user?.first_name || 'Foydalanuvchi'}
@@ -128,7 +128,7 @@ export default function ProfileDropdown() {
         </div>
         {/* Chevron icon */}
         <svg
-          className={`w-4 h-4 text-slate-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-3 h-3 sm:w-4 sm:h-4 text-slate-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -139,11 +139,11 @@ export default function ProfileDropdown() {
 
       {/* Dropdown menyu */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50">
+        <div className="absolute right-0 top-full mt-1.5 w-48 sm:w-56 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-50">
           {/* Foydalanuvchi ma'lumotlari */}
-          <div className="p-4 border-b border-slate-100 bg-slate-50">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full overflow-hidden bg-white flex items-center justify-center">
+          <div className="p-2.5 sm:p-3 border-b border-slate-100 bg-slate-50">
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-white flex items-center justify-center">
                 {profileImage ? (
                   <img
                     src={profileImage}
@@ -154,12 +154,12 @@ export default function ProfileDropdown() {
                   <img
                     src="/aytixlogo.png"
                     alt="AyTix"
-                    className="w-full h-full object-contain p-1"
+                    className="w-full h-full object-contain p-0.5"
                   />
                 )}
               </div>
               <div>
-                <div className="font-semibold text-slate-900">
+                <div className="text-xs sm:text-sm font-semibold text-slate-900 line-clamp-1">
                   {user?.first_name && user?.last_name
                     ? `${user.first_name} ${user.last_name}`
                     : user?.username || 'Foydalanuvchi'}
@@ -169,13 +169,13 @@ export default function ProfileDropdown() {
           </div>
 
           {/* Menyu elementlari */}
-          <div className="p-2">
+          <div className="p-1.5">
             <Link
               href="/settings"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 px-4 py-3 text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
+              className="flex items-center gap-2 px-2.5 py-2 text-xs sm:text-sm text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -194,9 +194,9 @@ export default function ProfileDropdown() {
 
             <button
               onClick={openLogoutModal}
-              className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+              className="w-full flex items-center gap-2 px-2.5 py-2 text-xs sm:text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -220,11 +220,11 @@ export default function ProfileDropdown() {
           />
 
           {/* Modal */}
-          <div className="relative bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 animate-in fade-in zoom-in duration-200">
+          <div className="relative bg-white rounded-xl shadow-2xl p-4 sm:p-5 w-full max-w-xs mx-3 animate-in fade-in zoom-in duration-200">
             {/* Icon */}
-            <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
-                <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex justify-center mb-3">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-red-100 flex items-center justify-center">
+                <svg className="w-6 h-6 sm:w-7 sm:h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -236,24 +236,24 @@ export default function ProfileDropdown() {
             </div>
 
             {/* Text */}
-            <h3 className="text-xl font-semibold text-slate-900 text-center mb-2">
+            <h3 className="text-base sm:text-lg font-semibold text-slate-900 text-center mb-1.5">
               Tizimdan chiqish
             </h3>
-            <p className="text-slate-500 text-center mb-6">
+            <p className="text-xs sm:text-sm text-slate-500 text-center mb-4">
               Haqiqatan ham tizimdan chiqmoqchimisiz?
             </p>
 
             {/* Buttons */}
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               <button
                 onClick={cancelLogout}
-                className="flex-1 px-4 py-3 border border-slate-200 text-slate-700 rounded-xl font-medium hover:bg-slate-50 transition-colors"
+                className="flex-1 px-3 py-2 text-xs sm:text-sm border border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors"
               >
                 Bekor qilish
               </button>
               <button
                 onClick={confirmLogout}
-                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-colors"
+                className="flex-1 px-3 py-2 text-xs sm:text-sm bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors"
               >
                 Chiqish
               </button>

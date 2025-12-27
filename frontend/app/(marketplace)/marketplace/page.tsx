@@ -70,9 +70,43 @@ export default function MarketplacePage() {
       {/* Banner Slider */}
       <BannerSlider />
 
-      {/* Main Content */}
-      <div className="w-full px-3 sm:px-4 py-4 sm:py-8">
+      {/* Mobile Hamburger Menu - banner tagida */}
+      <div className="lg:hidden px-3 py-2 bg-white border-b border-slate-100">
+        <button
+          onClick={() => setShowMobileFilter(!showMobileFilter)}
+          className="flex items-center gap-2 p-2 text-slate-700 hover:text-indigo-600 transition-colors"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <span className="text-sm font-medium">
+            {selectedCategory || 'Kategoriyalar'}
+          </span>
+          <svg
+            className={`w-4 h-4 transition-transform ${showMobileFilter ? 'rotate-180' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Main Content with Mobile Sidebar */}
+      <div className="w-full px-3 sm:px-4 py-4 sm:py-8 relative">
+        {/* Mobile Category Filter - absolute positioned sidebar */}
+        <MobileCategoryFilter
+          isOpen={showMobileFilter}
+          onClose={() => setShowMobileFilter(false)}
+          selectedCategory={selectedCategory}
+          selectedSubcategory={selectedSubcategory}
+          onCategorySelect={handleCategorySelect}
+          onSubcategorySelect={handleSubcategorySelect}
+        />
+
         <div className="flex gap-4 lg:gap-8 items-start">
+
           {/* Sidebar Categories - sticky (faqat desktop) */}
           <CategoriesSidebar
             selectedCategory={selectedCategory}
@@ -83,34 +117,6 @@ export default function MarketplacePage() {
 
           {/* Projects Grid */}
           <main className="flex-1 min-w-0">
-            {/* Mobile Filter Button */}
-            <div className="lg:hidden mb-4">
-              <button
-                onClick={() => setShowMobileFilter(true)}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-slate-700 font-medium hover:border-indigo-500 hover:text-indigo-600 transition-all"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                </svg>
-                <span>Kategoriyalar</span>
-                {selectedCategory && (
-                  <span className="bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full text-xs">
-                    {selectedCategory}
-                  </span>
-                )}
-              </button>
-            </div>
-
-            {/* Mobile Category Filter Modal */}
-            <MobileCategoryFilter
-              isOpen={showMobileFilter}
-              onClose={() => setShowMobileFilter(false)}
-              selectedCategory={selectedCategory}
-              selectedSubcategory={selectedSubcategory}
-              onCategorySelect={handleCategorySelect}
-              onSubcategorySelect={handleSubcategorySelect}
-            />
-
             <div className="mb-4 sm:mb-6 flex items-center justify-between">
               <h2 className="text-lg sm:text-2xl font-bold text-slate-900">
                 {selectedCategory ? selectedCategory : 'Barcha loyihalar'}
@@ -137,9 +143,11 @@ export default function MarketplacePage() {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
                   {projects.map((project) => (
-                    <ProjectCard key={project.id} project={project} />
+                    <div key={project.id} className="w-full">
+                      <ProjectCard project={project} />
+                    </div>
                   ))}
                 </div>
 
