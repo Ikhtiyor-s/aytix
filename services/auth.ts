@@ -14,6 +14,7 @@ export interface RegisterData {
   full_name?: string
   first_name?: string
   last_name?: string
+  phone?: string
 }
 
 export type { User }
