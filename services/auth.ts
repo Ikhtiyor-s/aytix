@@ -51,6 +51,32 @@ export interface TelegramStatusResponse {
   message: string
 }
 
+// Ro'yxatdan o'tish OTP interfeyslari
+export interface RegisterInitData {
+  first_name: string
+  last_name: string
+  phone: string
+  email?: string
+}
+
+export interface RegisterInitResponse {
+  success: boolean
+  message: string
+  session_id: string
+  expires_in: number
+}
+
+export interface RegisterVerifyOTPData {
+  session_id: string
+  otp_code: string
+}
+
+export interface RegisterCompleteData {
+  session_id: string
+  password: string
+  password_confirm: string
+}
+
 export type { User }
 
 export const authService = {
@@ -111,6 +137,22 @@ export const authService = {
 
   async checkTelegramStatus(phone: string): Promise<TelegramStatusResponse> {
     const response = await api.post('/auth/check-telegram-status', { phone })
+    return response.data
+  },
+
+  // Ro'yxatdan o'tish OTP funksiyalari
+  async registerInit(data: RegisterInitData): Promise<RegisterInitResponse> {
+    const response = await api.post('/auth/register/init', data)
+    return response.data
+  },
+
+  async registerVerifyOTP(data: RegisterVerifyOTPData): Promise<OTPResponse> {
+    const response = await api.post('/auth/register/verify-otp', data)
+    return response.data
+  },
+
+  async registerComplete(data: RegisterCompleteData): Promise<User> {
+    const response = await api.post('/auth/register/complete', data)
     return response.data
   },
 }
