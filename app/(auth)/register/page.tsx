@@ -87,7 +87,14 @@ export default function RegisterPage() {
         router.push('/login')
       }, 2000)
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Ro\'yxatdan o\'tishda xatolik')
+      const detail = err.response?.data?.detail
+      if (typeof detail === 'string') {
+        setError(detail)
+      } else if (Array.isArray(detail)) {
+        setError(detail.map((d: any) => d.msg || d).join(', '))
+      } else {
+        setError('Ro\'yxatdan o\'tishda xatolik')
+      }
     } finally {
       setLoading(false)
     }

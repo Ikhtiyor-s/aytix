@@ -45,7 +45,14 @@ export default function LoginPage() {
       // Sahifani to'liq yangilash - barcha holatlarni reset qilish uchun
       window.location.href = '/marketplace'
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Kirish muvaffaqiyatsiz')
+      const detail = err.response?.data?.detail
+      if (typeof detail === 'string') {
+        setError(detail)
+      } else if (Array.isArray(detail)) {
+        setError(detail.map((d: any) => d.msg || d).join(', '))
+      } else {
+        setError('Kirish muvaffaqiyatsiz')
+      }
     } finally {
       setLoading(false)
     }
