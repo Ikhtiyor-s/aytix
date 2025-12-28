@@ -17,6 +17,40 @@ export interface RegisterData {
   phone?: string
 }
 
+export interface OTPRequestData {
+  method: 'telegram' | 'email'
+  phone?: string
+  email?: string
+}
+
+export interface OTPVerifyData {
+  method: 'telegram' | 'email'
+  phone?: string
+  email?: string
+  otp_code: string
+}
+
+export interface PasswordResetData {
+  method: 'telegram' | 'email'
+  phone?: string
+  email?: string
+  otp_code: string
+  new_password: string
+  confirm_password: string
+}
+
+export interface OTPResponse {
+  success: boolean
+  message: string
+  expires_in?: number
+}
+
+export interface TelegramStatusResponse {
+  is_connected: boolean
+  phone: string
+  message: string
+}
+
 export type { User }
 
 export const authService = {
@@ -56,7 +90,28 @@ export const authService = {
   },
 
   isAuthenticated(): boolean {
-  return Boolean(Cookies.get('access_token'))
+    return Boolean(Cookies.get('access_token'))
+  },
+
+  // OTP funksiyalari
+  async requestOTP(data: OTPRequestData): Promise<OTPResponse> {
+    const response = await api.post('/auth/request-otp', data)
+    return response.data
+  },
+
+  async verifyOTP(data: OTPVerifyData): Promise<OTPResponse> {
+    const response = await api.post('/auth/verify-otp', data)
+    return response.data
+  },
+
+  async resetPassword(data: PasswordResetData): Promise<OTPResponse> {
+    const response = await api.post('/auth/reset-password', data)
+    return response.data
+  },
+
+  async checkTelegramStatus(phone: string): Promise<TelegramStatusResponse> {
+    const response = await api.post('/auth/check-telegram-status', { phone })
+    return response.data
   },
 }
 

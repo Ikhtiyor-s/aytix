@@ -14,6 +14,7 @@ export default function RegisterPage() {
     firstName: '',
     lastName: '',
     phone: '',
+    email: '',
     password: '',
     passwordConfirm: '',
   })
@@ -64,7 +65,8 @@ export default function RegisterPage() {
     try {
       setLoading(true)
       setError('')
-      const email = `${formData.phone}@aytix.uz`
+      // Agar foydalanuvchi email kiritsa - shu emailni ishlatish, kiritilmasa avtomatik yaratish
+      const email = formData.email.trim() || `${formData.phone}@aytix.uz`
       const fullName = `${formData.firstName} ${formData.lastName}`
       const username = `user_${formData.phone}`
       const fullPhone = `${selectedCountry.dialCode}${formData.phone}`
@@ -83,10 +85,24 @@ export default function RegisterPage() {
       }, 2000)
     } catch (err: any) {
       const detail = err.response?.data?.detail
+      // Xato xabarlarini o'zbek tiliga tarjima qilish
+      const translateError = (msg: string): string => {
+        const translations: { [key: string]: string } = {
+          'Phone or username already registered': 'Bu telefon raqam yoki foydalanuvchi nomi allaqachon ro\'yxatdan o\'tgan',
+          'Phone already registered': 'Bu telefon raqam allaqachon ro\'yxatdan o\'tgan',
+          'Username already taken': 'Bu foydalanuvchi nomi band',
+          'Email already registered': 'Bu email allaqachon ro\'yxatdan o\'tgan',
+          'Invalid phone number': 'Telefon raqam noto\'g\'ri',
+          'Password too short': 'Parol juda qisqa',
+          'Invalid credentials': 'Ma\'lumotlar noto\'g\'ri',
+        }
+        return translations[msg] || msg
+      }
+
       if (typeof detail === 'string') {
-        setError(detail)
+        setError(translateError(detail))
       } else if (Array.isArray(detail)) {
-        setError(detail.map((d: any) => d.msg || d).join(', '))
+        setError(detail.map((d: any) => translateError(d.msg || d)).join(', '))
       } else {
         setError('Ro\'yxatdan o\'tishda xatolik')
       }
@@ -113,29 +129,29 @@ export default function RegisterPage() {
         <div>
           <div className="grid grid-cols-2 gap-2 mb-3">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Ism</label>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Ism <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 placeholder="Ismingiz"
                 value={formData.firstName}
                 onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                className="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all text-sm"
+                className="w-full px-2.5 py-2 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all text-xs"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Familiya</label>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Familiya <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 placeholder="Familiyangiz"
                 value={formData.lastName}
                 onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                className="w-full px-3 py-2.5 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all text-sm"
+                className="w-full px-2.5 py-2 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all text-xs"
               />
             </div>
           </div>
 
-          <div className="mb-3">
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Telefon raqam</label>
+          <div className="mb-2">
+            <label className="block text-xs font-medium text-slate-700 mb-1">Telefon raqam <span className="text-red-500">*</span></label>
             <div className="relative flex">
               <CountrySelector
                 selectedCountry={selectedCountry}
@@ -146,20 +162,33 @@ export default function RegisterPage() {
                 placeholder="90 123 45 67"
                 value={formatPhoneNumber(formData.phone)}
                 onChange={handlePhoneChange}
-                className="flex-1 px-3 py-2.5 border-2 border-slate-200 rounded-r-xl outline-none focus:border-indigo-500 transition-all text-sm"
+                className="flex-1 px-2.5 py-2 border-2 border-slate-200 rounded-r-xl outline-none focus:border-indigo-500 transition-all text-xs"
               />
             </div>
           </div>
 
-          <div className="mb-3">
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Parol</label>
+          <div className="mb-2">
+            <label className="block text-xs font-medium text-slate-700 mb-1">
+              Email <span className="text-slate-400 font-normal">(ixtiyoriy, OTP kod olishingizda kerak bo'ladi)</span>
+            </label>
+            <input
+              type="email"
+              placeholder="example@gmail.com"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className="w-full px-2.5 py-2 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all text-xs"
+            />
+          </div>
+
+          <div className="mb-2">
+            <label className="block text-xs font-medium text-slate-700 mb-1">Parol <span className="text-red-500">*</span></label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Kamida 6 ta belgi"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="w-full px-3 py-2.5 pr-10 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all text-sm"
+                className="w-full px-2.5 py-2 pr-9 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all text-xs"
               />
               <button
                 type="button"
@@ -180,15 +209,15 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Parolni tasdiqlang</label>
+          <div className="mb-3">
+            <label className="block text-xs font-medium text-slate-700 mb-1">Parolni tasdiqlang <span className="text-red-500">*</span></label>
             <div className="relative">
               <input
                 type={showPasswordConfirm ? 'text' : 'password'}
                 placeholder="Parolni qayta kiriting"
                 value={formData.passwordConfirm}
                 onChange={(e) => setFormData({ ...formData, passwordConfirm: e.target.value })}
-                className="w-full px-3 py-2.5 pr-10 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all text-sm"
+                className="w-full px-2.5 py-2 pr-9 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all text-xs"
               />
               <button
                 type="button"
@@ -224,7 +253,7 @@ export default function RegisterPage() {
           <button
             onClick={handleSubmit}
             disabled={loading || success}
-            className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold py-2.5 rounded-xl transition-all hover:scale-[1.02] mb-3 disabled:opacity-50 text-sm"
+            className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold py-2 rounded-xl transition-all hover:scale-[1.02] mb-2 disabled:opacity-50 text-xs"
           >
             {loading ? 'Ro\'yxatdan o\'tilmoqda...' : success ? 'Muvaffaqiyatli!' : 'Ro\'yxatdan o\'tish'}
           </button>

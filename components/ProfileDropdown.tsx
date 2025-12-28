@@ -121,9 +121,7 @@ export default function ProfileDropdown() {
         </div>
         <div className="hidden md:block text-left">
           <div className="text-xs sm:text-sm font-semibold text-slate-900">
-            {user?.first_name && user?.last_name
-              ? `${user.first_name} ${user.last_name}`
-              : user?.first_name || 'Foydalanuvchi'}
+            {user?.first_name || user?.full_name?.split(' ')[0] || user?.username || 'Foydalanuvchi'}
           </div>
         </div>
         {/* Chevron icon */}
@@ -160,9 +158,7 @@ export default function ProfileDropdown() {
               </div>
               <div>
                 <div className="text-xs sm:text-sm font-semibold text-slate-900 line-clamp-1">
-                  {user?.first_name && user?.last_name
-                    ? `${user.first_name} ${user.last_name}`
-                    : user?.username || 'Foydalanuvchi'}
+                  {user?.full_name || `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || user?.username || 'Foydalanuvchi'}
                 </div>
               </div>
             </div>

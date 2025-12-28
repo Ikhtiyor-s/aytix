@@ -1,11 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import Link from 'next/link'
 import CountrySelector from '@/components/CountrySelector'
 import { Country, defaultCountry } from '@/lib/countries'
+
+// Telegram username - ro'yxatdan o'tgan foydalanuvchilar shu yerga yo'naltiriladi
+const TELEGRAM_USERNAME = 'Ikhtiyor_sb'
 
 export default function LoginPage() {
   const [selectedCountry, setSelectedCountry] = useState<Country>(defaultCountry)
@@ -15,7 +18,14 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const { login } = useAuth()
+  const { login, isAuthenticated, loading: authLoading } = useAuth()
+
+  // Agar foydalanuvchi allaqachon tizimga kirgan bo'lsa - Telegram ga yo'naltirish
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      window.location.href = `https://t.me/${TELEGRAM_USERNAME}`
+    }
+  }, [isAuthenticated, authLoading])
 
   // Telefon raqamni formatlash (94 867 93 00)
   const formatPhoneNumber = (value: string) => {
@@ -42,20 +52,53 @@ export default function LoginPage() {
       // Telefon raqamini to'liq formatda yuborish (mamlakat kodi bilan)
       const fullPhone = `${selectedCountry.dialCode}${phone}`
       await login(fullPhone, password)
-      // Sahifani to'liq yangilash - barcha holatlarni reset qilish uchun
-      window.location.href = '/marketplace'
+      // Muvaffaqiyatli login - Telegram ga yo'naltirish
+      window.location.href = `https://t.me/${TELEGRAM_USERNAME}`
     } catch (err: any) {
       const detail = err.response?.data?.detail
+      // Xato xabarlarini o'zbek tiliga tarjima qilish
+      const translateError = (msg: string): string => {
+        const translations: { [key: string]: string } = {
+          'Incorrect phone or password': 'Telefon raqam yoki parol noto\'g\'ri',
+          'Incorrect email or password': 'Email yoki parol noto\'g\'ri',
+          'Invalid credentials': 'Ma\'lumotlar noto\'g\'ri',
+          'Inactive user': 'Foydalanuvchi faol emas',
+          'User not found': 'Foydalanuvchi topilmadi',
+          'Invalid phone number': 'Telefon raqam noto\'g\'ri',
+          'Invalid password': 'Parol noto\'g\'ri',
+          'Field required': 'Maydon to\'ldirilishi shart',
+        }
+        return translations[msg] || msg
+      }
+
       if (typeof detail === 'string') {
-        setError(detail)
+        setError(translateError(detail))
       } else if (Array.isArray(detail)) {
-        setError(detail.map((d: any) => d.msg || d).join(', '))
+        setError(detail.map((d: any) => translateError(d.msg || d)).join(', '))
       } else {
         setError('Kirish muvaffaqiyatsiz')
       }
     } finally {
       setLoading(false)
     }
+  }
+
+  // Auth yuklanayotganda yoki foydalanuvchi kirgan bo'lsa - loading ko'rsatish
+  if (authLoading || isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-3">
+            <img
+              src="/aytixlogo.png"
+              alt="AyTix Logo"
+              className="w-full h-full object-contain animate-pulse"
+            />
+          </div>
+          <p className="text-slate-500 text-sm">Yuklanmoqda...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -75,7 +118,7 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Telefon raqam</label>
+            <label className="block text-xs font-medium text-slate-700 mb-1">Telefon raqam <span className="text-red-500">*</span></label>
             <div className="relative flex">
               <CountrySelector
                 selectedCountry={selectedCountry}
@@ -86,21 +129,21 @@ export default function LoginPage() {
                 placeholder="90 123 45 67"
                 value={formatPhoneNumber(phone)}
                 onChange={handlePhoneChange}
-                className="flex-1 px-3 py-2.5 border-2 border-slate-200 rounded-r-xl outline-none focus:border-indigo-500 transition-all text-sm"
+                className="flex-1 px-2.5 py-2 border-2 border-slate-200 rounded-r-xl outline-none focus:border-indigo-500 transition-all text-xs"
                 required
               />
             </div>
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Parol</label>
+            <label className="block text-xs font-medium text-slate-700 mb-1">Parol <span className="text-red-500">*</span></label>
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2.5 pr-10 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all text-sm"
+                className="w-full px-2.5 py-2 pr-9 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all text-xs"
                 required
               />
               <button
@@ -137,7 +180,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold py-2.5 rounded-xl transition-all hover:scale-[1.02] mb-3 disabled:opacity-50 text-sm"
+            className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold py-2 rounded-xl transition-all hover:scale-[1.02] mb-3 disabled:opacity-50 text-xs"
           >
             {loading ? 'Kirilmoqda...' : 'Kirish'}
           </button>

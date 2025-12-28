@@ -28,7 +28,14 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
+    const originalRequest = error.config
+
+    // Login va register endpointlarida 401 xatosini interceptor boshqarmaydi
+    // Ular o'z sahifalarida xatoni ko'rsatadi
+    const isAuthEndpoint = originalRequest?.url?.includes('/auth/login') ||
+                           originalRequest?.url?.includes('/auth/register')
+
+    if (error.response?.status === 401 && !isAuthEndpoint) {
       // Try to refresh token
       const refreshToken = Cookies.get('refresh_token')
       if (refreshToken) {

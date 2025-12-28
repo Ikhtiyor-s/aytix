@@ -79,8 +79,13 @@ export function useAuth() {
   }
 
   const login = async (phone: string, password: string) => {
-    await authService.login({ phone, password })
-    await loadUser()
+    try {
+      await authService.login({ phone, password })
+      await loadUser()
+    } catch (error) {
+      // Xatoni qayta throw qilish - login page'da ushlanadi
+      throw error
+    }
   }
 
   const logout = () => {
