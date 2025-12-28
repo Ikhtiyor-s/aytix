@@ -39,9 +39,9 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      // Phone number ni email formatiga o'zgartirish (backend email kutadi)
-      const email = `${phone}@aytix.uz`
-      await login(email, password)
+      // Telefon raqamini to'liq formatda yuborish (mamlakat kodi bilan)
+      const fullPhone = `${selectedCountry.dialCode}${phone}`
+      await login(fullPhone, password)
       // Sahifani to'liq yangilash - barcha holatlarni reset qilish uchun
       window.location.href = '/marketplace'
     } catch (err: any) {

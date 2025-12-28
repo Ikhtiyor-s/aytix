@@ -78,8 +78,8 @@ export function useAuth() {
     }
   }
 
-  const login = async (email: string, password: string) => {
-    await authService.login({ email, password })
+  const login = async (phone: string, password: string) => {
+    await authService.login({ phone, password })
     await loadUser()
   }
 

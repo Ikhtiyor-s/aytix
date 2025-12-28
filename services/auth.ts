@@ -3,7 +3,7 @@ import Cookies from 'js-cookie'
 import { User } from '@/types'
 
 export interface LoginData {
-  email: string
+  phone: string
   password: string
 }
 
@@ -22,7 +22,7 @@ export type { User }
 export const authService = {
   async login(data: LoginData) {
     const formData = new URLSearchParams()
-    formData.append('email', data.email)
+    formData.append('phone', data.phone)
     formData.append('password', data.password)
     const response = await api.post('/auth/login', formData, {
       headers: {
