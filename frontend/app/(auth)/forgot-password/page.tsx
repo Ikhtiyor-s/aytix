@@ -1,94 +1,184 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
+import CountrySelector from '@/components/CountrySelector'
+import { Country, defaultCountry } from '@/lib/countries'
+import { authService } from '@/services/auth'
+
+type Step = 'phone' | 'otp' | 'password'
 
 export default function ForgotPasswordPage() {
   const router = useRouter()
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState<Step>('phone')
+  const [selectedCountry, setSelectedCountry] = useState<Country>(defaultCountry)
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState(['', '', '', ''])
   const [newPassword, setNewPassword] = useState('')
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('')
-  const [otpTimeLeft, setOtpTimeLeft] = useState(60)
-  const [otpAttempts, setOtpAttempts] = useState(3)
-  const [isBlocked, setIsBlocked] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false)
+  const [otpTimer, setOtpTimer] = useState(60)
+  const [canResend, setCanResend] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const otpInputs = useRef<(HTMLInputElement | null)[]>([])
 
-  // Step 1: Phone Number
-  const handleSendOTP = () => {
-    if (phone.length !== 9) {
-      setError('Telefon raqamni to\'g\'ri kiriting!')
+  // OTP timer
+  useEffect(() => {
+    let interval: NodeJS.Timeout
+    if (step === 'otp' && otpTimer > 0) {
+      interval = setInterval(() => {
+        setOtpTimer((prev) => {
+          if (prev <= 1) {
+            setCanResend(true)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    }
+    return () => clearInterval(interval)
+  }, [step, otpTimer])
+
+  // Telefon raqamni formatlash
+  const formatPhoneNumber = (value: string) => {
+    const digits = value.replace(/\D/g, '')
+    if (digits.length <= 2) return digits
+    if (digits.length <= 5) return `${digits.slice(0, 2)} ${digits.slice(2)}`
+    if (digits.length <= 7) return `${digits.slice(0, 2)} ${digits.slice(2, 5)} ${digits.slice(5)}`
+    return `${digits.slice(0, 2)} ${digits.slice(2, 5)} ${digits.slice(5, 7)} ${digits.slice(7, 9)}`
+  }
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value.replace(/\D/g, '')
+    if (rawValue.length <= selectedCountry.phoneLength) {
+      setPhone(rawValue)
+    }
+  }
+
+  // To'liq telefon raqam
+  const getFullPhone = () => `${selectedCountry.dialCode}${phone}`
+
+  // Step 1: OTP yuborish
+  const handleSendOTP = async () => {
+    if (phone.length !== selectedCountry.phoneLength) {
+      setError(`Telefon raqam ${selectedCountry.phoneLength} ta raqamdan iborat bo'lishi kerak!`)
       return
     }
-    setError('')
-    setStep(2)
-    startOTPTimer()
-  }
 
-  // Step 2: OTP Verification
-  const startOTPTimer = () => {
-    setOtpTimeLeft(60)
-    const interval = setInterval(() => {
-      setOtpTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval)
-          return 0
-        }
-        return prev - 1
+    try {
+      setLoading(true)
+      setError('')
+      await authService.sendOTP({
+        phone: getFullPhone(),
+        purpose: 'reset_password'
       })
-    }, 1000)
+      setStep('otp')
+      setOtpTimer(60)
+      setCanResend(false)
+      setTimeout(() => otpInputs.current[0]?.focus(), 100)
+    } catch (err: any) {
+      const detail = err.response?.data?.detail
+      if (typeof detail === 'string') {
+        setError(detail)
+      } else {
+        setError('OTP yuborishda xatolik')
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleOTPChange = (index: number, value: string) => {
-    if (value.length > 1) return
+  // OTP input handler
+  const handleOtpChange = (index: number, value: string) => {
+    if (value.length > 1) {
+      value = value.slice(-1)
+    }
+    if (!/^\d*$/.test(value)) return
+
     const newOtp = [...otp]
     newOtp[index] = value
     setOtp(newOtp)
 
     if (value && index < 3) {
-      const nextInput = document.getElementById(`forgot-otp-${index + 1}`)
-      nextInput?.focus()
+      otpInputs.current[index + 1]?.focus()
     }
   }
 
-  const handleOTPPaste = (e: React.ClipboardEvent) => {
-    e.preventDefault()
-    const paste = e.clipboardData.getData('text')
-    const newOtp = paste.slice(0, 4).split('')
-    setOtp([...newOtp, '', '', '', ''].slice(0, 4))
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      otpInputs.current[index - 1]?.focus()
+    }
   }
 
-  const handleVerifyOTP = () => {
-    if (isBlocked) return
+  const handleOtpPaste = (e: React.ClipboardEvent) => {
+    e.preventDefault()
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 4)
+    if (pastedData.length === 4) {
+      setOtp(pastedData.split(''))
+      otpInputs.current[3]?.focus()
+    }
+  }
 
+  // OTP qayta yuborish
+  const handleResendOTP = async () => {
+    try {
+      setLoading(true)
+      setError('')
+      await authService.resendOTP({
+        phone: getFullPhone(),
+        purpose: 'reset_password'
+      })
+      setOtp(['', '', '', ''])
+      setOtpTimer(60)
+      setCanResend(false)
+      otpInputs.current[0]?.focus()
+    } catch (err: any) {
+      const detail = err.response?.data?.detail
+      if (typeof detail === 'string') {
+        setError(detail)
+      } else {
+        setError('Qayta yuborishda xatolik')
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Step 2: OTP ni tekshirish
+  const handleVerifyOTP = async () => {
     const otpCode = otp.join('')
     if (otpCode.length !== 4) {
-      setError('OTP kodni to\'liq kiriting!')
+      setError('4 xonali kodni kiriting')
       return
     }
 
-    // Mock verification - 1234 is correct
-    if (otpCode === '1234') {
-      setStep(3)
+    try {
+      setLoading(true)
       setError('')
-    } else {
-      const newAttempts = otpAttempts - 1
-      setOtpAttempts(newAttempts)
-      setError(`❌ Xato kod! ${newAttempts} ta urinish qoldi`)
-      setOtp(['', '', '', ''])
-      document.getElementById('forgot-otp-0')?.focus()
-
-      if (newAttempts <= 0) {
-        setIsBlocked(true)
-        setError('🔒 3 marta xato kiritdingiz. 60 daqiqadan keyin qayta urinib ko\'ring.')
+      await authService.verifyOTP({
+        phone: getFullPhone(),
+        code: otpCode,
+        purpose: 'reset_password'
+      })
+      setStep('password')
+    } catch (err: any) {
+      const detail = err.response?.data?.detail
+      if (typeof detail === 'string') {
+        setError(detail)
+      } else {
+        setError('Noto\'g\'ri kod')
       }
+    } finally {
+      setLoading(false)
     }
   }
 
-  // Step 3: New Password
+  // Step 3: Parolni yangilash
   const handleResetPassword = async () => {
     if (newPassword.length < 6) {
       setError('Parol kamida 6 ta belgidan iborat bo\'lishi kerak!')
@@ -99,205 +189,333 @@ export default function ForgotPasswordPage() {
       return
     }
 
-    setLoading(true)
     try {
-      // Here you would call API to reset password
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      alert(`✅ Parol muvaffaqiyatli yangilandi!\n📱 +998 ${phone}\nYangi parol bilan tizimga kiring.`)
-      router.push('/login')
+      setLoading(true)
+      setError('')
+      const otpCode = otp.join('')
+      await authService.resetPassword({
+        phone: getFullPhone(),
+        code: otpCode,
+        new_password: newPassword
+      })
+      setSuccess(true)
+      setTimeout(() => {
+        router.push('/login')
+      }, 2000)
     } catch (err: any) {
-      setError('Parolni yangilashda xatolik')
+      const detail = err.response?.data?.detail
+      if (typeof detail === 'string') {
+        setError(detail)
+      } else {
+        setError('Parolni yangilashda xatolik')
+      }
     } finally {
       setLoading(false)
     }
   }
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
-  }
-
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
-      <div className="bg-white rounded-2xl max-w-md w-full p-8 relative">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white font-bold text-2xl">🔑</span>
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-3 sm:p-4">
+      <div className="bg-white rounded-xl w-full max-w-[320px] sm:max-w-[360px] md:max-w-[400px] p-4 sm:p-5 md:p-6 shadow-lg">
+        {/* Logo va sarlavha */}
+        <div className="text-center mb-3 sm:mb-4">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center mx-auto mb-2">
+            <Image
+              src="/aytixlogo.png"
+              alt="AyTix Logo"
+              width={48}
+              height={48}
+              className="object-contain w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12"
+            />
           </div>
-          <h2 className="text-3xl font-bold text-slate-900 mb-2">Parolni tiklash</h2>
-          <p className="text-slate-600">
-            {step === 1 && 'Telefon raqamingizni kiriting'}
-            {step === 2 && 'Telefon raqamni tasdiqlang'}
-            {step === 3 && 'Yangi parol yarating'}
+          <h2 className="text-base sm:text-lg md:text-xl font-bold text-slate-900 mb-0.5">
+            {step === 'phone' && 'Parolni tiklash'}
+            {step === 'otp' && 'Kodni kiriting'}
+            {step === 'password' && 'Yangi parol'}
+          </h2>
+          <p className="text-slate-500 text-[10px] sm:text-xs">
+            {step === 'phone' && 'Telefon raqamingizni kiriting'}
+            {step === 'otp' && (
+              <>
+                <span className="font-medium text-slate-700">{getFullPhone()}</span> raqamiga
+                <a
+                  href="https://t.me/aytixuz_bot"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-600 hover:text-indigo-700 font-medium ml-1"
+                >
+                  @aytixuz_bot
+                </a>
+                {' '}orqali kod yuborildi
+              </>
+            )}
+            {step === 'password' && 'Yangi parolni kiriting'}
           </p>
         </div>
 
-        {/* Step 1: Phone Number */}
-        {step === 1 && (
+        {/* Step 1: Telefon raqam */}
+        {step === 'phone' && (
           <div>
-            <div className="mb-6">
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Telefon raqam</label>
-              <div className="relative flex">
-                <div className="flex items-center gap-2 px-4 py-3 bg-slate-100 border-2 border-r-0 border-slate-200 rounded-l-2xl">
-                  <span className="text-lg">🇺🇿</span>
-                  <span className="text-slate-600 font-medium">+998</span>
-                </div>
+            <div className="mb-2.5 sm:mb-3">
+              <label className="block text-[10px] sm:text-xs font-medium text-slate-700 mb-1 sm:mb-1.5">Telefon raqam <span className="text-red-500">*</span></label>
+              <div className="relative flex items-center w-full border-2 border-slate-200 rounded-lg bg-white focus-within:border-indigo-500 transition-all">
+                <CountrySelector
+                  selectedCountry={selectedCountry}
+                  onCountryChange={setSelectedCountry}
+                />
                 <input
                   type="tel"
                   placeholder="90 123 45 67"
-                  maxLength={9}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                  className="flex-1 px-4 py-3 border-2 border-slate-200 rounded-r-2xl outline-none focus:border-indigo-500 transition-all"
+                  value={formatPhoneNumber(phone)}
+                  onChange={handlePhoneChange}
+                  className="flex-1 px-2 sm:px-3 py-1.5 sm:py-2 bg-transparent outline-none text-xs sm:text-sm"
                 />
               </div>
             </div>
 
             {error && (
-              <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm text-center">
+              <div className="mb-2.5 sm:mb-3 bg-red-50 border border-red-200 text-red-700 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-xs text-center">
                 {error}
               </div>
             )}
 
             <button
               onClick={handleSendOTP}
-              className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold py-3 rounded-2xl transition-all hover:scale-105 mb-3"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold py-1.5 sm:py-2 rounded-lg transition-all hover:scale-[1.01] mb-2.5 sm:mb-3 disabled:opacity-50 text-xs sm:text-sm"
             >
-              OTP kod yuborish
+              {loading ? 'Yuborilmoqda...' : 'OTP kod olish'}
             </button>
+
+            {/* Telegram bot haqida eslatma */}
+            <div className="mb-2.5 sm:mb-3 bg-blue-50 border border-blue-200 rounded-lg p-2 sm:p-2.5">
+              <div className="flex items-start gap-1.5 sm:gap-2">
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+                <div>
+                  <p className="text-[10px] sm:text-xs text-blue-700">
+                    OTP kod{' '}
+                    <a
+                      href="https://t.me/aytixuz_bot"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold hover:underline"
+                    >
+                      @aytixuz_bot
+                    </a>
+                    {' '}Telegram bot orqali keladi
+                  </p>
+                </div>
+              </div>
+            </div>
 
             <Link
               href="/login"
-              className="w-full text-slate-600 hover:text-slate-900 font-medium py-2 block text-center"
+              className="w-full text-slate-600 hover:text-slate-800 font-medium py-1 sm:py-1.5 block text-center text-[10px] sm:text-xs"
             >
               ← Orqaga qaytish
             </Link>
           </div>
         )}
 
-        {/* Step 2: OTP Verification */}
-        {step === 2 && (
+        {/* Step 2: OTP */}
+        {step === 'otp' && (
           <div>
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                </svg>
+            {/* Telegram bot banner */}
+            <div className="mb-3 sm:mb-4 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-2 sm:p-3 text-white">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <div className="w-7 h-7 sm:w-9 sm:h-9 bg-white/20 rounded-full flex items-center justify-center">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121L8.32 13.617l-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.94z"/>
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-[10px] sm:text-xs">Telegram botga o'ting</p>
+                  <a
+                    href="https://t.me/aytixuz_bot"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white/90 text-[10px] sm:text-xs hover:text-white underline"
+                  >
+                    @aytixuz_bot
+                  </a>
+                </div>
+                <a
+                  href="https://t.me/aytixuz_bot"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white text-blue-600 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md text-[10px] sm:text-xs font-semibold hover:bg-blue-50 transition-colors"
+                >
+                  Ochish
+                </a>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">OTP kodni kiriting</h3>
-              <p className="text-sm text-slate-600">+998 {phone} raqamiga kod yuborildi</p>
             </div>
 
-            <div className="mb-6">
-              <div className="flex gap-3 justify-center mb-4">
-                {[0, 1, 2, 3].map((index) => (
+            <div className="mb-3 sm:mb-4">
+              <label className="block text-[10px] sm:text-xs font-medium text-slate-700 mb-1.5 sm:mb-2 text-center">
+                4 xonali kodni kiriting
+              </label>
+              <div className="flex justify-center gap-1.5 sm:gap-2" onPaste={handleOtpPaste}>
+                {otp.map((digit, index) => (
                   <input
                     key={index}
-                    id={`forgot-otp-${index}`}
+                    ref={(el) => { otpInputs.current[index] = el }}
                     type="text"
+                    inputMode="numeric"
                     maxLength={1}
-                    value={otp[index]}
-                    onChange={(e) => handleOTPChange(index, e.target.value)}
-                    onPaste={index === 0 ? handleOTPPaste : undefined}
-                    disabled={isBlocked}
-                    className="w-14 h-14 text-center text-2xl font-bold border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 transition-all disabled:opacity-50"
+                    value={digit}
+                    onChange={(e) => handleOtpChange(index, e.target.value)}
+                    onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                    className="w-10 h-11 sm:w-11 sm:h-12 md:w-12 md:h-14 text-center text-base sm:text-lg font-bold border-2 border-slate-200 rounded-lg outline-none focus:border-indigo-500 bg-white transition-all"
                   />
                 ))}
               </div>
+            </div>
 
-              <div className="text-center mb-4">
-                <div className="text-2xl font-bold text-indigo-600 mb-2">{formatTime(otpTimeLeft)}</div>
-                <p className="text-sm text-slate-600">{otpAttempts} ta urinish qoldi</p>
-              </div>
-
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-4 text-sm text-center">
-                  {error}
-                </div>
+            <div className="text-center mb-2.5 sm:mb-3">
+              {canResend ? (
+                <button
+                  onClick={handleResendOTP}
+                  disabled={loading}
+                  className="text-indigo-600 hover:text-indigo-700 font-medium text-[10px] sm:text-xs"
+                >
+                  Kodni qayta yuborish
+                </button>
+              ) : (
+                <p className="text-slate-500 text-[10px] sm:text-xs">
+                  Qayta yuborish: <span className="font-semibold text-indigo-600">{otpTimer}s</span>
+                </p>
               )}
-
-              {isBlocked && (
-                <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-xl mb-4 text-sm text-center">
-                  🔒 3 marta xato kiritdingiz. 60 daqiqadan keyin qayta urinib ko'ring.
-                </div>
-              )}
-            </div>
-
-            <button
-              onClick={handleVerifyOTP}
-              disabled={isBlocked}
-              className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold py-3 rounded-2xl transition-all hover:scale-105 mb-3 disabled:opacity-50"
-            >
-              Tasdiqlash
-            </button>
-
-            <button
-              onClick={() => {
-                setOtp(['', '', '', ''])
-                startOTPTimer()
-                setError('')
-              }}
-              disabled={otpTimeLeft > 0 || isBlocked}
-              className="w-full border-2 border-slate-200 text-slate-700 font-semibold py-3 rounded-2xl hover:border-indigo-500 hover:text-indigo-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Qayta yuborish
-            </button>
-          </div>
-        )}
-
-        {/* Step 3: New Password */}
-        {step === 3 && (
-          <div>
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/>
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Yangi parol</h3>
-              <p className="text-sm text-slate-600">Yangi parolni o'rnating</p>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Yangi parol</label>
-              <input
-                type="password"
-                placeholder="Kamida 6 ta belgi"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-slate-200 rounded-2xl outline-none focus:border-indigo-500 transition-all"
-              />
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Parolni tasdiqlang</label>
-              <input
-                type="password"
-                placeholder="Parolni qayta kiriting"
-                value={newPasswordConfirm}
-                onChange={(e) => setNewPasswordConfirm(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-slate-200 rounded-2xl outline-none focus:border-indigo-500 transition-all"
-              />
             </div>
 
             {error && (
-              <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm text-center">
+              <div className="mb-2.5 sm:mb-3 bg-red-50 border border-red-200 text-red-700 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-xs text-center">
                 {error}
               </div>
             )}
 
             <button
-              onClick={handleResetPassword}
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold py-3 rounded-2xl transition-all hover:scale-105 disabled:opacity-50"
+              onClick={handleVerifyOTP}
+              disabled={loading || otp.join('').length !== 4}
+              className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold py-1.5 sm:py-2 rounded-lg transition-all hover:scale-[1.01] mb-2.5 sm:mb-3 disabled:opacity-50 text-xs sm:text-sm"
             >
-              {loading ? 'Yangilanmoqda...' : 'Parolni yangilash'}
+              {loading ? 'Tekshirilmoqda...' : 'Tasdiqlash'}
+            </button>
+
+            <button
+              onClick={() => { setStep('phone'); setError(''); setOtp(['', '', '', '']) }}
+              className="w-full text-slate-600 hover:text-slate-800 font-medium py-1 sm:py-1.5 text-[10px] sm:text-xs"
+            >
+              ← Orqaga
             </button>
           </div>
+        )}
+
+        {/* Step 3: Yangi parol */}
+        {step === 'password' && (
+          <div>
+            <div className="mb-2.5 sm:mb-3 bg-green-50 border border-green-200 rounded-lg p-2 sm:p-2.5">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                <p className="text-[10px] sm:text-xs text-green-700 font-medium">
+                  Telefon raqam tasdiqlandi!
+                </p>
+              </div>
+            </div>
+
+            <div className="mb-2.5 sm:mb-3">
+              <label className="block text-[10px] sm:text-xs font-medium text-slate-700 mb-1 sm:mb-1.5">Yangi parol <span className="text-red-500">*</span></label>
+              <div className="relative flex items-center w-full border-2 border-slate-200 rounded-lg bg-white focus-within:border-indigo-500 transition-all">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Kamida 6 ta belgi"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="flex-1 px-2 sm:px-3 py-1.5 sm:py-2 bg-transparent outline-none text-xs sm:text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="px-2 sm:px-3 text-slate-400 hover:text-slate-600 transition-colors"
+                >
+                  {showPassword ? (
+                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    </svg>
+                  ) : (
+                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="mb-2.5 sm:mb-3">
+              <label className="block text-[10px] sm:text-xs font-medium text-slate-700 mb-1 sm:mb-1.5">Parolni tasdiqlang <span className="text-red-500">*</span></label>
+              <div className="relative flex items-center w-full border-2 border-slate-200 rounded-lg bg-white focus-within:border-indigo-500 transition-all">
+                <input
+                  type={showPasswordConfirm ? 'text' : 'password'}
+                  placeholder="Parolni qayta kiriting"
+                  value={newPasswordConfirm}
+                  onChange={(e) => setNewPasswordConfirm(e.target.value)}
+                  className="flex-1 px-2 sm:px-3 py-1.5 sm:py-2 bg-transparent outline-none text-xs sm:text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                  className="px-2 sm:px-3 text-slate-400 hover:text-slate-600 transition-colors"
+                >
+                  {showPasswordConfirm ? (
+                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    </svg>
+                  ) : (
+                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {error && (
+              <div className="mb-2.5 sm:mb-3 bg-red-50 border border-red-200 text-red-700 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-xs text-center">
+                {error}
+              </div>
+            )}
+
+            {success && (
+              <div className="mb-2.5 sm:mb-3 bg-green-50 border border-green-200 text-green-700 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-xs text-center">
+                Parol muvaffaqiyatli yangilandi! Kirish sahifasiga yo'naltirilmoqda...
+              </div>
+            )}
+
+            <button
+              onClick={handleResetPassword}
+              disabled={loading || success}
+              className="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold py-1.5 sm:py-2 rounded-lg transition-all hover:scale-[1.01] mb-2.5 sm:mb-3 disabled:opacity-50 text-xs sm:text-sm"
+            >
+              {loading ? 'Yangilanmoqda...' : success ? 'Muvaffaqiyatli!' : 'Parolni yangilash'}
+            </button>
+          </div>
+        )}
+
+        {/* Login link */}
+        {step !== 'password' && (
+          <p className="text-center text-[10px] sm:text-xs text-slate-500 mt-2 sm:mt-3">
+            Parolni eslaysizmi?{' '}
+            <Link href="/login" className="text-indigo-600 hover:text-indigo-700 font-semibold">
+              Kirish
+            </Link>
+          </p>
         )}
       </div>
     </div>
   )
 }
-
