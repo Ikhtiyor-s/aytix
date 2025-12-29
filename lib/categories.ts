@@ -1,0 +1,177 @@
+// Kategoriyalar va subkategoriyalar ma'lumotlari
+
+export interface CategoryWithSubs {
+  id: number
+  name: string
+  icon: string
+  subcategories: string[]
+}
+
+export const categoriesData: CategoryWithSubs[] = [
+  {
+    id: 1,
+    name: 'Biznes va Avtomatlashtirish',
+    icon: '💼',
+    subcategories: [
+      'CRM tizimlari',
+      'ERP tizimlari',
+      'Ombor va inventar boshqaruvi',
+      'Buyurtma va savdo boshqaruvi',
+      'Hisob-kitob va billing',
+      'Kadrlar (HR) tizimlari',
+      'Avtomatik hisobotlar',
+      'Raqamli hujjatlashtirish',
+    ],
+  },
+  {
+    id: 2,
+    name: 'Savdo va Marketing',
+    icon: '📈',
+    subcategories: [
+      'Onlayn savdo platformalari',
+      'Internet do\'konlar (E-commerce)',
+      'Reklama boshqaruvi (Ads tools)',
+      'SMM va kontent rejalashtirish',
+      'Lead generation tizimlari',
+      'Email & SMS marketing',
+      'Call-center avtomatlashtirish',
+      'Affiliate marketing tizimlari',
+    ],
+  },
+  {
+    id: 3,
+    name: 'Moliyaviy Texnologiyalar',
+    icon: '💳',
+    subcategories: [
+      'Buxgalteriya dasturlari',
+      'Soliq va hisobot tizimlari',
+      'To\'lov integratsiyalari',
+      'Bank API va billing',
+      'Kredit va qarz boshqaruvi',
+      'Kassa va POS tizimlari',
+      'Valyuta va konvertatsiya',
+      'Obuna (subscription) tizimlari',
+    ],
+  },
+  {
+    id: 4,
+    name: 'Ta\'lim va O\'rganish',
+    icon: '📚',
+    subcategories: [
+      'LMS (online ta\'lim platformalari)',
+      'Test va imtihon tizimlari',
+      'Video dars platformalari',
+      'O\'quvchilarni boshqarish',
+      'Sertifikatlash tizimlari',
+      'Trening va webinar platformalari',
+      'Onlayn kurs marketplace',
+      'AI yordamchi o\'qituvchilar',
+    ],
+  },
+  {
+    id: 5,
+    name: 'Qurilish va Ko\'chmas Mulk',
+    icon: '🏗️',
+    subcategories: [
+      'Qurilish boshqaruvi tizimlari',
+      'Loyiha va smeta dasturlari',
+      'Ombor va material nazorati',
+      'Texnika ijarasi boshqaruvi',
+      'Real estate CRM',
+      'E\'lon va listing platformalari',
+      'Xarita va joylashuv tizimlari',
+      'Smart qurilish yechimlari',
+    ],
+  },
+  {
+    id: 6,
+    name: 'AI va Avtomatik Yordamchilar',
+    icon: '🤖',
+    subcategories: [
+      'Chatbotlar (Telegram / Web)',
+      'AI konsultantlar',
+      'Matn, rasm va video AI',
+      'Ovoz orqali boshqaruv',
+      'AI analytics va prognoz',
+      'Tavsiya (recommendation) tizimlari',
+      'Avtomatik javob beruvchi botlar',
+      'Custom AI yechimlar',
+    ],
+  },
+  {
+    id: 7,
+    name: 'Mobil va Veb Ilovalar',
+    icon: '📱',
+    subcategories: [
+      'Mobil ilovalar (Flutter / Native)',
+      'Veb platformalar',
+      'Admin panellar',
+      'Landing page va saytlar',
+      'Progressive Web App (PWA)',
+      'API va backend xizmatlar',
+      'SaaS platformalar',
+      'UI/UX dizayn xizmatlari',
+    ],
+  },
+  {
+    id: 8,
+    name: 'Media va Dizayn',
+    icon: '🎨',
+    subcategories: [
+      'Grafik dizayn',
+      'Brending va logo',
+      'Video montaj',
+      'Motion dizayn',
+      'UI/UX dizayn',
+      'Reklama bannerlari',
+      'Social media dizayn',
+      'Prezentatsiya dizayni',
+    ],
+  },
+  {
+    id: 9,
+    name: 'Logistika va Yetkazib Berish',
+    icon: '🚚',
+    subcategories: [
+      'Yetkazib berish tizimlari',
+      'Kuryer boshqaruvi',
+      'Marshrut optimizatsiyasi',
+      'Buyurtma tracking',
+      'Ombor logistika',
+      'GPS va xarita integratsiya',
+      'Fleet management',
+      'Avtomatik xabarnoma',
+    ],
+  },
+  {
+    id: 10,
+    name: 'Sanoat va Ishlab Chiqarish',
+    icon: '🏭',
+    subcategories: [
+      'Ishlab chiqarish monitoringi',
+      'Texnik xizmat nazorati',
+      'IoT boshqaruvi',
+      'Sifat nazorati tizimlari',
+      'Buyurtma ishlab chiqarish',
+      'Energiya monitoringi',
+      'Zavod ERP',
+      'Avtomatik rejalashtirish',
+    ],
+  },
+  {
+    id: 11,
+    name: 'Startaplar va Maxsus Buyurtmalar',
+    icon: '🚀',
+    subcategories: [
+      'MVP ishlab chiqish',
+      'Startap prototiplari',
+      'Maxsus dastur buyurtmalari',
+      'Texnik konsultatsiya',
+      'Digital transformatsiya',
+      'API integratsiyalar',
+      'Legacy system modernizatsiya',
+      'Texnik audit',
+    ],
+  },
+]
+
