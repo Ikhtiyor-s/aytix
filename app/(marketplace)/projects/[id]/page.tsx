@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { projectsService, Project, getImageUrl } from '@/services/adminApi'
@@ -19,10 +19,37 @@ export default function ProjectDetailPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>()
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | undefined>()
   const [isFavorite, setIsFavorite] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [sidebarBottom, setSidebarBottom] = useState<number | null>(null)
   const hasFetchedRef = useRef(false)
+  const contentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setMounted(true)
+  }, [])
+
+  // Scroll holatini kuzatish - kategoriyalar uchun sticky
+  useEffect(() => {
+    const handleScroll = () => {
+      const headerHeight = 56
+      setIsScrolled(window.scrollY > 20)
+
+      // Footer bilan to'qnashuvni tekshirish
+      if (contentRef.current) {
+        const contentRect = contentRef.current.getBoundingClientRect()
+        const viewportHeight = window.innerHeight
+
+        if (contentRect.bottom < viewportHeight) {
+          setSidebarBottom(viewportHeight - contentRect.bottom)
+        } else {
+          setSidebarBottom(null)
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    handleScroll()
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   // localStorage dan sevimlilarni tekshirish
@@ -151,14 +178,30 @@ export default function ProjectDetailPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="w-full px-3 sm:px-4 py-4 sm:py-6">
-        <div className="flex gap-4 lg:gap-8">
+        <div ref={contentRef} className="flex gap-4 lg:gap-8">
           {/* Categories Sidebar - sticky (faqat desktop) */}
-          <CategoriesSidebar
-            selectedCategory={selectedCategory}
-            selectedSubcategory={selectedSubcategory}
-            onCategorySelect={handleCategorySelect}
-            onSubcategorySelect={handleSubcategorySelect}
-          />
+          <div className="hidden lg:block w-72 flex-shrink-0">
+            <div
+              className={`w-72 overflow-y-auto transition-all duration-200 ${
+                isScrolled ? 'fixed' : 'relative'
+              }`}
+              style={{
+                top: isScrolled ? '56px' : 'auto',
+                bottom: sidebarBottom !== null ? `${sidebarBottom}px` : 'auto',
+                height: isScrolled && sidebarBottom === null ? 'calc(100vh - 56px)' : 'auto',
+                maxHeight: isScrolled ? 'calc(100vh - 56px)' : 'calc(100vh - 200px)'
+              }}
+            >
+              <div className={isScrolled ? 'py-4 pr-4' : ''}>
+                <CategoriesSidebar
+                  selectedCategory={selectedCategory}
+                  selectedSubcategory={selectedSubcategory}
+                  onCategorySelect={handleCategorySelect}
+                  onSubcategorySelect={handleSubcategorySelect}
+                />
+              </div>
+            </div>
+          </div>
 
           {/* Main Content */}
           <div className="flex-1 min-w-0">
