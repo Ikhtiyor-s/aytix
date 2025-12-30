@@ -111,15 +111,15 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </svg>
         </button> */}
       </div>
-      <div className="p-3 sm:p-4 lg:p-6">
-        <h3 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 dark:text-slate-100 mb-1 sm:mb-2 line-clamp-2">{project.name_uz}</h3>
+      <div className="p-2.5 sm:p-3 lg:p-4">
+        <h3 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 dark:text-slate-100 mb-0.5 sm:mb-1 line-clamp-2">{project.name_uz}</h3>
         {project.description_uz && (
-          <p className="text-[11px] sm:text-xs lg:text-sm text-slate-600 dark:text-slate-400 mb-2 sm:mb-3 lg:mb-4 line-clamp-2">{project.description_uz}</p>
+          <p className="text-[11px] sm:text-xs lg:text-sm text-slate-600 dark:text-slate-400 mb-1.5 sm:mb-2 line-clamp-2">{project.description_uz}</p>
         )}
 
         {/* Technologies */}
         {project.technologies && project.technologies.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-2 sm:mb-3 lg:mb-4">
+          <div className="flex flex-wrap gap-1 mb-1.5 sm:mb-2">
             {project.technologies.slice(0, 3).map((tech, index) => (
               <span key={index} className="px-1.5 sm:px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] sm:text-xs rounded-full">
                 {tech}
@@ -133,7 +133,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </div>
         )}
 
-        <div className="pt-2 sm:pt-3 lg:pt-4 border-t border-slate-100 dark:border-slate-700">
+        <div className="pt-1.5 sm:pt-2 border-t border-slate-100 dark:border-slate-700">
           <div className="flex justify-between items-center">
             <span className="text-[10px] sm:text-xs lg:text-sm text-indigo-600 dark:text-indigo-400 font-medium line-clamp-1">{project.category}</span>
             <span className="flex items-center gap-0.5 sm:gap-1 text-slate-500 dark:text-slate-400 text-[10px] sm:text-xs lg:text-sm">
