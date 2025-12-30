@@ -393,6 +393,23 @@ export default function ProjectDetailPage() {
                   </a>
                 </div>
 
+                {/* Features - O'ng sidebar da */}
+                {project.features && project.features.length > 0 && (
+                  <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">Xususiyatlar</h3>
+                    <ul className="space-y-2">
+                      {project.features.map((feature, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <svg className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 {/* Info */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
                   <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">Ma'lumot</h3>
