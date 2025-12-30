@@ -73,21 +73,45 @@ export default function BannerSlider() {
     <div className="relative bg-gradient-to-r from-indigo-600 to-purple-600 overflow-hidden h-[200px] sm:h-[280px] md:h-[350px]">
       {banners.map((banner, index) => {
         const imageUrl = getImageUrl(banner.image_url)
+        const videoUrl = getImageUrl(banner.video_url)
+        const isVideo = videoUrl && (videoUrl.endsWith('.mp4') || videoUrl.endsWith('.webm') || videoUrl.endsWith('.ogg'))
+
         return (
           <div
             key={banner.id}
             className={`absolute inset-0 transition-opacity duration-500 ${
               index === currentIndex ? 'opacity-100' : 'opacity-0'
             }`}
-            style={{
-              backgroundImage: imageUrl
-                ? `linear-gradient(to right, rgba(0,0,0,0.4), rgba(0,0,0,0.2)), url('${imageUrl}')`
-                : 'linear-gradient(to right, rgba(79, 70, 229, 1), rgba(147, 51, 234, 1))',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
           >
-            <div className="w-full px-4 sm:px-16 md:px-20 h-full flex items-end justify-start pb-4 sm:pb-6 md:pb-8">
+            {/* Background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600" />
+
+            {/* Banner video */}
+            {isVideo && (
+              <video
+                src={videoUrl}
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover object-center"
+              />
+            )}
+
+            {/* Banner rasm yoki GIF */}
+            {!isVideo && imageUrl && (
+              <img
+                src={imageUrl}
+                alt={banner.title_uz}
+                className="absolute inset-0 w-full h-full object-contain object-center"
+              />
+            )}
+
+            {/* Overlay gradient - matn o'qilishi uchun */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-transparent" />
+
+            {/* Content */}
+            <div className="relative w-full px-4 sm:px-16 md:px-20 h-full flex items-end justify-start pb-4 sm:pb-6 md:pb-8">
               <div className="max-w-lg text-white text-left">
                 <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2 line-clamp-2">{banner.title_uz}</h2>
                 {banner.description_uz && (

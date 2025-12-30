@@ -101,19 +101,19 @@ export default function MarketplacePage() {
   }
 
   return (
-    <div className="bg-slate-50 min-h-screen">
+    <div className="bg-slate-50 dark:bg-slate-900 min-h-screen transition-colors duration-300">
       {/* Banner Slider */}
       <div ref={bannerRef}>
         <BannerSlider />
       </div>
 
       {/* Mobile Hamburger Menu - header ostida fixed */}
-      <div className={`lg:hidden px-3 py-2 bg-white border-b border-slate-100 z-30 ${isScrolled ? 'fixed top-[56px] left-0 right-0' : ''}`}>
+      <div className={`lg:hidden px-3 py-2 bg-white dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 z-30 ${isScrolled ? 'fixed top-[56px] left-0 right-0' : ''}`}>
         <div className="flex items-center justify-between">
           {/* Kategoriyalar tugmasi */}
           <button
             onClick={() => setShowMobileFilter(!showMobileFilter)}
-            className="flex items-center gap-2 p-2 text-slate-700 hover:text-indigo-600 transition-colors"
+            className="flex items-center gap-2 p-2 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -134,7 +134,7 @@ export default function MarketplacePage() {
           {/* Qidiruv tugmasi */}
           <button
             onClick={() => setShowMobileSearch(!showMobileSearch)}
-            className={`p-2 rounded-full transition-colors ${showMobileSearch ? 'bg-indigo-100 text-indigo-600' : 'text-slate-700 hover:bg-slate-100'}`}
+            className={`p-2 rounded-full transition-colors ${showMobileSearch ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'}`}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -159,7 +159,7 @@ export default function MarketplacePage() {
                   value={mobileSearchValue}
                   onChange={(e) => setMobileSearchValue(e.target.value)}
                   placeholder="Loyihalarni qidirish..."
-                  className="w-full pl-3 pr-8 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full pl-3 pr-8 py-2 text-sm border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder:text-slate-400"
                   autoFocus
                 />
                 {mobileSearchValue && (
@@ -170,7 +170,7 @@ export default function MarketplacePage() {
                       setSearch('')
                       setPage(1)
                     }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -232,16 +232,16 @@ export default function MarketplacePage() {
           {/* Projects Grid */}
           <main className="flex-1 min-w-0">
             <div className="mb-4 sm:mb-6 flex items-center justify-between">
-              <h2 className="text-lg sm:text-2xl font-bold text-slate-900">
+              <h2 className="text-lg sm:text-2xl font-bold text-slate-900 dark:text-slate-100">
                 {selectedCategory ? selectedCategory : 'Barcha loyihalar'}
               </h2>
-              <span className="text-sm sm:text-base text-slate-600">{projects.length} ta loyiha</span>
+              <span className="text-sm sm:text-base text-slate-600 dark:text-slate-400">{projects.length} ta loyiha</span>
             </div>
 
             {loading ? (
               <Loading text="Loyihalar yuklanmoqda..." />
             ) : projects.length === 0 ? (
-              <div className="text-center py-12 text-slate-500">
+              <div className="text-center py-12 text-slate-500 dark:text-slate-400">
                 <div className="text-6xl mb-4">📭</div>
                 <p className="mb-4">Loyihalar topilmadi</p>
                 <button
@@ -250,7 +250,7 @@ export default function MarketplacePage() {
                     setSelectedCategory(undefined)
                     setSelectedSubcategory(undefined)
                   }}
-                  className="text-indigo-600 hover:text-indigo-500"
+                  className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500"
                 >
                   Filtrni tozalash
                 </button>
@@ -270,14 +270,14 @@ export default function MarketplacePage() {
                     <button
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
                       disabled={page === 1}
-                      className="px-3 sm:px-4 py-2 text-sm sm:text-base border rounded-md disabled:opacity-50 hover:bg-slate-50"
+                      className="px-3 sm:px-4 py-2 text-sm sm:text-base border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-md disabled:opacity-50 hover:bg-slate-50 dark:hover:bg-slate-700"
                     >
                       Oldingi
                     </button>
-                    <span className="px-3 sm:px-4 py-2 text-sm sm:text-base">Sahifa {page}</span>
+                    <span className="px-3 sm:px-4 py-2 text-sm sm:text-base text-slate-700 dark:text-slate-300">Sahifa {page}</span>
                     <button
                       onClick={() => setPage((p) => p + 1)}
-                      className="px-3 sm:px-4 py-2 text-sm sm:text-base border rounded-md hover:bg-slate-50"
+                      className="px-3 sm:px-4 py-2 text-sm sm:text-base border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700"
                     >
                       Keyingi
                     </button>

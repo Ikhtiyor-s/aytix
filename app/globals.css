@@ -11,6 +11,36 @@
 body {
   color: rgb(var(--foreground-rgb));
   background: #f8fafc;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark body {
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+.dark .categories-scroll::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark .categories-scroll::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark .categories-scroll::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
 }
 
 @keyframes slideInRight {

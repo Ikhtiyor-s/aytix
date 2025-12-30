@@ -88,14 +88,14 @@ export default function CategoriesSidebar({
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        <div className="p-4 border-b border-slate-100">
-          <h2 className="font-bold text-slate-800 flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
+        <div className="p-4 border-b border-slate-100 dark:border-slate-700">
+          <h2 className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
             <span className="text-xl">📂</span>
             Kategoriyalar
           </h2>
         </div>
-        <div className="p-4 text-center text-slate-500">
+        <div className="p-4 text-center text-slate-500 dark:text-slate-400">
           Yuklanmoqda...
         </div>
       </div>
@@ -103,33 +103,33 @@ export default function CategoriesSidebar({
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden flex flex-col">
-      <div className="p-4 border-b border-slate-100 flex-shrink-0">
-        <h2 className="font-bold text-slate-800 flex items-center gap-2">
-          <span className="text-xl">📂</span>
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden flex flex-col">
+      <div className="px-3 py-2 border-b border-slate-100 dark:border-slate-700 flex-shrink-0">
+        <h2 className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5 text-sm">
+          <span className="text-base">📂</span>
           Kategoriyalar
         </h2>
       </div>
-      <div className="p-3 flex-1 overflow-y-auto categories-scroll min-h-0">
+      <div className="p-2 flex-1 overflow-y-auto categories-scroll min-h-0">
         {categories.length === 0 ? (
-          <div className="text-center text-slate-500 py-4">
+          <div className="text-center text-slate-500 dark:text-slate-400 py-4">
             Kategoriyalar topilmadi
           </div>
         ) : (
-          <div className="space-y-1">
+          <div className="space-y-0.5">
             {categories.map((cat) => (
               <div key={cat.id}>
                 <button
                   onClick={() => handleCategoryClick(cat)}
-                  className={`w-full text-left px-3 py-2.5 rounded-xl hover:bg-indigo-50 transition-all flex items-center justify-between ${
+                  className={`w-full text-left px-2 py-1.5 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all flex items-center justify-between ${
                     selectedCategory === cat.name_uz
-                      ? 'bg-indigo-100 text-indigo-700 font-semibold'
-                      : 'text-slate-700'
+                      ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 font-semibold'
+                      : 'text-slate-700 dark:text-slate-300'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="text-xl">{getCategoryIcon(cat)}</span>
-                    <span className="text-sm">{cat.name_uz}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">{getCategoryIcon(cat)}</span>
+                    <span className="text-xs">{cat.name_uz}</span>
                   </div>
                   {cat.subcategories.length > 0 && (
                     <svg
@@ -152,16 +152,16 @@ export default function CategoriesSidebar({
 
                 {/* Subcategories */}
                 {expandedCategory === cat.id && cat.subcategories.length > 0 && (
-                  <div className="ml-8 mt-1 space-y-1">
+                  <div className="ml-6 mt-0.5 space-y-0.5">
                     <button
                       onClick={() => {
                         onCategorySelect(cat.name_uz)
                         onSubcategorySelect(cat.name_uz, '')
                       }}
-                      className={`w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-indigo-50 transition-all ${
+                      className={`w-full text-left px-2 py-1 text-xs rounded-md hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all ${
                         selectedCategory === cat.name_uz && !selectedSubcategory
-                          ? 'bg-indigo-50 text-indigo-600 font-medium'
-                          : 'text-slate-600'
+                          ? 'bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 font-medium'
+                          : 'text-slate-600 dark:text-slate-400'
                       }`}
                     >
                       Barchasi
@@ -170,10 +170,10 @@ export default function CategoriesSidebar({
                       <button
                         key={sub.id}
                         onClick={() => handleSubcategoryClick(cat.name_uz, sub.name_uz)}
-                        className={`w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-indigo-50 transition-all ${
+                        className={`w-full text-left px-2 py-1 text-xs rounded-md hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all ${
                           selectedCategory === cat.name_uz && selectedSubcategory === sub.name_uz
-                            ? 'bg-indigo-50 text-indigo-600 font-medium'
-                            : 'text-slate-600'
+                            ? 'bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 font-medium'
+                            : 'text-slate-600 dark:text-slate-400'
                         }`}
                       >
                         {sub.name_uz}
@@ -191,7 +191,7 @@ export default function CategoriesSidebar({
             setExpandedCategory(null)
             onCategorySelect(undefined)
           }}
-          className="w-full mt-4 px-4 py-2.5 border-2 border-slate-200 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 font-medium transition-all text-sm"
+          className="w-full mt-2 px-3 py-1.5 border border-slate-200 dark:border-slate-600 rounded-lg hover:border-indigo-500 dark:hover:border-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium transition-all text-xs"
         >
           🔄 Filtrni tozalash
         </button>

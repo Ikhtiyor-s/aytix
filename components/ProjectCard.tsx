@@ -65,9 +65,9 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Link
       href={`/projects/${project.id}`}
-      className="block w-full bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer"
+      className="block w-full bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-xl dark:shadow-slate-900/50 transition-all duration-300 overflow-hidden group cursor-pointer"
     >
-      <div className="relative aspect-[16/9] overflow-hidden">
+      <div className="relative aspect-[16/10] overflow-hidden">
         {project.image_url ? (
           <img
             src={getImageUrl(project.image_url) || ''}
@@ -91,7 +91,8 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             {badge.text}
           </span>
         )}
-        <button
+        {/* TODO: Keyinchalik qo'shiladi */}
+        {/* <button
           onClick={toggleFavorite}
           className="absolute top-2 sm:top-3 right-2 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 bg-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
         >
@@ -108,48 +109,40 @@ export default function ProjectCard({ project }: ProjectCardProps) {
               d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
             />
           </svg>
-        </button>
+        </button> */}
       </div>
       <div className="p-3 sm:p-4 lg:p-6">
-        <h3 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 mb-1 sm:mb-2 line-clamp-2">{project.name_uz}</h3>
+        <h3 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 dark:text-slate-100 mb-1 sm:mb-2 line-clamp-2">{project.name_uz}</h3>
         {project.description_uz && (
-          <p className="text-[11px] sm:text-xs lg:text-sm text-slate-600 mb-2 sm:mb-3 lg:mb-4 line-clamp-2">{project.description_uz}</p>
+          <p className="text-[11px] sm:text-xs lg:text-sm text-slate-600 dark:text-slate-400 mb-2 sm:mb-3 lg:mb-4 line-clamp-2">{project.description_uz}</p>
         )}
 
         {/* Technologies */}
         {project.technologies && project.technologies.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-2 sm:mb-3 lg:mb-4">
             {project.technologies.slice(0, 3).map((tech, index) => (
-              <span key={index} className="px-1.5 sm:px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] sm:text-xs rounded-full">
+              <span key={index} className="px-1.5 sm:px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] sm:text-xs rounded-full">
                 {tech}
               </span>
             ))}
             {project.technologies.length > 3 && (
-              <span className="px-1.5 sm:px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] sm:text-xs rounded-full">
+              <span className="px-1.5 sm:px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] sm:text-xs rounded-full">
                 +{project.technologies.length - 3}
               </span>
             )}
           </div>
         )}
 
-        <div className="pt-2 sm:pt-3 lg:pt-4 border-t border-slate-100">
+        <div className="pt-2 sm:pt-3 lg:pt-4 border-t border-slate-100 dark:border-slate-700">
           <div className="flex justify-between items-center">
-            <span className="text-[10px] sm:text-xs lg:text-sm text-indigo-600 font-medium line-clamp-1">{project.category}</span>
-            <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-3 text-slate-500 text-[10px] sm:text-xs lg:text-sm">
-              <span className="flex items-center gap-0.5 sm:gap-1">
-                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                {project.views}
-              </span>
-              <span className="flex items-center gap-0.5 sm:gap-1">
-                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-                {project.favorites}
-              </span>
-            </div>
+            <span className="text-[10px] sm:text-xs lg:text-sm text-indigo-600 dark:text-indigo-400 font-medium line-clamp-1">{project.category}</span>
+            <span className="flex items-center gap-0.5 sm:gap-1 text-slate-500 dark:text-slate-400 text-[10px] sm:text-xs lg:text-sm">
+              <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              {project.views}
+            </span>
           </div>
         </div>
       </div>

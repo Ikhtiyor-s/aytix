@@ -154,6 +154,7 @@ export interface Banner {
   description_ru: string | null
   description_en: string | null
   image_url: string | null
+  video_url: string | null
   link_url: string | null
   project_id: number | null
   order: number

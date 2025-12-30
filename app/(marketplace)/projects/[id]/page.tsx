@@ -67,20 +67,30 @@ export default function ProjectDetailPage() {
     }
   }, [project])
 
-  const allImages = useMemo(() => {
+  // Media items - rasmlar va video birgalikda
+  const allMedia = useMemo(() => {
     if (!project) return []
-    const images: string[] = []
+    const media: { type: 'image' | 'video'; url: string }[] = []
+
+    // Rasmlarni qo'shish
     if (project.image_url) {
       const url = getImageUrl(project.image_url)
-      if (url) images.push(url)
+      if (url) media.push({ type: 'image', url })
     }
     if (project.images && Array.isArray(project.images)) {
       project.images.forEach(img => {
         const url = getImageUrl(img)
-        if (url) images.push(url)
+        if (url) media.push({ type: 'image', url })
       })
     }
-    return images
+
+    // Videoni qo'shish (oxiriga)
+    if (project.video_url) {
+      const url = getImageUrl(project.video_url)
+      if (url) media.push({ type: 'video', url })
+    }
+
+    return media
   }, [project])
 
   useEffect(() => {
@@ -152,10 +162,10 @@ export default function ProjectDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-slate-600">Yuklanmoqda...</p>
+          <p className="text-slate-600 dark:text-slate-400">Yuklanmoqda...</p>
         </div>
       </div>
     )
@@ -163,11 +173,11 @@ export default function ProjectDetailPage() {
 
   if (error || !project) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4">404</div>
-          <p className="text-slate-600 mb-4">{error || 'Loyiha topilmadi'}</p>
-          <Link href="/marketplace" className="text-indigo-600 hover:text-indigo-500">
+          <div className="text-6xl mb-4 text-slate-900 dark:text-slate-100">404</div>
+          <p className="text-slate-600 dark:text-slate-400 mb-4">{error || 'Loyiha topilmadi'}</p>
+          <Link href="/marketplace" className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500">
             Marketga qaytish
           </Link>
         </div>
@@ -176,7 +186,7 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
       <div className="w-full px-3 sm:px-4 py-4 sm:py-6">
         <div ref={contentRef} className="flex gap-4 lg:gap-8">
           {/* Categories Sidebar - sticky (faqat desktop) */}
@@ -207,73 +217,47 @@ export default function ProjectDetailPage() {
           <div className="flex-1 min-w-0">
             {/* Orqaga tugmasi va sarlavha */}
             <div className="mb-4 sm:mb-6">
-              <div className="flex items-center justify-between">
-                <button
-                  onClick={() => router.back()}
-                  className="text-slate-600 hover:text-slate-900 mb-3 sm:mb-4 flex items-center gap-2 text-sm sm:text-base"
-                >
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-                  </svg>
-                  Orqaga
-                </button>
-                <button
-                  onClick={toggleFavorite}
-                  className={`p-2 sm:p-3 rounded-full transition-all ${
-                    isFavorite
-                      ? 'bg-red-50 text-red-500 hover:bg-red-100'
-                      : 'bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-red-400'
-                  }`}
-                  title={isFavorite ? "Sevimlilardan olib tashlash" : "Sevimlilarga qo'shish"}
-                >
-                  <svg
-                    className="w-5 h-5 sm:w-6 sm:h-6"
-                    fill={isFavorite ? "currentColor" : "none"}
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                    />
-                  </svg>
-                </button>
-              </div>
-              <div className="flex items-center gap-2 sm:gap-3 mb-2">
-                {project.is_top && (
-                  <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-yellow-400 text-slate-900 text-xs font-bold rounded-full">TOP</span>
-                )}
-                {project.is_new && (
-                  <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-green-500 text-white text-xs font-bold rounded-full">YANGI</span>
-                )}
-              </div>
-              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 mb-2">{project.name_uz}</h1>
-              <p className="text-slate-600 text-sm sm:text-base lg:text-lg">{project.category}</p>
-              {project.subcategory && (
-                <p className="text-slate-500 text-xs sm:text-sm mt-1">{project.subcategory}</p>
-              )}
+              <button
+                onClick={() => router.back()}
+                className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 mb-3 sm:mb-4 flex items-center gap-2 text-sm sm:text-base"
+              >
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Orqaga
+              </button>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
               {/* Project Details */}
               <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-                {/* Rasmlar */}
-                {mounted && allImages.length > 0 && (
-                  <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
-                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 mb-3 sm:mb-4">Rasmlar</h2>
+                {/* Rasmlar va Video */}
+                {mounted && allMedia.length > 0 && (
+                  <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
+                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">
+                      {project.video_url ? 'Rasmlar va Video' : 'Rasmlar'}
+                    </h2>
                     <div className="relative">
-                      <div className="relative rounded-lg sm:rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center" style={{ minHeight: '200px', maxHeight: '500px' }}>
-                        <img
-                          src={allImages[currentImageIndex]}
-                          alt={`${project.name_uz} - ${currentImageIndex + 1}`}
-                          className="max-w-full max-h-[300px] sm:max-h-[400px] md:max-h-[500px] object-contain"
-                        />
-                        {allImages.length > 1 && (
+                      <div className="relative rounded-lg sm:rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-700 aspect-[16/10]">
+                        {allMedia[currentImageIndex]?.type === 'video' ? (
+                          <video
+                            controls
+                            className="w-full h-full object-contain"
+                            src={allMedia[currentImageIndex].url}
+                          >
+                            Brauzeringiz video formatini qo'llab-quvvatlamaydi.
+                          </video>
+                        ) : (
+                          <img
+                            src={allMedia[currentImageIndex]?.url}
+                            alt={`${project.name_uz} - ${currentImageIndex + 1}`}
+                            className="w-full h-full object-contain"
+                          />
+                        )}
+                        {allMedia.length > 1 && (
                           <>
                             <button
-                              onClick={() => setCurrentImageIndex(prev => prev === 0 ? allImages.length - 1 : prev - 1)}
+                              onClick={() => setCurrentImageIndex(prev => prev === 0 ? allMedia.length - 1 : prev - 1)}
                               className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center text-white"
                             >
                               <svg className="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -281,7 +265,7 @@ export default function ProjectDetailPage() {
                               </svg>
                             </button>
                             <button
-                              onClick={() => setCurrentImageIndex(prev => prev === allImages.length - 1 ? 0 : prev + 1)}
+                              onClick={() => setCurrentImageIndex(prev => prev === allMedia.length - 1 ? 0 : prev + 1)}
                               className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center text-white"
                             >
                               <svg className="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -290,23 +274,31 @@ export default function ProjectDetailPage() {
                             </button>
                           </>
                         )}
-                        {allImages.length > 1 && (
+                        {allMedia.length > 1 && (
                           <div className="absolute bottom-2 sm:bottom-4 right-2 sm:right-4 px-2 sm:px-3 py-0.5 sm:py-1 bg-black/50 rounded-full text-white text-xs sm:text-sm">
-                            {currentImageIndex + 1} / {allImages.length}
+                            {currentImageIndex + 1} / {allMedia.length}
                           </div>
                         )}
                       </div>
-                      {allImages.length > 1 && (
+                      {allMedia.length > 1 && (
                         <div className="flex gap-2 mt-3 sm:mt-4 overflow-x-auto pb-2">
-                          {allImages.map((img, idx) => (
+                          {allMedia.map((media, idx) => (
                             <button
                               key={idx}
                               onClick={() => setCurrentImageIndex(idx)}
-                              className={`flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 ${
+                              className={`flex-shrink-0 w-16 sm:w-20 aspect-[16/10] rounded-lg overflow-hidden border-2 relative ${
                                 idx === currentImageIndex ? 'border-indigo-500' : 'border-transparent hover:border-slate-300'
                               }`}
                             >
-                              <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                              {media.type === 'video' ? (
+                                <div className="w-full h-full bg-slate-800 flex items-center justify-center">
+                                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z" />
+                                  </svg>
+                                </div>
+                              ) : (
+                                <img src={media.url} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
+                              )}
                             </button>
                           ))}
                         </div>
@@ -316,24 +308,24 @@ export default function ProjectDetailPage() {
                 )}
 
                 {/* Description */}
-                <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
-                  <h2 className="text-lg sm:text-xl font-bold text-slate-900 mb-3 sm:mb-4">Tavsif</h2>
-                  <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+                <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
+                  <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">Tavsif</h2>
+                  <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
                     {project.description_uz || 'Tavsif mavjud emas'}
                   </p>
                 </div>
 
                 {/* Features */}
                 {project.features && project.features.length > 0 && (
-                  <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
-                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 mb-3 sm:mb-4">Xususiyatlar</h2>
+                  <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
+                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">Xususiyatlar</h2>
                     <ul className="space-y-2 sm:space-y-3">
                       {project.features.map((feature, index) => (
                         <li key={index} className="flex items-start gap-2 sm:gap-3">
                           <svg className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                           </svg>
-                          <span className="text-sm sm:text-base text-slate-600">{feature}</span>
+                          <span className="text-sm sm:text-base text-slate-600 dark:text-slate-400">{feature}</span>
                         </li>
                       ))}
                     </ul>
@@ -342,11 +334,11 @@ export default function ProjectDetailPage() {
 
                 {/* Technologies */}
                 {project.technologies && project.technologies.length > 0 && (
-                  <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
-                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 mb-3 sm:mb-4">Texnologiyalar</h2>
+                  <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
+                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">Texnologiyalar</h2>
                     <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {project.technologies.map((tech, index) => (
-                        <span key={index} className="px-3 sm:px-4 py-1.5 sm:py-2 bg-indigo-50 text-indigo-700 rounded-full text-xs sm:text-sm font-medium">
+                        <span key={index} className="px-3 sm:px-4 py-1.5 sm:py-2 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded-full text-xs sm:text-sm font-medium">
                           {tech}
                         </span>
                       ))}
@@ -356,11 +348,11 @@ export default function ProjectDetailPage() {
 
                 {/* Integrations */}
                 {project.integrations && project.integrations.length > 0 && (
-                  <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
-                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 mb-3 sm:mb-4">Integratsiyalar</h2>
+                  <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
+                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">Integratsiyalar</h2>
                     <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {project.integrations.map((integration, index) => (
-                        <span key={index} className="px-3 sm:px-4 py-1.5 sm:py-2 bg-purple-50 text-purple-700 rounded-full text-xs sm:text-sm font-medium">
+                        <span key={index} className="px-3 sm:px-4 py-1.5 sm:py-2 bg-purple-50 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded-full text-xs sm:text-sm font-medium">
                           {integration}
                         </span>
                       ))}
@@ -372,33 +364,22 @@ export default function ProjectDetailPage() {
               {/* Right Sidebar */}
               <div className="space-y-4 sm:space-y-6">
                 {/* Stats */}
-                <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
-                  <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-3 sm:mb-4">Statistika</h3>
-                  <div className="space-y-3 sm:space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm sm:text-base text-slate-600 flex items-center gap-2">
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                        Ko'rishlar
-                      </span>
-                      <span className="font-semibold text-sm sm:text-base text-slate-900">{project.views}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm sm:text-base text-slate-600 flex items-center gap-2">
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                        Sevimlilar
-                      </span>
-                      <span className="font-semibold text-sm sm:text-base text-slate-900">{project.favorites}</span>
-                    </div>
+                <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">Statistika</h3>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm sm:text-base text-slate-600 dark:text-slate-400 flex items-center gap-2">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                      Ko'rishlar
+                    </span>
+                    <span className="font-semibold text-sm sm:text-base text-slate-900 dark:text-slate-100">{project.views}</span>
                   </div>
                 </div>
 
                 {/* Contact */}
-                <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
+                <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
                   <a
                     href="https://t.me/Ikhtiyor_sb"
                     target="_blank"
@@ -412,33 +393,19 @@ export default function ProjectDetailPage() {
                   </a>
                 </div>
 
-                {/* Video */}
-                {project.video_url && (
-                  <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
-                    <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-3 sm:mb-4">Video</h3>
-                    <video
-                      controls
-                      className="w-full rounded-lg"
-                      src={getImageUrl(project.video_url) || ''}
-                    >
-                      Brauzeringiz video formatini qo'llab-quvvatlamaydi.
-                    </video>
-                  </div>
-                )}
-
                 {/* Info */}
-                <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
-                  <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-3 sm:mb-4">Ma'lumot</h3>
+                <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">Ma'lumot</h3>
                   <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Status</span>
-                      <span className={`font-medium ${project.status === 'active' ? 'text-green-600' : 'text-slate-400'}`}>
+                      <span className="text-slate-500 dark:text-slate-400">Status</span>
+                      <span className={`font-medium ${project.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-slate-400'}`}>
                         {project.status === 'active' ? 'Faol' : 'Nofaol'}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Qo'shilgan</span>
-                      <span className="text-slate-900">
+                      <span className="text-slate-500 dark:text-slate-400">Qo'shilgan</span>
+                      <span className="text-slate-900 dark:text-slate-100">
                         {new Date(project.created_at).toLocaleDateString('uz-UZ')}
                       </span>
                     </div>
@@ -451,10 +418,10 @@ export default function ProjectDetailPage() {
             {similarProjects.length > 0 && (
               <div className="mt-8 sm:mt-12">
                 <div className="flex items-center justify-between mb-4 sm:mb-6">
-                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900">O'xshash loyihalar</h2>
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100">O'xshash loyihalar</h2>
                   <Link
                     href={`/marketplace?category=${encodeURIComponent(project.category)}`}
-                    className="text-sm sm:text-base text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1"
+                    className="text-sm sm:text-base text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium flex items-center gap-1"
                   >
                     Barchasini ko'rish
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
