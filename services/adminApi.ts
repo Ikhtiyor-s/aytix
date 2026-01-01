@@ -13,7 +13,8 @@ import axios, { AxiosInstance } from 'axios'
 // =============================================================================
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'
+// BACKEND_URL ni API_URL dan olamiz (/api/v1 ni olib tashlab)
+const BACKEND_URL = API_URL.replace('/api/v1', '')
 
 const adminApi: AxiosInstance = axios.create({
   baseURL: API_URL,
