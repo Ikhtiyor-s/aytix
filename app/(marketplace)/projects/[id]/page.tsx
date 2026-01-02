@@ -315,22 +315,6 @@ export default function ProjectDetailPage() {
                   </p>
                 </div>
 
-                {/* Features */}
-                {project.features && project.features.length > 0 && (
-                  <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
-                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">Xususiyatlar</h2>
-                    <ul className="space-y-2 sm:space-y-3">
-                      {project.features.map((feature, index) => (
-                        <li key={index} className="flex items-start gap-2 sm:gap-3">
-                          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                          </svg>
-                          <span className="text-sm sm:text-base text-slate-600 dark:text-slate-400">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
 
                 {/* Technologies */}
                 {project.technologies && project.technologies.length > 0 && (
