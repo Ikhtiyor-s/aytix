@@ -23,8 +23,17 @@ export default function MarketplacePage() {
   const [sidebarTop, setSidebarTop] = useState<number>(0)
   const [sidebarBottom, setSidebarBottom] = useState<number | null>(null)
   const [isSidebarFixed, setIsSidebarFixed] = useState(false)
+  const [navbarHeight, setNavbarHeight] = useState<number>(64)
   const contentRef = useRef<HTMLDivElement>(null)
   const sidebarContainerRef = useRef<HTMLDivElement>(null)
+
+  // Navbar balandligini aniqlash
+  useEffect(() => {
+    const navbar = document.querySelector('header')
+    if (navbar) {
+      setNavbarHeight(navbar.offsetHeight)
+    }
+  }, [])
 
   // URL parametrlari o'zgarganda search state'ni yangilash
   useEffect(() => {
@@ -114,7 +123,10 @@ export default function MarketplacePage() {
   return (
     <div className="bg-slate-50 dark:bg-slate-900 min-h-screen transition-colors duration-300">
       {/* Mobile Hamburger Menu */}
-      <div className="lg:hidden px-3 py-2 bg-white dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700">
+      <div
+        className="lg:hidden sticky z-40 px-3 py-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border-b border-slate-100 dark:border-slate-700"
+        style={{ top: `${navbarHeight}px` }}
+      >
         <div className="flex items-center justify-between">
           {/* Kategoriyalar tugmasi */}
           <button
