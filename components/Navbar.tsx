@@ -62,6 +62,8 @@ export default function Navbar() {
               Adminga murojaat
             </a>
 
+            <LanguageSelector />
+
             {/* Dark Mode Toggle */}
             <button
               onClick={toggleTheme}
@@ -78,10 +80,6 @@ export default function Navbar() {
                 </svg>
               )}
             </button>
-
-            <div className="hidden sm:block">
-              <LanguageSelector />
-            </div>
 
             {/* TODO: Keyinchalik qo'shiladi */}
             {/* <NotificationsDropdown /> */}

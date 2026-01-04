@@ -17,9 +17,9 @@ export default function LanguageSelector() {
     <div className="relative">
       <button
         onClick={() => setShowDropdown(!showDropdown)}
-        className="flex items-center gap-2 px-3 h-10 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-full transition-all"
+        className="flex items-center gap-1.5 px-2.5 sm:px-3 h-10 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-full transition-all border-2 border-transparent hover:border-indigo-500/30"
       >
-        <span className="text-lg">{currentLang.flag}</span>
+        <span className="text-xl sm:text-2xl">{currentLang.flag}</span>
         <svg
           className={`w-4 h-4 text-slate-600 dark:text-slate-300 transition-transform ${showDropdown ? 'rotate-180' : ''}`}
           fill="none"
