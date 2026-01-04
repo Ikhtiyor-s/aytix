@@ -32,6 +32,36 @@ export default function BannerSlider() {
     fetchBanners()
   }, [mounted])
 
+  // Avtomatik scroll
+  useEffect(() => {
+    if (banners.length <= 1) return
+
+    const interval = setInterval(() => {
+      if (scrollContainerRef.current) {
+        const container = scrollContainerRef.current
+        const scrollWidth = container.scrollWidth
+        const clientWidth = container.clientWidth
+        const currentScroll = container.scrollLeft
+
+        // Agar oxirgi bannerga yetgan bo'lsa, boshiga qaytadi
+        if (currentScroll + clientWidth >= scrollWidth - 10) {
+          container.scrollTo({
+            left: 0,
+            behavior: 'smooth'
+          })
+        } else {
+          // Keyingi bannerga o'tadi
+          container.scrollBy({
+            left: clientWidth,
+            behavior: 'smooth'
+          })
+        }
+      }
+    }, 5000) // Har 5 sekundda
+
+    return () => clearInterval(interval)
+  }, [banners.length])
+
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
