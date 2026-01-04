@@ -1,0 +1,229 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { categoryProjectsService, CategoryProject, SubcategoryProject } from '@/services/adminApi'
+
+interface CategoryWithSubs extends CategoryProject {
+  subcategories: SubcategoryProject[]
+}
+
+interface MobileCategoryFilterProps {
+  isOpen: boolean
+  onClose: () => void
+  selectedCategory?: string
+  selectedSubcategory?: string
+  onCategorySelect: (categoryName: string | undefined) => void
+  onSubcategorySelect: (categoryName: string, subcategory: string) => void
+}
+
+export default function MobileCategoryFilter({
+  isOpen,
+  onClose,
+  selectedCategory,
+  selectedSubcategory,
+  onCategorySelect,
+  onSubcategorySelect,
+}: MobileCategoryFilterProps) {
+  const [categories, setCategories] = useState<CategoryWithSubs[]>([])
+  const [loading, setLoading] = useState(true)
+  const [expandedCategory, setExpandedCategory] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (isOpen) {
+      loadCategories()
+    }
+  }, [isOpen])
+
+  const loadCategories = async () => {
+    try {
+      const cats = await categoryProjectsService.getCategories(true)
+      const catsWithSubs = await Promise.all(
+        cats.map(async (cat) => {
+          try {
+            const subs = await categoryProjectsService.getSubcategories(cat.id, true)
+            return { ...cat, subcategories: subs }
+          } catch {
+            return { ...cat, subcategories: [] }
+          }
+        })
+      )
+      setCategories(catsWithSubs)
+    } catch (error) {
+      console.error('Failed to load categories:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const getCategoryIcon = (cat: CategoryWithSubs) => {
+    if (!cat.icon || /^\d/.test(cat.icon)) {
+      const iconMap: { [key: string]: string } = {
+        'Biznes va Avtomatlashtirish': '💼',
+        'Savdo va Marketing': '🛒',
+        'Moliyaviy Texnologiyalar': '💰',
+        "Ta'lim va O'rganish": '📚',
+        'AI va Avtomatik Yordamchilar': '🤖',
+        'Mobil va Veb Ilovalar': '📱',
+        'Support': '📋',
+        'Logistika va Yetkazib Berish': '🚚',
+      }
+      return iconMap[cat.name_uz] || '📁'
+    }
+    return cat.icon
+  }
+
+  const handleCategoryClick = (cat: CategoryWithSubs) => {
+    if (expandedCategory === cat.id) {
+      setExpandedCategory(null)
+      onCategorySelect(undefined)
+    } else {
+      setExpandedCategory(cat.id)
+      onCategorySelect(cat.name_uz)
+      onSubcategorySelect(cat.name_uz, '')
+    }
+  }
+
+  const handleSubcategoryClick = (categoryName: string, subcategory: string) => {
+    onSubcategorySelect(categoryName, subcategory)
+    onClose()
+  }
+
+  const handleClearFilter = () => {
+    setExpandedCategory(null)
+    onCategorySelect(undefined)
+    onClose()
+  }
+
+  if (!isOpen) return null
+
+  return (
+    <div className="lg:hidden fixed left-0 top-[100px] z-40">
+      {/* Left Side Panel - fixed position, header + mobile menu ostida */}
+      <div className="w-[50vw] min-w-[200px] max-w-[300px] bg-white flex flex-col shadow-xl border-r border-slate-200 animate-slide-left overflow-hidden" style={{ maxHeight: 'calc(100vh - 110px)' }}>
+        {/* Header */}
+        <div className="flex items-center justify-between p-3 border-b border-slate-100">
+          <h2 className="font-semibold text-xs text-slate-800 flex items-center gap-1.5">
+            <span className="text-sm">📂</span>
+            <span className="line-clamp-1">Kategoriyalar</span>
+          </h2>
+          <button
+            onClick={onClose}
+            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors flex-shrink-0"
+          >
+            <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-2">
+          {loading ? (
+            <div className="text-center text-slate-500 py-6 text-xs">
+              Yuklanmoqda...
+            </div>
+          ) : categories.length === 0 ? (
+            <div className="text-center text-slate-500 py-6 text-xs">
+              Kategoriyalar topilmadi
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {categories.map((cat) => (
+                <div key={cat.id}>
+                  <button
+                    onClick={() => handleCategoryClick(cat)}
+                    className={`w-full text-left px-2 py-2 rounded-lg hover:bg-indigo-50 transition-all flex items-start justify-between gap-1 ${
+                      selectedCategory === cat.name_uz
+                        ? 'bg-indigo-100 text-indigo-700 font-medium'
+                        : 'text-slate-700 bg-slate-50'
+                    }`}
+                  >
+                    <div className="flex items-start gap-1.5 min-w-0 flex-1">
+                      <span className="text-sm flex-shrink-0 mt-0.5">{getCategoryIcon(cat)}</span>
+                      <span className="text-xs line-clamp-2 leading-tight">{cat.name_uz}</span>
+                    </div>
+                    {cat.subcategories.length > 0 && (
+                      <svg
+                        className={`w-3 h-3 transition-transform flex-shrink-0 mt-0.5 ${
+                          expandedCategory === cat.id ? 'rotate-180' : ''
+                        }`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    )}
+                  </button>
+
+                  {/* Subcategories */}
+                  {expandedCategory === cat.id && cat.subcategories.length > 0 && (
+                    <div className="ml-4 mt-1 space-y-0.5">
+                      <button
+                        onClick={() => {
+                          onCategorySelect(cat.name_uz)
+                          onSubcategorySelect(cat.name_uz, '')
+                          onClose()
+                        }}
+                        className={`w-full text-left px-2 py-1.5 rounded-lg hover:bg-indigo-50 transition-all text-[10px] ${
+                          selectedCategory === cat.name_uz && !selectedSubcategory
+                            ? 'bg-indigo-50 text-indigo-600 font-medium'
+                            : 'text-slate-600'
+                        }`}
+                      >
+                        Barchasi
+                      </button>
+                      {cat.subcategories.map((sub) => (
+                        <button
+                          key={sub.id}
+                          onClick={() => handleSubcategoryClick(cat.name_uz, sub.name_uz)}
+                          className={`w-full text-left px-2 py-1.5 rounded-lg hover:bg-indigo-50 transition-all text-[10px] line-clamp-2 leading-tight ${
+                            selectedCategory === cat.name_uz && selectedSubcategory === sub.name_uz
+                              ? 'bg-indigo-50 text-indigo-600 font-medium'
+                              : 'text-slate-600'
+                          }`}
+                        >
+                          {sub.name_uz}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="p-2 border-t border-slate-100">
+          <button
+            onClick={handleClearFilter}
+            className="w-full px-2 py-2 border border-slate-200 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 text-[10px] font-medium transition-all flex items-center justify-center gap-1"
+          >
+            <span className="text-sm">🔄</span>
+            <span className="line-clamp-1">Tozalash</span>
+          </button>
+        </div>
+      </div>
+
+      <style jsx>{`
+        @keyframes slide-left {
+          from {
+            transform: translateX(-100%);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
+        .animate-slide-left {
+          animation: slide-left 0.3s ease-out;
+        }
+      `}</style>
+    </div>
+  )
+}
