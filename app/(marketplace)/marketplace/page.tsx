@@ -236,7 +236,7 @@ export default function MarketplacePage() {
                 type="submit"
                 className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
               >
-                Qidirish
+                {t('common.search')}
               </button>
             </form>
           </div>
@@ -260,14 +260,10 @@ export default function MarketplacePage() {
           {/* Sidebar Categories (faqat desktop) - header ostida chap tarafda */}
           <div ref={sidebarContainerRef} className="hidden lg:block w-72 flex-shrink-0">
             <div
-              className={`w-72 overflow-y-auto transition-all duration-200 ${
-                isSidebarFixed ? 'fixed' : 'relative'
-              }`}
+              className="w-72 overflow-y-auto sticky"
               style={{
-                top: isSidebarFixed ? `${sidebarTop}px` : 'auto',
-                bottom: sidebarBottom !== null ? `${sidebarBottom}px` : 'auto',
-                height: isSidebarFixed && sidebarBottom === null ? `calc(100vh - ${sidebarTop}px)` : 'auto',
-                maxHeight: isSidebarFixed ? `calc(100vh - ${sidebarTop}px)` : 'calc(100vh - 200px)'
+                top: '56px',
+                height: 'calc(100vh - 56px)'
               }}
             >
               <div className="px-3 py-4">
@@ -309,7 +305,7 @@ export default function MarketplacePage() {
                     }}
                     className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500"
                   >
-                    Filtrni tozalash
+                    {t('common.clearFilter')}
                   </button>
                 </div>
               ) : (
@@ -329,14 +325,14 @@ export default function MarketplacePage() {
                         disabled={page === 1}
                         className="px-3 sm:px-4 py-2 text-sm sm:text-base border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-md disabled:opacity-50 hover:bg-slate-50 dark:hover:bg-slate-700"
                       >
-                        Oldingi
+                        {t('common.prev')}
                       </button>
                       <span className="px-3 sm:px-4 py-2 text-sm sm:text-base text-slate-700 dark:text-slate-300">{t('common.page')} {page}</span>
                       <button
                         onClick={() => setPage((p) => p + 1)}
                         className="px-3 sm:px-4 py-2 text-sm sm:text-base border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700"
                       >
-                        Keyingi
+                        {t('common.next')}
                       </button>
                     </div>
                   )}

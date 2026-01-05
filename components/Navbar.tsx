@@ -23,7 +23,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border-b border-slate-100 dark:border-slate-700 sticky top-0 z-50 transition-colors duration-300">
+    <header className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border-b border-slate-100 dark:border-slate-700 fixed top-0 left-0 right-0 z-50 transition-colors duration-300">
       <div className="w-full px-2 sm:px-4">
         <div className="flex items-center py-2 gap-2 sm:gap-4 lg:gap-6">
           {/* Logo - chap tomonda */}

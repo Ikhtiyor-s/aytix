@@ -3,12 +3,14 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { Project, getImageUrl } from '@/services/adminApi'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface ProjectCardProps {
   project: Project
 }
 
 export default function ProjectCard({ project }: ProjectCardProps) {
+  const { t } = useLanguage()
   const [isFavorite, setIsFavorite] = useState(false)
 
   // localStorage dan sevimlilarni tekshirish
@@ -56,7 +58,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
   const getBadge = () => {
     if (project.is_top) return { text: 'TOP', color: 'bg-yellow-400 text-slate-900' }
-    if (project.is_new) return { text: 'YANGI', color: 'bg-green-500 text-white' }
+    if (project.is_new) return { text: t('home.new'), color: 'bg-green-500 text-white' }
     return null
   }
 
