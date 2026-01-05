@@ -167,6 +167,10 @@ const translations: Record<string, Record<string, string>> = {
     'project.notFound': 'Loyiha topilmadi',
     'project.backToMarket': 'Marketga qaytish',
     'project.noDescription': 'Tavsif mavjud emas',
+
+    // Contact Modal
+    'contact.title': "Bog'lanish",
+    'contact.phone': 'Telefon',
   },
   ru: {
     // Navbar
@@ -315,6 +319,10 @@ const translations: Record<string, Record<string, string>> = {
     'project.notFound': 'Проект не найден',
     'project.backToMarket': 'Вернуться на маркет',
     'project.noDescription': 'Описание отсутствует',
+
+    // Contact Modal
+    'contact.title': 'Связаться',
+    'contact.phone': 'Телефон',
   },
   en: {
     // Navbar
@@ -463,6 +471,10 @@ const translations: Record<string, Record<string, string>> = {
     'project.notFound': 'Project not found',
     'project.backToMarket': 'Back to market',
     'project.noDescription': 'No description available',
+
+    // Contact Modal
+    'contact.title': 'Contact Us',
+    'contact.phone': 'Phone',
   },
 }
 

@@ -22,10 +22,8 @@ export default function MarketplacePage() {
   const [showMobileFilter, setShowMobileFilter] = useState(false)
   const [showMobileSearch, setShowMobileSearch] = useState(false)
   const [mobileSearchValue, setMobileSearchValue] = useState('')
-  const [sidebarTop, setSidebarTop] = useState<number>(0)
-  const [sidebarBottom, setSidebarBottom] = useState<number | null>(null)
-  const [isSidebarFixed, setIsSidebarFixed] = useState(false)
-  const [navbarHeight, setNavbarHeight] = useState<number>(64)
+  const [sidebarHeight, setSidebarHeight] = useState<string>('calc(100vh - 56px)')
+  const [navbarHeight, setNavbarHeight] = useState<number>(56)
   const contentRef = useRef<HTMLDivElement>(null)
   const sidebarContainerRef = useRef<HTMLDivElement>(null)
   const mobileSearchRef = useRef<HTMLDivElement>(null)
@@ -70,43 +68,32 @@ export default function MarketplacePage() {
     setPage(1)
   }, [searchParams])
 
-  // Scroll holatini kuzatish
+  // Footer pozitsiyasiga qarab sidebar balandligini o'zgartirish
   useEffect(() => {
     const handleScroll = () => {
-      const navbar = document.querySelector('header')
-      const navbarHeight = navbar ? navbar.offsetHeight : 64
-
-      // Sidebar containerning pozitsiyasini olish
-      if (sidebarContainerRef.current) {
-        const containerTop = sidebarContainerRef.current.getBoundingClientRect().top
-
-        // Agar container yuqoridan navbar balandligiga yetsa, sidebar fixed bo'lsin
-        if (containerTop <= navbarHeight) {
-          setIsSidebarFixed(true)
-          setSidebarTop(navbarHeight)
-        } else {
-          setIsSidebarFixed(false)
-          setSidebarTop(0)
-        }
-      }
-
-      // Footer bilan to'qnashuvni tekshirish
-      if (contentRef.current) {
-        const contentRect = contentRef.current.getBoundingClientRect()
+      const footer = document.querySelector('footer')
+      if (footer) {
+        const footerRect = footer.getBoundingClientRect()
         const viewportHeight = window.innerHeight
+        const navHeight = 56
 
-        // Agar content pastki qismi viewport ichida bo'lsa
-        if (contentRect.bottom < viewportHeight) {
-          setSidebarBottom(viewportHeight - contentRect.bottom)
+        // Agar footer ekranga kirgan bo'lsa
+        if (footerRect.top < viewportHeight) {
+          const availableHeight = footerRect.top - navHeight
+          setSidebarHeight(`${Math.max(100, availableHeight)}px`)
         } else {
-          setSidebarBottom(null)
+          setSidebarHeight(`calc(100vh - ${navHeight}px)`)
         }
       }
     }
 
     window.addEventListener('scroll', handleScroll)
-    handleScroll() // Initial check
-    return () => window.removeEventListener('scroll', handleScroll)
+    window.addEventListener('resize', handleScroll)
+    handleScroll()
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('resize', handleScroll)
+    }
   }, [])
 
   useEffect(() => {
@@ -256,26 +243,21 @@ export default function MarketplacePage() {
           triggerButtonRef={categoryButtonRef}
         />
 
-        <div ref={contentRef} className="flex gap-0">
-          {/* Sidebar Categories (faqat desktop) - header ostida chap tarafda */}
-          <div ref={sidebarContainerRef} className="hidden lg:block w-72 flex-shrink-0">
-            <div
-              className="w-72 overflow-y-auto sticky"
-              style={{
-                top: '56px',
-                height: 'calc(100vh - 56px)'
-              }}
-            >
-              <div className="px-3 py-4">
-                <CategoriesSidebar
-                  selectedCategory={selectedCategory}
-                  selectedSubcategory={selectedSubcategory}
-                  onCategorySelect={handleCategorySelect}
-                  onSubcategorySelect={handleSubcategorySelect}
-                />
-              </div>
-            </div>
+        {/* Fixed Sidebar Categories (faqat desktop) */}
+        <div className="hidden lg:block fixed left-0 w-72 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 overflow-y-auto z-40 transition-all duration-150" style={{ top: '56px', height: sidebarHeight }}>
+          <div className="px-3 pt-8 pb-4">
+            <CategoriesSidebar
+              selectedCategory={selectedCategory}
+              selectedSubcategory={selectedSubcategory}
+              onCategorySelect={handleCategorySelect}
+              onSubcategorySelect={handleSubcategorySelect}
+            />
           </div>
+        </div>
+
+        <div ref={contentRef} className="flex gap-0">
+          {/* Sidebar uchun bo'sh joy (faqat desktop) */}
+          <div className="hidden lg:block w-72 flex-shrink-0" />
 
           {/* O'ng tomon - Banner va Projects */}
           <div className="flex-1 min-w-0">

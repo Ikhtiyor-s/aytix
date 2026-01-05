@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { bannersService, getImageUrl, Banner } from '@/services/adminApi'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -10,7 +10,7 @@ export default function BannerSlider() {
   const [banners, setBanners] = useState<Banner[]>([])
   const [loading, setLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const [currentIndex, setCurrentIndex] = useState(0)
 
   // Client-side mount
   useEffect(() => {
@@ -34,53 +34,23 @@ export default function BannerSlider() {
     fetchBanners()
   }, [mounted])
 
-  // Avtomatik scroll
+  // Keyingi bannerga o'tish
+  const goToNext = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % banners.length)
+  }, [banners.length])
+
+  // Oldingi bannerga o'tish
+  const goToPrev = useCallback(() => {
+    setCurrentIndex((prev) => (prev - 1 + banners.length) % banners.length)
+  }, [banners.length])
+
+  // Avtomatik aylanish
   useEffect(() => {
     if (banners.length <= 1) return
 
-    const interval = setInterval(() => {
-      if (scrollContainerRef.current) {
-        const container = scrollContainerRef.current
-        const scrollWidth = container.scrollWidth
-        const clientWidth = container.clientWidth
-        const currentScroll = container.scrollLeft
-
-        // Agar oxirgi bannerga yetgan bo'lsa, boshiga qaytadi
-        if (currentScroll + clientWidth >= scrollWidth - 10) {
-          container.scrollTo({
-            left: 0,
-            behavior: 'smooth'
-          })
-        } else {
-          // Keyingi bannerga o'tadi
-          container.scrollBy({
-            left: clientWidth,
-            behavior: 'smooth'
-          })
-        }
-      }
-    }, 5000) // Har 5 sekundda
-
+    const interval = setInterval(goToNext, 5000)
     return () => clearInterval(interval)
-  }, [banners.length])
-
-  const scrollLeft = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({
-        left: -scrollContainerRef.current.offsetWidth,
-        behavior: 'smooth'
-      })
-    }
-  }
-
-  const scrollRight = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({
-        left: scrollContainerRef.current.offsetWidth,
-        behavior: 'smooth'
-      })
-    }
-  }
+  }, [banners.length, goToNext])
 
   // Server-side va mount bo'lmagan holat - loading ko'rsatish
   if (!mounted || loading) {
@@ -97,16 +67,11 @@ export default function BannerSlider() {
   }
 
   return (
-    <div className="relative group">
-      {/* Horizontal scroll container */}
+    <div className="relative group overflow-hidden h-[200px] sm:h-[280px] md:h-[350px]">
+      {/* Banners container */}
       <div
-        ref={scrollContainerRef}
-        className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth h-[200px] sm:h-[280px] md:h-[350px]"
-        style={{
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-          WebkitOverflowScrolling: 'touch'
-        }}
+        className="flex transition-transform duration-500 ease-in-out h-full"
+        style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
         {banners.map((banner) => {
           const imageUrl = getImageUrl(banner.image_url)
@@ -116,7 +81,7 @@ export default function BannerSlider() {
           return (
             <div
               key={banner.id}
-              className="relative flex-shrink-0 w-full snap-start"
+              className="relative flex-shrink-0 w-full h-full"
             >
               {/* Background gradient */}
               <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600" />
@@ -171,11 +136,28 @@ export default function BannerSlider() {
         })}
       </div>
 
+      {/* Dots indicator */}
+      {banners.length > 1 && (
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+          {banners.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentIndex(index)}
+              className={`w-2 h-2 rounded-full transition-all ${
+                index === currentIndex
+                  ? 'bg-white w-6'
+                  : 'bg-white/50 hover:bg-white/75'
+              }`}
+            />
+          ))}
+        </div>
+      )}
+
       {/* Navigation Arrows - ko'rsatiladi hover qilinganda */}
       {banners.length > 1 && (
         <>
           <button
-            onClick={scrollLeft}
+            onClick={goToPrev}
             className="absolute left-2 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-white/30 backdrop-blur-sm hover:bg-white/60 rounded-full flex items-center justify-center transition-all hover:scale-110 z-10 opacity-0 group-hover:opacity-100"
           >
             <svg className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -183,7 +165,7 @@ export default function BannerSlider() {
             </svg>
           </button>
           <button
-            onClick={scrollRight}
+            onClick={goToNext}
             className="absolute right-2 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-white/30 backdrop-blur-sm hover:bg-white/60 rounded-full flex items-center justify-center transition-all hover:scale-110 z-10 opacity-0 group-hover:opacity-100"
           >
             <svg className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

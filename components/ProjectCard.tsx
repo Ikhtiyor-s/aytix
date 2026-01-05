@@ -10,8 +10,33 @@ interface ProjectCardProps {
 }
 
 export default function ProjectCard({ project }: ProjectCardProps) {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const [isFavorite, setIsFavorite] = useState(false)
+
+  // Tilga qarab nom va tavsifni olish
+  const getLocalizedField = (fieldUz: string, fieldRu?: string | null, fieldEn?: string | null) => {
+    if (language.code === 'ru' && fieldRu) return fieldRu
+    if (language.code === 'en' && fieldEn) return fieldEn
+    return fieldUz
+  }
+
+  // Object yoki string tipidagi ma'lumotni tilga qarab olish
+  const getLocalizedValue = (item: unknown): string => {
+    if (typeof item === 'object' && item !== null) {
+      const obj = item as { uz?: string; ru?: string; en?: string }
+      if (language.code === 'ru' && obj.ru) return obj.ru
+      if (language.code === 'en' && obj.en) return obj.en
+      return obj.uz || JSON.stringify(item)
+    }
+    return String(item)
+  }
+
+  const projectName = getLocalizedField(project.name_uz, project.name_ru, project.name_en)
+  const projectDescription = getLocalizedField(
+    project.description_uz || '',
+    project.description_ru,
+    project.description_en
+  )
 
   // localStorage dan sevimlilarni tekshirish
   useEffect(() => {
@@ -73,7 +98,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         {project.image_url ? (
           <img
             src={getImageUrl(project.image_url) || ''}
-            alt={project.name_uz}
+            alt={projectName}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
           />
         ) : (
@@ -114,9 +139,9 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         </button> */}
       </div>
       <div className="p-2.5 sm:p-3 lg:p-4">
-        <h3 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 dark:text-slate-100 mb-0.5 sm:mb-1 line-clamp-2">{project.name_uz}</h3>
-        {project.description_uz && (
-          <p className="text-[11px] sm:text-xs lg:text-sm text-slate-600 dark:text-slate-400 mb-1.5 sm:mb-2 line-clamp-2">{project.description_uz}</p>
+        <h3 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 dark:text-slate-100 mb-0.5 sm:mb-1 line-clamp-2">{projectName}</h3>
+        {projectDescription && (
+          <p className="text-[11px] sm:text-xs lg:text-sm text-slate-600 dark:text-slate-400 mb-1.5 sm:mb-2 line-clamp-2">{projectDescription}</p>
         )}
 
         {/* Technologies */}
@@ -124,7 +149,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           <div className="flex flex-wrap gap-1 mb-1.5 sm:mb-2">
             {project.technologies.slice(0, 3).map((tech, index) => (
               <span key={index} className="px-1.5 sm:px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] sm:text-xs rounded-full">
-                {tech}
+                {getLocalizedValue(tech)}
               </span>
             ))}
             {project.technologies.length > 3 && (

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { projectsService, Project, getImageUrl } from '@/services/adminApi'
 import CategoriesSidebar from '@/components/CategoriesSidebar'
 import ProjectCard from '@/components/ProjectCard'
+import ContactModal from '@/components/ContactModal'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function ProjectDetailPage() {
@@ -13,6 +14,24 @@ export default function ProjectDetailPage() {
   const params = useParams()
   const router = useRouter()
   const [project, setProject] = useState<Project | null>(null)
+
+  // Tilga qarab maydonni olish
+  const getLocalizedField = (fieldUz?: string | null, fieldRu?: string | null, fieldEn?: string | null) => {
+    if (language.code === 'ru' && fieldRu) return fieldRu
+    if (language.code === 'en' && fieldEn) return fieldEn
+    return fieldUz || ''
+  }
+
+  // Object yoki string tipidagi ma'lumotni tilga qarab olish
+  const getLocalizedValue = (item: unknown): string => {
+    if (typeof item === 'object' && item !== null) {
+      const obj = item as { uz?: string; ru?: string; en?: string }
+      if (language.code === 'ru' && obj.ru) return obj.ru
+      if (language.code === 'en' && obj.en) return obj.en
+      return obj.uz || JSON.stringify(item)
+    }
+    return String(item)
+  }
   const [similarProjects, setSimilarProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -23,6 +42,7 @@ export default function ProjectDetailPage() {
   const [isFavorite, setIsFavorite] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [sidebarBottom, setSidebarBottom] = useState<number | null>(null)
+  const [showContactModal, setShowContactModal] = useState(false)
   const hasFetchedRef = useRef(false)
   const contentRef = useRef<HTMLDivElement>(null)
 
@@ -237,10 +257,10 @@ export default function ProjectDetailPage() {
                 {mounted && allMedia.length > 0 && (
                   <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
                     <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">
-                      {project.video_url ? t('project.imagesAndVideo') : t('project.images')}
+                      {getLocalizedField(project.name_uz, project.name_ru, project.name_en)}
                     </h2>
                     <div className="relative">
-                      <div className="relative rounded-lg sm:rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-700 aspect-[16/10]">
+                      <div className="relative rounded-lg sm:rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-700 aspect-[16/7]">
                         {allMedia[currentImageIndex]?.type === 'video' ? (
                           <video
                             controls
@@ -252,7 +272,7 @@ export default function ProjectDetailPage() {
                         ) : (
                           <img
                             src={allMedia[currentImageIndex]?.url}
-                            alt={`${project.name_uz} - ${currentImageIndex + 1}`}
+                            alt={`${getLocalizedField(project.name_uz, project.name_ru, project.name_en)} - ${currentImageIndex + 1}`}
                             className="w-full h-full object-contain"
                           />
                         )}
@@ -325,7 +345,7 @@ export default function ProjectDetailPage() {
                     <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {project.technologies.map((tech, index) => (
                         <span key={index} className="px-3 sm:px-4 py-1.5 sm:py-2 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded-full text-xs sm:text-sm font-medium">
-                          {tech}
+                          {getLocalizedValue(tech)}
                         </span>
                       ))}
                     </div>
@@ -339,7 +359,7 @@ export default function ProjectDetailPage() {
                     <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {project.integrations.map((integration, index) => (
                         <span key={index} className="px-3 sm:px-4 py-1.5 sm:py-2 bg-purple-50 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded-full text-xs sm:text-sm font-medium">
-                          {integration}
+                          {getLocalizedValue(integration)}
                         </span>
                       ))}
                     </div>
@@ -366,17 +386,15 @@ export default function ProjectDetailPage() {
 
                 {/* Contact */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
-                  <a
-                    href="https://t.me/Ikhtiyor_sb"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() => setShowContactModal(true)}
                     className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 sm:py-3 px-4 rounded-lg sm:rounded-xl transition-colors text-sm sm:text-base flex items-center justify-center gap-2"
                   >
                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
                     </svg>
                     {t('project.contact')}
-                  </a>
+                  </button>
                 </div>
 
                 {/* Features - O'ng sidebar da */}
@@ -389,7 +407,9 @@ export default function ProjectDetailPage() {
                           <svg className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                           </svg>
-                          <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">{feature}</span>
+                          <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                            {getLocalizedValue(feature)}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -442,6 +462,9 @@ export default function ProjectDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Contact Modal */}
+      <ContactModal isOpen={showContactModal} onClose={() => setShowContactModal(false)} />
     </div>
   )
 }

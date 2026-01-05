@@ -23,7 +23,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           <Navbar />
-          <main className="min-h-screen pt-14 bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+          <main className="min-h-screen pt-14 bg-slate-50 dark:bg-slate-900 transition-colors duration-300 isolate">
             {children}
           </main>
           <Footer />
