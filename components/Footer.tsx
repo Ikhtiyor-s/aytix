@@ -1,17 +1,20 @@
 'use client'
 
 import Link from 'next/link'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function Footer() {
+  const { t } = useLanguage()
+
   return (
-    <footer className="bg-slate-900 text-slate-300">
+    <footer className="bg-slate-900 text-slate-300 relative z-50">
       <div className="max-w-7xl mx-auto px-2 sm:px-3 py-2 sm:py-3">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 text-[10px] sm:text-xs">
           {/* Logo */}
           <div className="col-span-2 sm:col-span-1">
             <img src="/aytixlogo.png" alt="AyTix" className="h-5 sm:h-6 w-auto brightness-0 invert mb-1" />
             <p className="text-slate-400 text-[10px] mb-1">
-              IT loyihalar marketpleysi
+              {t('footer.description')}
             </p>
             <div className="flex items-center gap-1">
               <a href="https://t.me/aytix" target="_blank" rel="noopener noreferrer" className="w-5 h-5 bg-slate-800 rounded flex items-center justify-center hover:bg-indigo-600 transition-colors">
@@ -28,7 +31,7 @@ export default function Footer() {
 
           {/* Hamkorlar */}
           <div>
-            <h4 className="text-white font-semibold text-[10px] sm:text-xs mb-1">Hamkorlar</h4>
+            <h4 className="text-white font-semibold text-[10px] sm:text-xs mb-1">{t('footer.partners')}</h4>
             <div className="space-y-0.5 text-slate-400">
               <div className="hover:text-white transition-colors">Telegram</div>
               <div className="hover:text-white transition-colors">Click</div>
@@ -39,18 +42,18 @@ export default function Footer() {
 
           {/* Sahifalar */}
           <div>
-            <h4 className="text-white font-semibold text-[10px] sm:text-xs mb-1">Sahifalar</h4>
+            <h4 className="text-white font-semibold text-[10px] sm:text-xs mb-1">{t('footer.pages')}</h4>
             <div className="space-y-0.5">
-              <Link href="/about" className="text-slate-400 hover:text-white block transition-colors">Biz haqimizda</Link>
-              <Link href="/contact" className="text-slate-400 hover:text-white block transition-colors">Aloqa</Link>
-              <Link href="/faq" className="text-slate-400 hover:text-white block transition-colors">FAQ</Link>
-              <Link href="/marketplace" className="text-slate-400 hover:text-white block transition-colors">Marketplace</Link>
+              <Link href="/about" className="text-slate-400 hover:text-white block transition-colors">{t('footer.aboutUs')}</Link>
+              <Link href="/contact" className="text-slate-400 hover:text-white block transition-colors">{t('footer.contact')}</Link>
+              <Link href="/faq" className="text-slate-400 hover:text-white block transition-colors">{t('footer.faq')}</Link>
+              <Link href="/marketplace" className="text-slate-400 hover:text-white block transition-colors">{t('nav.marketplace')}</Link>
             </div>
           </div>
 
           {/* Bog'lanish */}
           <div>
-            <h4 className="text-white font-semibold text-[10px] sm:text-xs mb-1">Bog'lanish</h4>
+            <h4 className="text-white font-semibold text-[10px] sm:text-xs mb-1">{t('footer.contactUs')}</h4>
             <div className="space-y-0.5">
               <a href="https://t.me/Ikhtiyor_sb" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white flex items-center gap-1 transition-colors">
                 <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>

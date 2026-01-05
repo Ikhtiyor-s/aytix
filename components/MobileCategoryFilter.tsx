@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback, RefObject } from 'react'
 import { categoryProjectsService, CategoryProject, SubcategoryProject } from '@/services/adminApi'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface CategoryWithSubs extends CategoryProject {
   subcategories: SubcategoryProject[]
@@ -14,6 +15,7 @@ interface MobileCategoryFilterProps {
   selectedSubcategory?: string
   onCategorySelect: (categoryName: string | undefined) => void
   onSubcategorySelect: (categoryName: string, subcategory: string) => void
+  triggerButtonRef?: RefObject<HTMLButtonElement | null>
 }
 
 export default function MobileCategoryFilter({
@@ -23,16 +25,80 @@ export default function MobileCategoryFilter({
   selectedSubcategory,
   onCategorySelect,
   onSubcategorySelect,
+  triggerButtonRef,
 }: MobileCategoryFilterProps) {
+  const { t, getLocalizedName } = useLanguage()
   const [categories, setCategories] = useState<CategoryWithSubs[]>([])
   const [loading, setLoading] = useState(true)
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null)
+  const [maxHeight, setMaxHeight] = useState<string>('calc(100vh - 110px)')
+  const panelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (isOpen) {
       loadCategories()
     }
   }, [isOpen])
+
+// Tashqariga bosganda yopish
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node
+      // Trigger tugmasiga bosilgan bo'lsa, yopmaslik (toggle ishlaydi)
+      if (triggerButtonRef?.current && triggerButtonRef.current.contains(target)) {
+        return
+      }
+      // Panel tashqarisiga bosilgan bo'lsa yopish
+      if (panelRef.current && !panelRef.current.contains(target)) {
+        onClose()
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [isOpen, onClose, triggerButtonRef])
+
+  // Footer pozitsiyasiga qarab panel balandligini dinamik hisoblash
+  const calculateMaxHeight = useCallback(() => {
+    const footer = document.querySelector('footer')
+    const headerHeight = 100 // top-[100px] - header va mobile menu balandligi
+
+    if (footer) {
+      const footerRect = footer.getBoundingClientRect()
+      const viewportHeight = window.innerHeight
+
+      // Footer ekranga kirganda
+      if (footerRect.top < viewportHeight) {
+        const availableHeight = footerRect.top - headerHeight - 10 // 10px bo'shliq
+        if (availableHeight > 100) {
+          setMaxHeight(`${availableHeight}px`)
+        } else {
+          setMaxHeight('100px')
+        }
+      } else {
+        // Footer ekranda yo'q bo'lsa
+        setMaxHeight(`calc(100vh - ${headerHeight + 10}px)`)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (isOpen) {
+      calculateMaxHeight()
+      window.addEventListener('scroll', calculateMaxHeight)
+      window.addEventListener('resize', calculateMaxHeight)
+    }
+
+    return () => {
+      window.removeEventListener('scroll', calculateMaxHeight)
+      window.removeEventListener('resize', calculateMaxHeight)
+    }
+  }, [isOpen, calculateMaxHeight])
 
   const loadCategories = async () => {
     try {
@@ -97,14 +163,14 @@ export default function MobileCategoryFilter({
   if (!isOpen) return null
 
   return (
-    <div className="lg:hidden fixed left-0 top-[100px] z-40">
+    <div className="lg:hidden fixed left-0 top-[100px] z-30">
       {/* Left Side Panel - fixed position, header + mobile menu ostida */}
-      <div className="w-[50vw] min-w-[200px] max-w-[300px] bg-white flex flex-col shadow-xl border-r border-slate-200 animate-slide-left overflow-hidden" style={{ maxHeight: 'calc(100vh - 110px)' }}>
+      <div ref={panelRef} className="w-[50vw] min-w-[200px] max-w-[300px] bg-white dark:bg-slate-800 flex flex-col shadow-xl border-r border-slate-200 animate-slide-left overflow-hidden transition-all duration-150" style={{ maxHeight }}>
         {/* Header */}
         <div className="flex items-center justify-between p-3 border-b border-slate-100">
           <h2 className="font-semibold text-xs text-slate-800 flex items-center gap-1.5">
             <span className="text-sm">📂</span>
-            <span className="line-clamp-1">Kategoriyalar</span>
+            <span className="line-clamp-1">{t('categories.all')}</span>
           </h2>
           <button
             onClick={onClose}
@@ -120,11 +186,11 @@ export default function MobileCategoryFilter({
         <div className="flex-1 overflow-y-auto p-2">
           {loading ? (
             <div className="text-center text-slate-500 py-6 text-xs">
-              Yuklanmoqda...
+              {t('common.loading')}
             </div>
           ) : categories.length === 0 ? (
             <div className="text-center text-slate-500 py-6 text-xs">
-              Kategoriyalar topilmadi
+              {t('marketplace.noProjects')}
             </div>
           ) : (
             <div className="space-y-1">
@@ -140,7 +206,7 @@ export default function MobileCategoryFilter({
                   >
                     <div className="flex items-start gap-1.5 min-w-0 flex-1">
                       <span className="text-sm flex-shrink-0 mt-0.5">{getCategoryIcon(cat)}</span>
-                      <span className="text-xs line-clamp-2 leading-tight">{cat.name_uz}</span>
+                      <span className="text-xs line-clamp-2 leading-tight">{getLocalizedName(cat)}</span>
                     </div>
                     {cat.subcategories.length > 0 && (
                       <svg
@@ -176,7 +242,7 @@ export default function MobileCategoryFilter({
                             : 'text-slate-600'
                         }`}
                       >
-                        Barchasi
+                        {t("common.seeAll")}
                       </button>
                       {cat.subcategories.map((sub) => (
                         <button
@@ -188,7 +254,7 @@ export default function MobileCategoryFilter({
                               : 'text-slate-600'
                           }`}
                         >
-                          {sub.name_uz}
+                          {getLocalizedName(sub)}
                         </button>
                       ))}
                     </div>
@@ -206,7 +272,7 @@ export default function MobileCategoryFilter({
             className="w-full px-2 py-2 border border-slate-200 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 text-slate-700 hover:text-indigo-600 text-[10px] font-medium transition-all flex items-center justify-center gap-1"
           >
             <span className="text-sm">🔄</span>
-            <span className="line-clamp-1">Tozalash</span>
+            <span className="line-clamp-1">{t('common.clearFilter')}</span>
           </button>
         </div>
       </div>

@@ -8,8 +8,10 @@ import CategoriesSidebar from '@/components/CategoriesSidebar'
 import MobileCategoryFilter from '@/components/MobileCategoryFilter'
 import ProjectCard from '@/components/ProjectCard'
 import Loading from '@/components/ui/Loading'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function MarketplacePage() {
+  const { t } = useLanguage()
   const searchParams = useSearchParams()
   const [projects, setProjects] = useState<Project[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>()
@@ -26,6 +28,32 @@ export default function MarketplacePage() {
   const [navbarHeight, setNavbarHeight] = useState<number>(64)
   const contentRef = useRef<HTMLDivElement>(null)
   const sidebarContainerRef = useRef<HTMLDivElement>(null)
+  const mobileSearchRef = useRef<HTMLDivElement>(null)
+  const searchButtonRef = useRef<HTMLButtonElement>(null)
+  const categoryButtonRef = useRef<HTMLButtonElement>(null)
+
+  // Qidiruv inputi tashqariga bosilganda yopish
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node
+      // Qidiruv tugmasiga bosilgan bo'lsa, yopmaslik (toggle ishlaydi)
+      if (searchButtonRef.current && searchButtonRef.current.contains(target)) {
+        return
+      }
+      // Input tashqarisiga bosilgan bo'lsa yopish
+      if (mobileSearchRef.current && !mobileSearchRef.current.contains(target)) {
+        setShowMobileSearch(false)
+      }
+    }
+
+    if (showMobileSearch) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showMobileSearch])
 
   // Navbar balandligini aniqlash
   useEffect(() => {
@@ -130,14 +158,18 @@ export default function MarketplacePage() {
         <div className="flex items-center justify-between">
           {/* Kategoriyalar tugmasi */}
           <button
-            onClick={() => setShowMobileFilter(!showMobileFilter)}
+            ref={categoryButtonRef}
+            onClick={() => {
+              setShowMobileFilter(!showMobileFilter)
+              setShowMobileSearch(false)
+            }}
             className="flex items-center gap-2 p-2 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
             <span className="text-sm font-medium">
-              {selectedCategory || 'Kategoriyalar'}
+              {selectedCategory || t('categories.all')}
             </span>
             <svg
               className={`w-4 h-4 transition-transform ${showMobileFilter ? 'rotate-180' : ''}`}
@@ -151,7 +183,11 @@ export default function MarketplacePage() {
 
           {/* Qidiruv tugmasi */}
           <button
-            onClick={() => setShowMobileSearch(!showMobileSearch)}
+            ref={searchButtonRef}
+            onClick={() => {
+              setShowMobileSearch(!showMobileSearch)
+              setShowMobileFilter(false)
+            }}
             className={`p-2 rounded-full transition-colors ${showMobileSearch ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'}`}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -162,7 +198,7 @@ export default function MarketplacePage() {
 
         {/* Mobil qidiruv input */}
         {showMobileSearch && (
-          <div className="mt-2 pb-1">
+          <div ref={mobileSearchRef} className="mt-2 pb-1">
             <form
               onSubmit={(e) => {
                 e.preventDefault()
@@ -176,7 +212,7 @@ export default function MarketplacePage() {
                   type="text"
                   value={mobileSearchValue}
                   onChange={(e) => setMobileSearchValue(e.target.value)}
-                  placeholder="Loyihalarni qidirish..."
+                  placeholder={t('marketplace.searchPlaceholder')}
                   className="w-full pl-3 pr-8 py-2 text-sm border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder:text-slate-400"
                   autoFocus
                 />
@@ -217,6 +253,7 @@ export default function MarketplacePage() {
           selectedSubcategory={selectedSubcategory}
           onCategorySelect={handleCategorySelect}
           onSubcategorySelect={handleSubcategorySelect}
+          triggerButtonRef={categoryButtonRef}
         />
 
         <div ref={contentRef} className="flex gap-0">
@@ -253,17 +290,17 @@ export default function MarketplacePage() {
             <main className="px-3 sm:px-4 py-4 sm:py-8">
               <div className="mb-4 sm:mb-6 flex items-center justify-between">
                 <h2 className="text-lg sm:text-2xl font-bold text-slate-900 dark:text-slate-100">
-                  {selectedCategory ? selectedCategory : 'Barcha loyihalar'}
+                  {selectedCategory ? selectedCategory : t('marketplace.allProjects')}
                 </h2>
-                <span className="text-sm sm:text-base text-slate-600 dark:text-slate-400">{projects.length} ta loyiha</span>
+                <span className="text-sm sm:text-base text-slate-600 dark:text-slate-400">{projects.length} {t('marketplace.projects')}</span>
               </div>
 
               {loading ? (
-                <Loading text="Loyihalar yuklanmoqda..." />
+                <Loading text={t('marketplace.loadingProjects')} />
               ) : projects.length === 0 ? (
                 <div className="text-center py-12 text-slate-500 dark:text-slate-400">
                   <div className="text-6xl mb-4">📭</div>
-                  <p className="mb-4">Loyihalar topilmadi</p>
+                  <p className="mb-4">{t('marketplace.noProjects')}</p>
                   <button
                     onClick={() => {
                       setSearch('')
@@ -294,7 +331,7 @@ export default function MarketplacePage() {
                       >
                         Oldingi
                       </button>
-                      <span className="px-3 sm:px-4 py-2 text-sm sm:text-base text-slate-700 dark:text-slate-300">Sahifa {page}</span>
+                      <span className="px-3 sm:px-4 py-2 text-sm sm:text-base text-slate-700 dark:text-slate-300">{t('common.page')} {page}</span>
                       <button
                         onClick={() => setPage((p) => p + 1)}
                         className="px-3 sm:px-4 py-2 text-sm sm:text-base border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700"

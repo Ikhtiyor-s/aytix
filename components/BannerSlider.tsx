@@ -3,8 +3,10 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { bannersService, getImageUrl, Banner } from '@/services/adminApi'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function BannerSlider() {
+  const { t, language } = useLanguage()
   const [banners, setBanners] = useState<Banner[]>([])
   const [loading, setLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
@@ -146,16 +148,20 @@ export default function BannerSlider() {
               {/* Content */}
               <div className="relative w-full px-4 sm:px-16 md:px-20 h-full flex items-end justify-start pb-4 sm:pb-6 md:pb-8">
                 <div className="max-w-lg text-white text-left">
-                  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2 line-clamp-2">{banner.title_uz}</h2>
-                  {banner.description_uz && (
-                    <p className="text-sm sm:text-base md:text-lg mb-2 sm:mb-4 line-clamp-2 hidden sm:block">{banner.description_uz}</p>
+                  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2 line-clamp-2">
+                    {language.code === 'ru' && banner.title_ru ? banner.title_ru : language.code === 'en' && banner.title_en ? banner.title_en : banner.title_uz}
+                  </h2>
+                  {(banner.description_uz || banner.description_ru || banner.description_en) && (
+                    <p className="text-sm sm:text-base md:text-lg mb-2 sm:mb-4 line-clamp-2 hidden sm:block">
+                      {language.code === 'ru' && banner.description_ru ? banner.description_ru : language.code === 'en' && banner.description_en ? banner.description_en : banner.description_uz}
+                    </p>
                   )}
                   {banner.link_url && (
                     <Link
                       href={banner.link_url}
                       className="px-4 sm:px-6 py-2 sm:py-3 bg-white text-indigo-600 font-semibold rounded-lg sm:rounded-xl hover:bg-indigo-50 transition-all inline-block text-xs sm:text-sm"
                     >
-                      Batafsil →
+                      {t('banner.details')} →
                     </Link>
                   )}
                 </div>

@@ -6,8 +6,10 @@ import Link from 'next/link'
 import { projectsService, Project, getImageUrl } from '@/services/adminApi'
 import CategoriesSidebar from '@/components/CategoriesSidebar'
 import ProjectCard from '@/components/ProjectCard'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function ProjectDetailPage() {
+  const { t, language, getLocalizedName } = useLanguage()
   const params = useParams()
   const router = useRouter()
   const [project, setProject] = useState<Project | null>(null)
@@ -165,7 +167,7 @@ export default function ProjectDetailPage() {
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-400">Yuklanmoqda...</p>
+          <p className="text-slate-600 dark:text-slate-400">{t('common.loading')}</p>
         </div>
       </div>
     )
@@ -176,9 +178,9 @@ export default function ProjectDetailPage() {
       <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4 text-slate-900 dark:text-slate-100">404</div>
-          <p className="text-slate-600 dark:text-slate-400 mb-4">{error || 'Loyiha topilmadi'}</p>
+          <p className="text-slate-600 dark:text-slate-400 mb-4">{error || t('project.notFound')}</p>
           <Link href="/marketplace" className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500">
-            Marketga qaytish
+            {t('project.backToMarket')}
           </Link>
         </div>
       </div>
@@ -224,7 +226,7 @@ export default function ProjectDetailPage() {
                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
                 </svg>
-                Orqaga
+                {t('project.back')}
               </button>
             </div>
 
@@ -235,7 +237,7 @@ export default function ProjectDetailPage() {
                 {mounted && allMedia.length > 0 && (
                   <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
                     <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">
-                      {project.video_url ? 'Rasmlar va Video' : 'Rasmlar'}
+                      {project.video_url ? t('project.imagesAndVideo') : t('project.images')}
                     </h2>
                     <div className="relative">
                       <div className="relative rounded-lg sm:rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-700 aspect-[16/10]">
@@ -309,9 +311,9 @@ export default function ProjectDetailPage() {
 
                 {/* Description */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
-                  <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">Tavsif</h2>
+                  <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">{t('product.description')}</h2>
                   <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
-                    {project.description_uz || 'Tavsif mavjud emas'}
+                    {language.code === 'ru' && project.description_ru ? project.description_ru : language.code === 'en' && project.description_en ? project.description_en : project.description_uz || t('project.noDescription')}
                   </p>
                 </div>
 
@@ -319,7 +321,7 @@ export default function ProjectDetailPage() {
                 {/* Technologies */}
                 {project.technologies && project.technologies.length > 0 && (
                   <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
-                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">Texnologiyalar</h2>
+                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">{t('project.technologies')}</h2>
                     <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {project.technologies.map((tech, index) => (
                         <span key={index} className="px-3 sm:px-4 py-1.5 sm:py-2 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded-full text-xs sm:text-sm font-medium">
@@ -333,7 +335,7 @@ export default function ProjectDetailPage() {
                 {/* Integrations */}
                 {project.integrations && project.integrations.length > 0 && (
                   <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
-                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">Integratsiyalar</h2>
+                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">{t('project.integrations')}</h2>
                     <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {project.integrations.map((integration, index) => (
                         <span key={index} className="px-3 sm:px-4 py-1.5 sm:py-2 bg-purple-50 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded-full text-xs sm:text-sm font-medium">
@@ -349,14 +351,14 @@ export default function ProjectDetailPage() {
               <div className="space-y-4 sm:space-y-6">
                 {/* Stats */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
-                  <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">Statistika</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">{t('project.stats')}</h3>
                   <div className="flex items-center justify-between">
                     <span className="text-sm sm:text-base text-slate-600 dark:text-slate-400 flex items-center gap-2">
                       <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
-                      Ko'rishlar
+                      {t('project.views')}
                     </span>
                     <span className="font-semibold text-sm sm:text-base text-slate-900 dark:text-slate-100">{project.views}</span>
                   </div>
@@ -373,14 +375,14 @@ export default function ProjectDetailPage() {
                     <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
                     </svg>
-                    Bog'lanish
+                    {t('project.contact')}
                   </a>
                 </div>
 
                 {/* Features - O'ng sidebar da */}
                 {project.features && project.features.length > 0 && (
                   <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
-                    <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">Xususiyatlar</h3>
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">{t('project.features')}</h3>
                     <ul className="space-y-2">
                       {project.features.map((feature, index) => (
                         <li key={index} className="flex items-start gap-2">
@@ -396,16 +398,16 @@ export default function ProjectDetailPage() {
 
                 {/* Info */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
-                  <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">Ma'lumot</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">{t('project.info')}</h3>
                   <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
                     <div className="flex justify-between">
-                      <span className="text-slate-500 dark:text-slate-400">Status</span>
+                      <span className="text-slate-500 dark:text-slate-400">{t('project.status')}</span>
                       <span className={`font-medium ${project.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-slate-400'}`}>
-                        {project.status === 'active' ? 'Faol' : 'Nofaol'}
+                        {project.status === 'active' ? t('project.active') : t('project.inactive')}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500 dark:text-slate-400">Qo'shilgan</span>
+                      <span className="text-slate-500 dark:text-slate-400">{t('project.addedDate')}</span>
                       <span className="text-slate-900 dark:text-slate-100">
                         {new Date(project.created_at).toLocaleDateString('uz-UZ')}
                       </span>
@@ -419,12 +421,12 @@ export default function ProjectDetailPage() {
             {similarProjects.length > 0 && (
               <div className="mt-8 sm:mt-12">
                 <div className="flex items-center justify-between mb-4 sm:mb-6">
-                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100">O'xshash loyihalar</h2>
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100">{t('project.similarProjects')}</h2>
                   <Link
                     href={`/marketplace?category=${encodeURIComponent(project.category)}`}
                     className="text-sm sm:text-base text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium flex items-center gap-1"
                   >
-                    Barchasini ko'rish
+                    {t('project.viewAll')}
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                     </svg>
