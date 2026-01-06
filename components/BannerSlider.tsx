@@ -55,7 +55,7 @@ export default function BannerSlider() {
   // Server-side va mount bo'lmagan holat - loading ko'rsatish
   if (!mounted || loading) {
     return (
-      <div className="relative bg-gradient-to-r from-indigo-600 to-purple-600 overflow-hidden h-[200px] sm:h-[280px] md:h-[350px] flex items-center justify-center">
+      <div className="relative bg-gradient-to-r from-indigo-600 to-purple-600 overflow-hidden aspect-[2/1] sm:aspect-[3/1] md:aspect-[4/1] flex items-center justify-center">
         <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-4 border-white border-t-transparent"></div>
       </div>
     )
@@ -67,7 +67,7 @@ export default function BannerSlider() {
   }
 
   return (
-    <div className="relative group overflow-hidden h-[200px] sm:h-[280px] md:h-[350px]">
+    <div className="relative group overflow-hidden aspect-[2/1] sm:aspect-[3/1] md:aspect-[4/1]">
       {/* Banners container */}
       <div
         className="flex transition-transform duration-500 ease-in-out h-full"
@@ -103,7 +103,7 @@ export default function BannerSlider() {
                 <img
                   src={imageUrl}
                   alt={banner.title_uz}
-                  className="absolute inset-0 w-full h-full object-contain object-center"
+                  className="absolute inset-0 w-full h-full object-cover object-center"
                 />
               )}
 

@@ -31,6 +31,27 @@ export default function ProjectCard({ project }: ProjectCardProps) {
     return String(item)
   }
 
+  // Kategoriya tarjimalari
+  const categoryTranslations: Record<string, { ru: string; en: string }> = {
+    'Biznes va Avtomatlashtirish': { ru: 'Бизнес и Автоматизация', en: 'Business & Automation' },
+    'Savdo va Marketing': { ru: 'Продажи и Маркетинг', en: 'Sales & Marketing' },
+    'AI va Avtomatik Yordamchilar': { ru: 'AI и Автоматические помощники', en: 'AI & Automatic Assistants' },
+    'Mobil va Veb Ilovalar': { ru: 'Мобильные и Веб приложения', en: 'Mobile & Web Apps' },
+    "Ta'lim va O'rganish": { ru: 'Образование и Обучение', en: 'Education & Learning' },
+    'Frontend': { ru: 'Фронтенд', en: 'Frontend' },
+    'Mobile': { ru: 'Мобильные', en: 'Mobile' },
+    'AI/ML': { ru: 'AI/ML', en: 'AI/ML' },
+  }
+
+  const getCategoryName = (categoryUz: string): string => {
+    const trans = categoryTranslations[categoryUz]
+    if (trans) {
+      if (language.code === 'ru') return trans.ru
+      if (language.code === 'en') return trans.en
+    }
+    return categoryUz
+  }
+
   const projectName = getLocalizedField(project.name_uz, project.name_ru, project.name_en)
   const projectDescription = getLocalizedField(
     project.description_uz || '',
@@ -162,7 +183,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
         <div className="pt-1.5 sm:pt-2 border-t border-slate-100 dark:border-slate-700">
           <div className="flex justify-between items-center">
-            <span className="text-[10px] sm:text-xs lg:text-sm text-indigo-600 dark:text-indigo-400 font-medium line-clamp-1">{project.category}</span>
+            <span className="text-[10px] sm:text-xs lg:text-sm text-indigo-600 dark:text-indigo-400 font-medium line-clamp-1">{getCategoryName(project.category)}</span>
             <span className="flex items-center gap-0.5 sm:gap-1 text-slate-500 dark:text-slate-400 text-[10px] sm:text-xs lg:text-sm">
               <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />

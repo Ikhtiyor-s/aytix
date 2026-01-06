@@ -28,8 +28,7 @@ const adminApi: AxiosInstance = axios.create({
 export const getImageUrl = (url: string | null): string | null => {
   if (!url) return null
   if (url.startsWith('http')) return url
-  const GITHUB_UPLOADS_URL = 'https://raw.githubusercontent.com/Ikhtiyor-s/aytixmarketbackend/main'
-  return `${GITHUB_UPLOADS_URL}${url}`
+  return `${BACKEND_URL}${url}`
 }
 
 // =============================================================================
