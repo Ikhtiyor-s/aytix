@@ -9,6 +9,7 @@ export default function BannerSlider() {
   const { t, language } = useLanguage()
   const [banners, setBanners] = useState<Banner[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
 
@@ -25,8 +26,10 @@ export default function BannerSlider() {
       try {
         const data = await bannersService.getBanners()
         setBanners(data)
-      } catch (error) {
-        console.error('Bannerlarni olishda xatolik:', error)
+        setError(false)
+      } catch (err) {
+        console.error('Bannerlarni olishda xatolik:', err)
+        setError(true)
       } finally {
         setLoading(false)
       }
@@ -61,8 +64,8 @@ export default function BannerSlider() {
     )
   }
 
-  // Banner yo'q bo'lsa
-  if (banners.length === 0) {
+  // Xatolik bo'lsa yoki banner yo'q bo'lsa - hech narsa ko'rsatmaslik
+  if (error || banners.length === 0) {
     return null
   }
 
