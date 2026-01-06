@@ -102,6 +102,11 @@ export interface ProjectsParams {
   search?: string
 }
 
+export interface ProjectCounts {
+  categories: Record<string, number>
+  subcategories: Record<string, number>
+}
+
 // =============================================================================
 // KATEGORIYALAR SERVISI
 // =============================================================================
@@ -191,6 +196,14 @@ export const bannersService = {
 // =============================================================================
 
 export const projectsService = {
+  /**
+   * Loyihalar sonini kategoriya va subkategoriya bo'yicha olish.
+   */
+  async getCounts(): Promise<ProjectCounts> {
+    const { data } = await adminApi.get<ProjectCounts>('/projects/counts')
+    return data
+  },
+
   /**
    * Loyihalar ro'yxatini olish.
    *

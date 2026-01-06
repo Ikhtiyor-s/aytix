@@ -158,18 +158,18 @@ export default function BannerSlider() {
         <>
           <button
             onClick={goToPrev}
-            className="absolute left-2 sm:left-4 md:left-6 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-white/30 backdrop-blur-sm hover:bg-white/60 rounded-full flex items-center justify-center transition-all hover:scale-110 z-10 opacity-0 group-hover:opacity-100"
+            className="absolute left-1 sm:left-2 md:left-3 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 bg-white/20 backdrop-blur-sm hover:bg-white/50 rounded-full flex items-center justify-center transition-all hover:scale-110 z-10 opacity-0 group-hover:opacity-100"
           >
-            <svg className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/>
+            <svg className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"/>
             </svg>
           </button>
           <button
             onClick={goToNext}
-            className="absolute right-2 sm:right-4 md:right-6 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-white/30 backdrop-blur-sm hover:bg-white/60 rounded-full flex items-center justify-center transition-all hover:scale-110 z-10 opacity-0 group-hover:opacity-100"
+            className="absolute right-1 sm:right-2 md:right-3 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 bg-white/20 backdrop-blur-sm hover:bg-white/50 rounded-full flex items-center justify-center transition-all hover:scale-110 z-10 opacity-0 group-hover:opacity-100"
           >
-            <svg className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/>
+            <svg className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"/>
             </svg>
           </button>
         </>

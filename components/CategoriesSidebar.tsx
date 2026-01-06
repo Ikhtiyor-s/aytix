@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { categoryProjectsService, CategoryProject, SubcategoryProject } from '@/services/adminApi'
+import { categoryProjectsService, CategoryProject, SubcategoryProject, projectsService, ProjectCounts } from '@/services/adminApi'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 interface CategoryWithSubs extends CategoryProject {
@@ -74,9 +74,11 @@ export default function CategoriesSidebar({
   const [categories, setCategories] = useState<CategoryWithSubs[]>([])
   const [loading, setLoading] = useState(true)
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null)
+  const [projectCounts, setProjectCounts] = useState<ProjectCounts>({ categories: {}, subcategories: {} })
 
   useEffect(() => {
     loadCategories()
+    loadProjectCounts()
   }, [])
 
   const loadCategories = async () => {
@@ -98,6 +100,24 @@ export default function CategoriesSidebar({
     } finally {
       setLoading(false)
     }
+  }
+
+  const loadProjectCounts = async () => {
+    try {
+      const counts = await projectsService.getCounts()
+      setProjectCounts(counts)
+    } catch (error) {
+      console.error('Failed to load project counts:', error)
+    }
+  }
+
+  const getCategoryCount = (categoryName: string): number => {
+    return projectCounts.categories[categoryName] || 0
+  }
+
+  const getSubcategoryCount = (categoryName: string, subcategoryName: string): number => {
+    const key = categoryName + ':' + subcategoryName
+    return projectCounts.subcategories[key] || 0
   }
 
   const handleCategoryClick = (cat: CategoryWithSubs) => {
@@ -165,6 +185,11 @@ export default function CategoriesSidebar({
                     {/* Name */}
                     <span className={`flex-1 text-sm ${isSelected ? 'font-medium' : ''}`}>
                       {getLocalizedName(cat)}
+                      {getCategoryCount(cat.name_uz) > 0 && (
+                        <span className="ml-1.5 text-xs text-slate-400 dark:text-slate-500">
+                          ({getCategoryCount(cat.name_uz)})
+                        </span>
+                      )}
                     </span>
 
                     {/* Expand arrow */}
@@ -196,19 +221,27 @@ export default function CategoriesSidebar({
                       >
                         {t('categories.showAll')}
                       </button>
-                      {cat.subcategories.map((sub) => (
-                        <button
-                          key={sub.id}
-                          onClick={() => handleSubcategoryClick(cat.name_uz, sub.name_uz)}
-                          className={`w-full text-left pl-12 pr-4 py-2.5 text-sm transition-all ${
-                            isSelected && selectedSubcategory === sub.name_uz
-                              ? 'text-teal-600 dark:text-teal-400 font-medium'
-                              : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
-                          }`}
-                        >
-                          {getLocalizedName(sub)}
-                        </button>
-                      ))}
+                      {cat.subcategories.map((sub) => {
+                        const subCount = getSubcategoryCount(cat.name_uz, sub.name_uz)
+                        return (
+                          <button
+                            key={sub.id}
+                            onClick={() => handleSubcategoryClick(cat.name_uz, sub.name_uz)}
+                            className={`w-full text-left pl-12 pr-4 py-2.5 text-sm transition-all ${
+                              isSelected && selectedSubcategory === sub.name_uz
+                                ? 'text-teal-600 dark:text-teal-400 font-medium'
+                                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                            }`}
+                          >
+                            {getLocalizedName(sub)}
+                            {subCount > 0 && (
+                              <span className="ml-1 text-xs text-slate-400 dark:text-slate-500">
+                                ({subCount})
+                              </span>
+                            )}
+                          </button>
+                        )
+                      })}
                     </div>
                   )}
                 </div>

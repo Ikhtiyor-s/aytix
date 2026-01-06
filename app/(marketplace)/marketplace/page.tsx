@@ -139,8 +139,7 @@ export default function MarketplacePage() {
     <div className="bg-slate-50 dark:bg-slate-900 min-h-screen transition-colors duration-300">
       {/* Mobile Hamburger Menu */}
       <div
-        className="lg:hidden sticky z-40 px-3 py-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border-b border-slate-100 dark:border-slate-700"
-        style={{ top: `${navbarHeight}px` }}
+        className="lg:hidden sticky top-14 z-40 px-3 py-2 bg-white dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700"
       >
         <div className="flex items-center justify-between">
           {/* Kategoriyalar tugmasi */}
@@ -244,7 +243,7 @@ export default function MarketplacePage() {
         />
 
         {/* Fixed Sidebar Categories (faqat desktop) */}
-        <div className="hidden lg:block fixed left-0 w-72 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 overflow-y-auto z-40 transition-all duration-150" style={{ top: '56px', height: sidebarHeight }}>
+        <div className="hidden lg:block fixed left-0 w-72 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 overflow-y-auto overflow-x-hidden z-40 transition-all duration-150" style={{ top: '56px', maxHeight: sidebarHeight }}>
           <div className="px-3 pt-8 pb-4">
             <CategoriesSidebar
               selectedCategory={selectedCategory}
@@ -261,8 +260,10 @@ export default function MarketplacePage() {
 
           {/* O'ng tomon - Banner va Projects */}
           <div className="flex-1 min-w-0">
-            {/* Banner Slider - kategoriyalar yonida */}
-            <BannerSlider />
+            {/* Banner Slider - desktopda sidebar bilan bir xil balandlikdan boshlanadi */}
+            <div className="lg:pt-8">
+              <BannerSlider />
+            </div>
 
             {/* Projects Grid */}
             <main className="px-3 sm:px-4 py-4 sm:py-8">
