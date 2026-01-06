@@ -228,4 +228,111 @@ export const projectsService = {
   }
 }
 
+// =============================================================================
+// TYPES - Hamkorlar
+// =============================================================================
+
+export interface Partner {
+  id: number
+  name: string
+  logo_url: string | null
+  website: string | null
+  description_uz: string | null
+  description_ru: string | null
+  description_en: string | null
+  partner_type: string | null
+  order: number
+  status: 'active' | 'inactive' | 'pending'
+  created_at: string
+  updated_at: string | null
+}
+
+// =============================================================================
+// HAMKORLAR SERVISI
+// =============================================================================
+
+export const partnersService = {
+  /**
+   * Faol hamkorlarni olish (public).
+   */
+  async getPartners(): Promise<Partner[]> {
+    const { data } = await adminApi.get<Partner[]>('/partners/public')
+    return data
+  }
+}
+
+// =============================================================================
+// TYPES - Xabarnomalar
+// =============================================================================
+
+export interface Notification {
+  id: number
+  title_uz: string
+  title_ru: string | null
+  title_en: string | null
+  message_uz: string | null
+  message_ru: string | null
+  message_en: string | null
+  icon: string | null
+  target: 'all' | 'users' | 'sellers' | 'admins'
+  scheduled_at: string | null
+  status: 'active' | 'inactive'
+  created_at: string
+  updated_at: string | null
+}
+
+// =============================================================================
+// XABARNOMALAR SERVISI
+// =============================================================================
+
+export const notificationsService = {
+  /**
+   * Faol xabarnomalarni olish (public).
+   */
+  async getNotifications(): Promise<Notification[]> {
+    const { data } = await adminApi.get<Notification[]>('/content/notifications/public')
+    return data
+  }
+}
+
+// =============================================================================
+// TYPES - Xabarlar (Contact Form)
+// =============================================================================
+
+export interface MessageCreate {
+  name: string
+  email: string
+  phone?: string
+  subject: string
+  message: string
+}
+
+export interface Message {
+  id: number
+  name: string
+  email: string
+  phone: string | null
+  subject: string
+  message: string
+  status: 'new' | 'read' | 'replied' | 'archived'
+  reply: string | null
+  replied_at: string | null
+  created_at: string
+  updated_at: string | null
+}
+
+// =============================================================================
+// XABARLAR SERVISI
+// =============================================================================
+
+export const messagesService = {
+  /**
+   * Yangi xabar yuborish (contact form).
+   */
+  async sendMessage(data: MessageCreate): Promise<Message> {
+    const response = await adminApi.post<Message>('/messages/', data)
+    return response.data
+  }
+}
+
 export default adminApi
