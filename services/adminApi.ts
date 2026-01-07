@@ -336,4 +336,38 @@ export const messagesService = {
   }
 }
 
+// =============================================================================
+// TYPES - FAQ (Ko'p so'raladigan savollar)
+// =============================================================================
+
+export interface FAQ {
+  id: number
+  question_uz: string
+  question_ru: string | null
+  question_en: string | null
+  answer_uz: string
+  answer_ru: string | null
+  answer_en: string | null
+  category: string | null
+  order: number
+  status: 'active' | 'inactive'
+  created_at: string
+  updated_at: string | null
+}
+
+// =============================================================================
+// FAQ SERVISI
+// =============================================================================
+
+export const faqService = {
+  /**
+   * Faol FAQ larni olish (public, autentifikatsiya kerak emas).
+   */
+  async getFAQs(category?: string): Promise<FAQ[]> {
+    const params = category ? { category } : {}
+    const { data } = await adminApi.get<FAQ[]>('/faq/public', { params })
+    return data
+  }
+}
+
 export default adminApi
