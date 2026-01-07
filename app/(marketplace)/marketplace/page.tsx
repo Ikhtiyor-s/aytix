@@ -293,11 +293,9 @@ export default function MarketplacePage() {
                 </div>
               ) : (
                 <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 auto-rows-fr">
                     {projects.map((project) => (
-                      <div key={project.id} className="w-full">
-                        <ProjectCard project={project} />
-                      </div>
+                      <ProjectCard key={project.id} project={project} />
                     ))}
                   </div>
 

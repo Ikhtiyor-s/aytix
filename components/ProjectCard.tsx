@@ -113,9 +113,10 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Link
       href={`/projects/${project.id}`}
-      className="block w-full bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-xl dark:shadow-slate-900/50 transition-all duration-300 overflow-hidden group cursor-pointer"
+      className="flex flex-col h-full bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-xl dark:shadow-slate-900/50 transition-all duration-300 overflow-hidden group cursor-pointer"
     >
-      <div className="relative aspect-[16/10] overflow-hidden">
+      {/* Rasm qismi - fixed height */}
+      <div className="relative aspect-[16/10] overflow-hidden flex-shrink-0">
         {project.image_url ? (
           <img
             src={getImageUrl(project.image_url) || ''}
@@ -139,51 +140,41 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             {badge.text}
           </span>
         )}
-        {/* TODO: Keyinchalik qo'shiladi */}
-        {/* <button
-          onClick={toggleFavorite}
-          className="absolute top-2 sm:top-3 right-2 sm:right-3 w-7 h-7 sm:w-8 sm:h-8 bg-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
-        >
-          <svg
-            className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isFavorite ? 'text-red-500 fill-current' : 'text-slate-400'}`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-            />
-          </svg>
-        </button> */}
       </div>
-      <div className="p-2.5 sm:p-3 lg:p-4">
-        <h3 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 dark:text-slate-100 mb-0.5 sm:mb-1 line-clamp-2">{projectName}</h3>
-        {projectDescription && (
-          <p className="text-[11px] sm:text-xs lg:text-sm text-slate-600 dark:text-slate-400 mb-1.5 sm:mb-2 line-clamp-2">{projectDescription}</p>
-        )}
 
-        {/* Technologies */}
-        {project.technologies && project.technologies.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-1.5 sm:mb-2">
-            {project.technologies.slice(0, 3).map((tech, index) => (
-              <span key={index} className="px-1.5 sm:px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] sm:text-xs rounded-full">
-                {getLocalizedValue(tech)}
-              </span>
-            ))}
-            {project.technologies.length > 3 && (
-              <span className="px-1.5 sm:px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] sm:text-xs rounded-full">
-                +{project.technologies.length - 3}
-              </span>
-            )}
-          </div>
-        )}
+      {/* Kontent qismi - flex grow */}
+      <div className="flex flex-col flex-grow p-2.5 sm:p-3 lg:p-4">
+        {/* Loyiha nomi - 1 qator */}
+        <h3 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 dark:text-slate-100 mb-1 truncate">
+          {projectName}
+        </h3>
 
-        <div className="pt-1.5 sm:pt-2 border-t border-slate-100 dark:border-slate-700">
-          <div className="flex justify-between items-center">
-            <span className="text-[10px] sm:text-xs lg:text-sm text-indigo-600 dark:text-indigo-400 font-medium line-clamp-1">{getCategoryName(project.category)}</span>
+        {/* Izoh - 2 qator */}
+        <p className="text-[11px] sm:text-xs lg:text-sm text-slate-600 dark:text-slate-400 mb-2 line-clamp-2 min-h-[2.5em]">
+          {projectDescription || '\u00A0'}
+        </p>
+
+        {/* Technologies - fixed height */}
+        <div className="flex flex-wrap gap-1 mb-2 min-h-[24px]">
+          {project.technologies && project.technologies.length > 0 ? (
+            <>
+              {project.technologies.slice(0, 3).map((tech, index) => (
+                <span key={index} className="px-1.5 sm:px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] sm:text-xs rounded-full">
+                  {getLocalizedValue(tech)}
+                </span>
+              ))}
+              {project.technologies.length > 3 && (
+                <span className="px-1.5 sm:px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] sm:text-xs rounded-full">
+                  +{project.technologies.length - 3}
+                </span>
+              )}
+            </>
+          ) : null}
+        </div>
+
+        {/* Footer - always at bottom */}
+        <div className="mt-auto pt-1.5 sm:pt-2 border-t border-slate-100 dark:border-slate-700">
+          <div className="flex justify-end items-center">
             <span className="flex items-center gap-0.5 sm:gap-1 text-slate-500 dark:text-slate-400 text-[10px] sm:text-xs lg:text-sm">
               <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
