@@ -96,6 +96,7 @@ export interface ProjectsParams {
   skip?: number
   limit?: number
   category?: string
+  subcategory?: string
   status?: string
   is_top?: boolean
   is_new?: boolean

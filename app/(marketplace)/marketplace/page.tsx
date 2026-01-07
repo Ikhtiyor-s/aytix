@@ -103,15 +103,12 @@ export default function MarketplacePage() {
   const loadProjects = async () => {
     setLoading(true)
     try {
-      const searchQuery = selectedSubcategory
-        ? `${search} ${selectedSubcategory}`.trim()
-        : search || undefined
-
       const data = await projectsService.getProjects({
         skip: (page - 1) * 20,
         limit: 20,
         category: selectedCategory,
-        search: searchQuery,
+        subcategory: selectedSubcategory,
+        search: search || undefined,
         status: 'active',
       })
       setProjects(data)
