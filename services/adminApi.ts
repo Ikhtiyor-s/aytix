@@ -370,4 +370,73 @@ export const faqService = {
   }
 }
 
+// =============================================================================
+// TYPES - Footer
+// =============================================================================
+
+export interface FooterItem {
+  id: number
+  title_uz: string
+  title_ru: string | null
+  title_en: string | null
+  url: string
+  icon: string | null
+  is_external: boolean
+  order: number
+  is_active: boolean
+}
+
+export interface FooterSection {
+  id: number
+  title_uz: string
+  title_ru: string | null
+  title_en: string | null
+  slug: string
+  order: number
+  is_active: boolean
+  items: FooterItem[]
+}
+
+export interface FooterSocialLink {
+  id: number
+  platform: string
+  url: string
+  icon: string | null
+  order: number
+  is_active: boolean
+}
+
+export interface FooterContact {
+  id: number
+  contact_type: string
+  label_uz: string
+  label_ru: string | null
+  label_en: string | null
+  value: string
+  icon: string | null
+  link_url: string | null
+  order: number
+  is_active: boolean
+}
+
+export interface FooterData {
+  sections: FooterSection[]
+  social_links: FooterSocialLink[]
+  contacts: FooterContact[]
+}
+
+// =============================================================================
+// FOOTER SERVISI
+// =============================================================================
+
+export const footerService = {
+  /**
+   * Footer ma'lumotlarini olish (public, autentifikatsiya kerak emas).
+   */
+  async getFooterData(): Promise<FooterData> {
+    const { data } = await adminApi.get<FooterData>('/footer/public')
+    return data
+  }
+}
+
 export default adminApi
