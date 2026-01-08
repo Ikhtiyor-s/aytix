@@ -46,7 +46,8 @@ export default function FAQPage() {
   }
 
   // Kategoriyalarni olish
-  const categories = [...new Set(faqs.map(f => f.category).filter(Boolean))] as string[]
+  // Kategoriyalarni olish
+  const categories = Array.from(new Set(faqs.map(f => f.category).filter(Boolean))) as string[]
 
   // Filtrlangan FAQ lar
   const filteredFaqs = selectedCategory
