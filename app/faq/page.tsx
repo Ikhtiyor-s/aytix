@@ -33,15 +33,15 @@ export default function FAQPage() {
 
   // Savolni tilga qarab olish
   const getQuestion = (faq: FAQ): string => {
-    if (language === 'ru' && faq.question_ru) return faq.question_ru
-    if (language === 'en' && faq.question_en) return faq.question_en
+    if (language.code === 'ru' && faq.question_ru) return faq.question_ru
+    if (language.code === 'en' && faq.question_en) return faq.question_en
     return faq.question_uz
   }
 
   // Javobni tilga qarab olish
   const getAnswer = (faq: FAQ): string => {
-    if (language === 'ru' && faq.answer_ru) return faq.answer_ru
-    if (language === 'en' && faq.answer_en) return faq.answer_en
+    if (language.code === 'ru' && faq.answer_ru) return faq.answer_ru
+    if (language.code === 'en' && faq.answer_en) return faq.answer_en
     return faq.answer_uz
   }
 
@@ -81,12 +81,12 @@ export default function FAQPage() {
             </svg>
           </div>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white mb-3">
-            {pageTitle[language]}
+            {pageTitle[language.code as keyof typeof pageTitle]}
           </h1>
           <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            {language === 'uz' && "AyTix platformasi haqida eng ko'p beriladigan savollarga javoblar"}
-            {language === 'ru' && "Ответы на самые популярные вопросы о платформе AyTix"}
-            {language === 'en' && "Answers to the most frequently asked questions about AyTix platform"}
+            {language.code === 'uz' && "AyTix platformasi haqida eng ko'p beriladigan savollarga javoblar"}
+            {language.code === 'ru' && "Ответы на самые популярные вопросы о платформе AyTix"}
+            {language.code === 'en' && "Answers to the most frequently asked questions about AyTix platform"}
           </p>
         </div>
 
@@ -101,7 +101,7 @@ export default function FAQPage() {
                   : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
               }`}
             >
-              {allCategoriesText[language]}
+              {allCategoriesText[language.code as keyof typeof allCategoriesText]}
             </button>
             {categories.map((category) => (
               <button
@@ -121,14 +121,14 @@ export default function FAQPage() {
 
         {/* FAQ ro'yxati */}
         {loading ? (
-          <Loading text={language === 'uz' ? 'Yuklanmoqda...' : language === 'ru' ? 'Загрузка...' : 'Loading...'} />
+          <Loading text={language.code === 'uz' ? 'Yuklanmoqda...' : language.code === 'ru' ? 'Загрузка...' : 'Loading...'} />
         ) : filteredFaqs.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">🤔</div>
             <p className="text-slate-600 dark:text-slate-400">
-              {language === 'uz' && "Hozircha savollar mavjud emas"}
-              {language === 'ru' && "Пока нет вопросов"}
-              {language === 'en' && "No questions available yet"}
+              {language.code === 'uz' && "Hozircha savollar mavjud emas"}
+              {language.code === 'ru' && "Пока нет вопросов"}
+              {language.code === 'en' && "No questions available yet"}
             </p>
           </div>
         ) : (
@@ -184,14 +184,14 @@ export default function FAQPage() {
         {/* Qo'shimcha yordam */}
         <div className="mt-12 text-center bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-8 text-white">
           <h3 className="text-xl font-bold mb-2">
-            {language === 'uz' && "Savolingizga javob topa olmadingizmi?"}
-            {language === 'ru' && "Не нашли ответ на свой вопрос?"}
-            {language === 'en' && "Didn't find the answer to your question?"}
+            {language.code === 'uz' && "Savolingizga javob topa olmadingizmi?"}
+            {language.code === 'ru' && "Не нашли ответ на свой вопрос?"}
+            {language.code === 'en' && "Didn't find the answer to your question?"}
           </h3>
           <p className="text-indigo-100 mb-4">
-            {language === 'uz' && "Biz bilan bog'laning, yordam beramiz!"}
-            {language === 'ru' && "Свяжитесь с нами, мы поможем!"}
-            {language === 'en' && "Contact us, we'll help!"}
+            {language.code === 'uz' && "Biz bilan bog'laning, yordam beramiz!"}
+            {language.code === 'ru' && "Свяжитесь с нами, мы поможем!"}
+            {language.code === 'en' && "Contact us, we'll help!"}
           </p>
           <button
             onClick={() => setShowContactModal(true)}
@@ -200,9 +200,9 @@ export default function FAQPage() {
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
             </svg>
-            {language === 'uz' && "Bo'g'lanish"}
-            {language === 'ru' && "Связаться"}
-            {language === 'en' && "Contact us"}
+            {language.code === 'uz' && "Bo'g'lanish"}
+            {language.code === 'ru' && "Связаться"}
+            {language.code === 'en' && "Contact us"}
           </button>
         </div>
       </div>
