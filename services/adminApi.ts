@@ -400,7 +400,7 @@ export interface FooterSection {
 export interface FooterSocialLink {
   id: number
   platform: string
-  url: string
+  link_url: string
   icon: string | null
   order: number
   is_active: boolean

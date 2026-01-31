@@ -32,9 +32,9 @@ const platformHoverColors: Record<string, string> = {
 
 // Default fallback ma'lumotlar (API ishlamasa)
 const defaultSocialLinks = [
-  { platform: 'telegram', url: 'https://t.me/aytixuz' },
-  { platform: 'instagram', url: 'https://instagram.com/aytix' },
-  { platform: 'youtube', url: 'https://youtube.com/@aytix' },
+  { platform: 'telegram', link_url: 'https://t.me/aytixuz' },
+  { platform: 'instagram', link_url: 'https://instagram.com/aytix' },
+  { platform: 'youtube', link_url: 'https://youtube.com/@aytix' },
 ]
 
 const defaultSections = [
@@ -163,7 +163,7 @@ export default function Footer() {
       return (
         <a
           key={index}
-          href={link.url}
+          href={link.link_url}
           target="_blank"
           rel="noopener noreferrer"
           className={`w-5 h-5 bg-slate-800 rounded flex items-center justify-center ${hoverColor} transition-colors`}
