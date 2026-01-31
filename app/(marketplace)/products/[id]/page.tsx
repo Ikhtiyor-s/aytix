@@ -100,7 +100,7 @@ export default function ProductDetailPage() {
           {product.description && (
             <div className="mb-6">
               <h2 className="text-xl font-semibold mb-2">Description</h2>
-              <p className="text-gray-700">{product.description}</p>
+              <p className="text-gray-700 whitespace-pre-line leading-relaxed">{product.description}</p>
             </div>
           )}
 

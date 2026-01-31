@@ -114,7 +114,7 @@ export default function AdminPanelPage() {
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
-                      <p className="text-gray-600 mb-2">{product.description}</p>
+                      <p className="text-gray-600 mb-2 whitespace-pre-line leading-relaxed">{product.description}</p>
                       <div className="flex gap-4 text-sm text-gray-500">
                         <span>Price: ${product.price}</span>
                         <span>Stock: {product.stock}</span>

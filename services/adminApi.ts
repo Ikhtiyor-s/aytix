@@ -127,7 +127,7 @@ export const categoryProjectsService = {
    * Bitta kategoriyani olish.
    */
   async getCategory(id: number): Promise<CategoryProject> {
-    const { data } = await adminApi.get<CategoryProject>(`/project-categories/${id}`)
+    const { data } = await adminApi.get<CategoryProject>(`/project-categories/${id}/`)
     return data
   },
 
@@ -179,7 +179,7 @@ export const bannersService = {
    * Faol bannerlarni olish (public, autentifikatsiya kerak emas).
    */
   async getBanners(): Promise<Banner[]> {
-    const { data } = await adminApi.get<Banner[]>('/content/banners/public')
+    const { data } = await adminApi.get<Banner[]>('/content/banners/public/')
     return data
   },
 
@@ -187,7 +187,7 @@ export const bannersService = {
    * Bitta bannerni olish.
    */
   async getBanner(id: number): Promise<Banner> {
-    const { data } = await adminApi.get<Banner>(`/content/banners/${id}`)
+    const { data } = await adminApi.get<Banner>(`/content/banners/${id}/`)
     return data
   }
 }
@@ -201,7 +201,7 @@ export const projectsService = {
    * Loyihalar sonini kategoriya va subkategoriya bo'yicha olish.
    */
   async getCounts(): Promise<ProjectCounts> {
-    const { data } = await adminApi.get<ProjectCounts>('/projects/counts')
+    const { data } = await adminApi.get<ProjectCounts>('/projects/counts/')
     return data
   },
 
@@ -224,7 +224,7 @@ export const projectsService = {
    * Bitta loyihani olish.
    */
   async getProject(id: number): Promise<Project> {
-    const { data } = await adminApi.get<Project>(`/projects/${id}`)
+    const { data} = await adminApi.get<Project>(`/projects/${id}/`)
     return data
   }
 }
@@ -257,7 +257,7 @@ export const partnersService = {
    * Faol hamkorlarni olish (public).
    */
   async getPartners(): Promise<Partner[]> {
-    const { data } = await adminApi.get<Partner[]>('/partners/public')
+    const { data } = await adminApi.get<Partner[]>('/partners/public/')
     return data
   }
 }
@@ -291,7 +291,7 @@ export const notificationsService = {
    * Faol xabarnomalarni olish (public).
    */
   async getNotifications(): Promise<Notification[]> {
-    const { data } = await adminApi.get<Notification[]>('/content/notifications/public')
+    const { data } = await adminApi.get<Notification[]>('/content/notifications/public/')
     return data
   }
 }
@@ -365,7 +365,7 @@ export const faqService = {
    */
   async getFAQs(category?: string): Promise<FAQ[]> {
     const params = category ? { category } : {}
-    const { data } = await adminApi.get<FAQ[]>('/faq/public', { params })
+    const { data } = await adminApi.get<FAQ[]>('/faq/public/', { params })
     return data
   }
 }
@@ -434,7 +434,7 @@ export const footerService = {
    * Footer ma'lumotlarini olish (public, autentifikatsiya kerak emas).
    */
   async getFooterData(): Promise<FooterData> {
-    const { data } = await adminApi.get<FooterData>('/footer/public')
+    const { data } = await adminApi.get<FooterData>('/footer/public/')
     return data
   }
 }

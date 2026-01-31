@@ -130,8 +130,8 @@ export default function ProjectDetailPage() {
       // O'xshash loyihalarni yuklash (shu kategoriyadan)
       if (data.category) {
         const allProjects = await projectsService.getProjects({ category: data.category })
-        // Hozirgi loyihani chiqarib tashlash va faqat 4 ta ko'rsatish
-        const similar = allProjects.filter(p => p.id !== data.id).slice(0, 4)
+        // Hozirgi loyihani chiqarib tashlash va 8 ta ko'rsatish (2 qator x 4)
+        const similar = allProjects.filter(p => p.id !== data.id).slice(0, 8)
         setSimilarProjects(similar)
       }
     } catch (error) {
@@ -332,7 +332,7 @@ export default function ProjectDetailPage() {
                 {/* Description */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
                   <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">{t('product.description')}</h2>
-                  <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed">
+                  <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-line">
                     {language.code === 'ru' && project.description_ru ? project.description_ru : language.code === 'en' && project.description_en ? project.description_en : project.description_uz || t('project.noDescription')}
                   </p>
                 </div>
@@ -452,7 +452,7 @@ export default function ProjectDetailPage() {
                     </svg>
                   </Link>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
                   {similarProjects.map((similarProject) => (
                     <ProjectCard key={similarProject.id} project={similarProject} />
                   ))}

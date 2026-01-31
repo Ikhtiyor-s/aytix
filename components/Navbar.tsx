@@ -25,7 +25,7 @@ export default function Navbar() {
       <div className="w-full px-2 sm:px-4">
         <div className="flex items-center py-2 gap-2 sm:gap-4 lg:gap-6">
           {/* Logo - chap tomonda */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 pl-2 sm:pl-4 lg:pl-8">
             <Logo />
           </div>
 

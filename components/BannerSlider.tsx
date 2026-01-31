@@ -12,6 +12,8 @@ export default function BannerSlider() {
   const [error, setError] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [touchEnd, setTouchEnd] = useState<number | null>(null)
 
   // Client-side mount
   useEffect(() => {
@@ -55,6 +57,32 @@ export default function BannerSlider() {
     return () => clearInterval(interval)
   }, [banners.length, goToNext])
 
+  // Touch swipe handlers
+  const minSwipeDistance = 50
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null)
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return
+
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > minSwipeDistance
+    const isRightSwipe = distance < -minSwipeDistance
+
+    if (isLeftSwipe) {
+      goToNext()
+    } else if (isRightSwipe) {
+      goToPrev()
+    }
+  }
+
   // Server-side va mount bo'lmagan holat - loading ko'rsatish
   if (!mounted || loading) {
     return (
@@ -70,7 +98,12 @@ export default function BannerSlider() {
   }
 
   return (
-    <div className="relative group overflow-hidden aspect-[2/1] sm:aspect-[3/1] md:aspect-[4/1]">
+    <div
+      className="relative group overflow-hidden aspect-[3/1]"
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
       {/* Banners container */}
       <div
         className="flex transition-transform duration-500 ease-in-out h-full"
@@ -97,7 +130,7 @@ export default function BannerSlider() {
                   muted
                   loop
                   playsInline
-                  className="absolute inset-0 w-full h-full object-cover object-center"
+                  className="absolute inset-0 w-full h-full object-contain object-center"
                 />
               )}
 
@@ -106,7 +139,7 @@ export default function BannerSlider() {
                 <img
                   src={imageUrl}
                   alt={banner.title_uz}
-                  className="absolute inset-0 w-full h-full object-cover object-center"
+                  className="absolute inset-0 w-full h-full object-contain object-center"
                 />
               )}
 
@@ -116,11 +149,11 @@ export default function BannerSlider() {
               {/* Content */}
               <div className="relative w-full px-4 sm:px-16 md:px-20 h-full flex items-end justify-start pb-4 sm:pb-6 md:pb-8">
                 <div className="max-w-lg text-white text-left">
-                  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2 line-clamp-2">
+                  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2 line-clamp-2 whitespace-pre-line">
                     {language.code === 'ru' && banner.title_ru ? banner.title_ru : language.code === 'en' && banner.title_en ? banner.title_en : banner.title_uz}
                   </h2>
                   {(banner.description_uz || banner.description_ru || banner.description_en) && (
-                    <p className="text-sm sm:text-base md:text-lg mb-2 sm:mb-4 line-clamp-2 hidden sm:block">
+                    <p className="text-sm sm:text-base md:text-lg mb-2 sm:mb-4 line-clamp-2 hidden sm:block whitespace-pre-line">
                       {language.code === 'ru' && banner.description_ru ? banner.description_ru : language.code === 'en' && banner.description_en ? banner.description_en : banner.description_uz}
                     </p>
                   )}
@@ -156,22 +189,22 @@ export default function BannerSlider() {
         </div>
       )}
 
-      {/* Navigation Arrows - ko'rsatiladi hover qilinganda */}
+      {/* Navigation Arrows - faqat desktopda ko'rsatiladi */}
       {banners.length > 1 && (
         <>
           <button
             onClick={goToPrev}
-            className="absolute left-1 sm:left-2 md:left-3 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 bg-white/20 backdrop-blur-sm hover:bg-white/50 rounded-full flex items-center justify-center transition-all hover:scale-110 z-10 opacity-0 group-hover:opacity-100"
+            className="hidden lg:flex absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/20 backdrop-blur-sm hover:bg-white/50 rounded-full items-center justify-center transition-all hover:scale-110 z-10 opacity-0 group-hover:opacity-100"
           >
-            <svg className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"/>
             </svg>
           </button>
           <button
             onClick={goToNext}
-            className="absolute right-1 sm:right-2 md:right-3 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 bg-white/20 backdrop-blur-sm hover:bg-white/50 rounded-full flex items-center justify-center transition-all hover:scale-110 z-10 opacity-0 group-hover:opacity-100"
+            className="hidden lg:flex absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/20 backdrop-blur-sm hover:bg-white/50 rounded-full items-center justify-center transition-all hover:scale-110 z-10 opacity-0 group-hover:opacity-100"
           >
-            <svg className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"/>
             </svg>
           </button>

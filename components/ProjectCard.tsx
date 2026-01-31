@@ -150,7 +150,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         </h3>
 
         {/* Izoh - 2 qator */}
-        <p className="text-[11px] sm:text-xs lg:text-sm text-slate-600 dark:text-slate-400 mb-2 line-clamp-2 min-h-[2.5em]">
+        <p className="text-[11px] sm:text-xs lg:text-sm text-slate-600 dark:text-slate-400 mb-2 line-clamp-2 min-h-[2.5em] whitespace-pre-line">
           {projectDescription || '\u00A0'}
         </p>
 
