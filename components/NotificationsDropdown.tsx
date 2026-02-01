@@ -2,8 +2,10 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { notificationsService, FormattedNotification } from '@/services/notifications'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function NotificationsDropdown() {
+  const { t } = useLanguage()
   const [showDropdown, setShowDropdown] = useState(false)
   const [notifications, setNotifications] = useState<FormattedNotification[]>([])
   const [loading, setLoading] = useState(false)
@@ -102,7 +104,7 @@ export default function NotificationsDropdown() {
       {showDropdown && (
         <div className="fixed right-0 top-14 w-[40%] max-w-[400px] bg-white rounded-l-xl shadow-2xl border border-slate-100 z-50 max-h-[80vh] overflow-hidden flex flex-col">
           <div className="p-3 sm:p-4 border-b border-slate-100 flex items-center justify-between">
-            <h3 className="font-semibold text-sm sm:text-base text-slate-800">Bildirishnomalar</h3>
+            <h3 className="font-semibold text-sm sm:text-base text-slate-800">{t('notifications.title')}</h3>
             <button
               onClick={() => setShowDropdown(false)}
               className="text-slate-500 hover:text-slate-700"
@@ -114,9 +116,9 @@ export default function NotificationsDropdown() {
           </div>
           <div className="overflow-y-auto flex-1">
             {loading ? (
-              <div className="p-6 sm:p-8 text-center text-slate-500 text-sm">Yuklanmoqda...</div>
+              <div className="p-6 sm:p-8 text-center text-slate-500 text-sm">{t('notifications.loading')}</div>
             ) : notifications.length === 0 ? (
-              <div className="p-6 sm:p-8 text-center text-slate-500 text-sm">Bildirishnomalar yo'q</div>
+              <div className="p-6 sm:p-8 text-center text-slate-500 text-sm">{t('notifications.empty')}</div>
             ) : (
               notifications.map((notif) => (
                 <div
@@ -149,7 +151,7 @@ export default function NotificationsDropdown() {
                 onClick={markAllAsRead}
                 className="text-xs sm:text-sm text-indigo-600 hover:text-indigo-700 font-medium"
               >
-                Hammasini o'qilgan deb belgilash
+                {t('notifications.markAllRead')}
               </button>
             </div>
           )}

@@ -71,7 +71,7 @@ export default function Navbar() {
             <button
               onClick={toggleTheme}
               className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-              title={theme === 'dark' ? "Yorug' rejim" : "Qorong'u rejim"}
+              title={theme === 'dark' ? t('theme.light') : t('theme.dark')}
             >
               {theme === 'dark' ? (
                 <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">

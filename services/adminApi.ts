@@ -127,7 +127,7 @@ export const categoryProjectsService = {
    * Bitta kategoriyani olish.
    */
   async getCategory(id: number): Promise<CategoryProject> {
-    const { data } = await adminApi.get<CategoryProject>(`/project-categories/${id}/`)
+    const { data } = await adminApi.get<CategoryProject>(`/project-categories/${id}`)
     return data
   },
 
@@ -187,7 +187,7 @@ export const bannersService = {
    * Bitta bannerni olish.
    */
   async getBanner(id: number): Promise<Banner> {
-    const { data } = await adminApi.get<Banner>(`/content/banners/${id}/`)
+    const { data } = await adminApi.get<Banner>(`/content/banners/${id}`)
     return data
   }
 }
@@ -224,7 +224,7 @@ export const projectsService = {
    * Bitta loyihani olish.
    */
   async getProject(id: number): Promise<Project> {
-    const { data} = await adminApi.get<Project>(`/projects/${id}/`)
+    const { data} = await adminApi.get<Project>(`/projects/${id}`)
     return data
   }
 }
@@ -359,6 +359,30 @@ export interface FAQ {
 // FAQ SERVISI
 // =============================================================================
 
+export interface FAQCreate {
+  question_uz: string
+  question_ru?: string
+  question_en?: string
+  answer_uz: string
+  answer_ru?: string
+  answer_en?: string
+  category?: string
+  order?: number
+  status?: 'active' | 'inactive'
+}
+
+export interface FAQUpdate {
+  question_uz?: string
+  question_ru?: string
+  question_en?: string
+  answer_uz?: string
+  answer_ru?: string
+  answer_en?: string
+  category?: string
+  order?: number
+  status?: 'active' | 'inactive'
+}
+
 export const faqService = {
   /**
    * Faol FAQ larni olish (public, autentifikatsiya kerak emas).
@@ -366,6 +390,78 @@ export const faqService = {
   async getFAQs(category?: string): Promise<FAQ[]> {
     const params = category ? { category } : {}
     const { data } = await adminApi.get<FAQ[]>('/faq/public/', { params })
+    return data
+  },
+
+  /**
+   * Barcha FAQ larni olish (admin).
+   */
+  async getAdminFAQs(token: string, category?: string, status?: string): Promise<FAQ[]> {
+    const params: any = {}
+    if (category) params.category = category
+    if (status) params.status = status
+    const { data } = await adminApi.get<FAQ[]>('/faq', {
+      params,
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    return data
+  },
+
+  /**
+   * Bitta FAQ ni olish (admin).
+   */
+  async getFAQ(token: string, id: number): Promise<FAQ> {
+    const { data } = await adminApi.get<FAQ>(`/faq/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    return data
+  },
+
+  /**
+   * Yangi FAQ yaratish (admin).
+   */
+  async createFAQ(token: string, faq: FAQCreate): Promise<FAQ> {
+    const { data } = await adminApi.post<FAQ>('/faq', faq, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    return data
+  },
+
+  /**
+   * FAQ ni yangilash (admin).
+   */
+  async updateFAQ(token: string, id: number, faq: FAQUpdate): Promise<FAQ> {
+    const { data } = await adminApi.put<FAQ>(`/faq/${id}`, faq, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    return data
+  },
+
+  /**
+   * FAQ ni o'chirish (admin).
+   */
+  async deleteFAQ(token: string, id: number): Promise<void> {
+    await adminApi.delete(`/faq/${id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+  },
+
+  /**
+   * FAQ tartibini o'zgartirish (admin).
+   */
+  async reorderFAQs(token: string, items: { id: number; order: number }[]): Promise<void> {
+    await adminApi.post('/faq/reorder', { items }, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+  },
+
+  /**
+   * FAQ holatini o'zgartirish (admin).
+   */
+  async toggleFAQStatus(token: string, id: number): Promise<FAQ> {
+    const { data } = await adminApi.patch<FAQ>(`/faq/${id}/toggle`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
     return data
   }
 }
@@ -440,3 +536,82 @@ export const footerService = {
 }
 
 export default adminApi
+
+// =============================================================================
+// TYPES - Site Contacts (Sayt aloqa ma'lumotlari)
+// =============================================================================
+
+export interface SiteContacts {
+  id: number
+  phone_primary: string
+  phone_secondary: string | null
+  telegram_username: string | null
+  telegram_url: string | null
+  whatsapp_number: string | null
+  email_primary: string | null
+  email_secondary: string | null
+  address_uz: string | null
+  address_ru: string | null
+  address_en: string | null
+  working_hours_uz: string | null
+  working_hours_ru: string | null
+  working_hours_en: string | null
+  additional_info_uz: string | null
+  additional_info_ru: string | null
+  additional_info_en: string | null
+  created_at: string
+  updated_at: string | null
+}
+
+export interface SiteContactsUpdate {
+  phone_primary?: string
+  phone_secondary?: string
+  telegram_username?: string
+  telegram_url?: string
+  whatsapp_number?: string
+  email_primary?: string
+  email_secondary?: string
+  address_uz?: string
+  address_ru?: string
+  address_en?: string
+  working_hours_uz?: string
+  working_hours_ru?: string
+  working_hours_en?: string
+  additional_info_uz?: string
+  additional_info_ru?: string
+  additional_info_en?: string
+}
+
+// =============================================================================
+// SITE CONTACTS SERVISI
+// =============================================================================
+
+export const siteContactsService = {
+  /**
+   * Public aloqa ma'lumotlarini olish.
+   */
+  async getPublicContacts(): Promise<SiteContacts> {
+    const { data } = await adminApi.get<SiteContacts>('/site-contacts/public')
+    return data
+  },
+
+  /**
+   * Admin - aloqa ma'lumotlarini olish.
+   */
+  async getContacts(token: string): Promise<SiteContacts> {
+    const { data } = await adminApi.get<SiteContacts>('/site-contacts', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    return data
+  },
+
+  /**
+   * Admin - aloqa ma'lumotlarini yangilash.
+   */
+  async updateContacts(token: string, contacts: SiteContactsUpdate): Promise<SiteContacts> {
+    const { data } = await adminApi.put<SiteContacts>('/site-contacts', contacts, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    return data
+  }
+}

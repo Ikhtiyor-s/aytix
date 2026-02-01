@@ -59,9 +59,63 @@ export default function AdminPanelPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Admin Panel</h1>
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">Admin Panel</h1>
 
-      <div className="mb-6 border-b border-gray-200">
+      {/* Quick Links */}
+      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <a
+          href="/admin/faq"
+          className="p-6 bg-white dark:bg-slate-800 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-slate-200 dark:border-slate-700"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 dark:text-white">FAQ Boshqaruvi</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400">Savol-javoblarni tahrirlash</p>
+            </div>
+          </div>
+        </a>
+
+        <a
+          href="/admin/site-contacts"
+          className="p-6 bg-white dark:bg-slate-800 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-slate-200 dark:border-slate-700"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/50 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 dark:text-white">Aloqa Ma'lumotlari</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400">Telefon, telegram, emaillarni boshqarish</p>
+            </div>
+          </div>
+        </a>
+
+        <a
+          href="/admin/contacts"
+          className="p-6 bg-white dark:bg-slate-800 rounded-lg shadow-sm hover:shadow-md transition-shadow border border-slate-200 dark:border-slate-700"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 dark:text-white">Footer Kontaktlar</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400">Footer ijtimoiy tarmoqlar</p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div className="mb-6 border-b border-gray-200 dark:border-slate-700">
         <nav className="flex space-x-8">
           {(['dashboard', 'products', 'users', 'orders'] as const).map((tab) => (
             <button
@@ -69,8 +123,8 @@ export default function AdminPanelPage() {
               onClick={() => setActiveTab(tab)}
               className={`py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === tab
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                  : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:border-gray-300 dark:hover:border-slate-600'
               }`}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}

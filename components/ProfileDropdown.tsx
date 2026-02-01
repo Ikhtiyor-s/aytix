@@ -11,10 +11,12 @@ import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function ProfileDropdown() {
   const { user, logout, isAuthenticated, loading } = useAuth()
   const router = useRouter()
+  const { t } = useLanguage()
   const [isOpen, setIsOpen] = useState(false)
   const [showLogoutModal, setShowLogoutModal] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -121,7 +123,7 @@ export default function ProfileDropdown() {
         </div>
         <div className="hidden md:block text-left">
           <div className="text-xs sm:text-sm font-semibold text-slate-900">
-            {user?.first_name || user?.full_name?.split(' ')[0] || user?.username || 'Foydalanuvchi'}
+            {user?.first_name || user?.full_name?.split(' ')[0] || user?.username || t('profile.user')}
           </div>
         </div>
         {/* Chevron icon */}
@@ -158,7 +160,7 @@ export default function ProfileDropdown() {
               </div>
               <div>
                 <div className="text-xs sm:text-sm font-semibold text-slate-900 line-clamp-1">
-                  {user?.full_name || `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || user?.username || 'Foydalanuvchi'}
+                  {user?.full_name || `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || user?.username || t('profile.user')}
                 </div>
               </div>
             </div>
@@ -185,7 +187,7 @@ export default function ProfileDropdown() {
                   d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                 />
               </svg>
-              <span>Sozlamalar</span>
+              <span>{t('settings.title')}</span>
             </Link>
 
             <button
@@ -200,7 +202,7 @@ export default function ProfileDropdown() {
                   d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                 />
               </svg>
-              <span>Chiqish</span>
+              <span>{t('profile.logout')}</span>
             </button>
           </div>
         </div>
@@ -233,10 +235,10 @@ export default function ProfileDropdown() {
 
             {/* Text */}
             <h3 className="text-base sm:text-lg font-semibold text-slate-900 text-center mb-1.5">
-              Tizimdan chiqish
+              {t('profile.signOut')}
             </h3>
             <p className="text-xs sm:text-sm text-slate-500 text-center mb-4">
-              Haqiqatan ham tizimdan chiqmoqchimisiz?
+              {t('profile.confirmLogout')}
             </p>
 
             {/* Buttons */}
@@ -245,7 +247,7 @@ export default function ProfileDropdown() {
                 onClick={cancelLogout}
                 className="flex-1 px-3 py-2 text-xs sm:text-sm border border-slate-200 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors"
               >
-                Bekor qilish
+                {t('common.cancel')}
               </button>
               <button
                 onClick={confirmLogout}

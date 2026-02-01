@@ -171,6 +171,68 @@ const translations: Record<string, Record<string, string>> = {
     // Contact Modal
     'contact.title': "Bog'lanish",
     'contact.phone': 'Telefon',
+    'contact.telegram': 'Telegram',
+    'contact.whatsapp': 'WhatsApp',
+    'contact.email': 'Email',
+    'contact.noData': "Ma'lumotlar topilmadi",
+
+    // Favorites
+    'favorites.title': 'Sevimli loyihalar',
+    'favorites.empty': "Sevimli loyihalar yo'q",
+    'favorites.viewAll': "Loyihalarni ko'rish",
+
+    // Notifications
+    'notifications.title': 'Bildirishnomalar',
+    'notifications.loading': 'Yuklanmoqda...',
+    'notifications.empty': "Bildirishnomalar yo'q",
+    'notifications.markAllRead': "Hammasini o'qilgan deb belgilash",
+
+    // Profile & Auth
+    'profile.user': 'Foydalanuvchi',
+    'profile.logout': 'Chiqish',
+    'profile.confirmLogout': 'Haqiqatan ham tizimdan chiqmoqchimisiz?',
+    'profile.signOut': 'Tizimdan chiqish',
+
+    // Theme
+    'theme.light': "Yorug' rejim",
+    'theme.dark': "Qorong'u rejim",
+
+    // Categories
+    'category.business': 'Biznes va Avtomatlashtirish',
+    'category.sales': 'Savdo va Marketing',
+    'category.finance': 'Moliyaviy Texnologiyalar',
+    'category.education': "Ta'lim va O'rganish",
+    'category.ai': 'AI va Avtomatik Yordamchilar',
+    'category.mobile': 'Mobil va Veb Ilovalar',
+    'category.support': 'Support',
+    'category.logistics': 'Logistika va Yetkazib Berish',
+    'category.industry': 'Sanoat va Ishlab Chiqarish',
+
+    // Subcategories
+    'subcategory.crm': 'CRM',
+    'subcategory.erp': 'ERP',
+    'subcategory.warehouse': 'Ombor boshqaruvi',
+    'subcategory.ecommerce': 'E-commerce',
+    'subcategory.pos': 'POS tizimlar',
+    'subcategory.smm': 'SMM',
+    'subcategory.seo': 'SEO',
+    'subcategory.fintech': 'Fintech',
+    'subcategory.banking': 'Banking',
+    'subcategory.payment': "To'lov tizimlari",
+    'subcategory.lms': 'LMS',
+    'subcategory.online': 'Online kurslar',
+    'subcategory.chatbot': 'Chatbot',
+    'subcategory.aiml': 'AI/ML',
+    'subcategory.automation': 'Avtomatlashtirish',
+    'subcategory.frontend': 'Frontend',
+    'subcategory.backend': 'Backend',
+    'subcategory.mobile_apps': 'Mobil ilovalar',
+    'subcategory.helpdesk': 'Helpdesk',
+    'subcategory.call': 'Call markaz',
+    'subcategory.delivery': 'Yetkazib berish',
+    'subcategory.tracking': 'Tracking',
+    'subcategory.monitoring': 'Ishlab chiqarish monitoringi',
+    'subcategory.quality': 'Sifat nazorati',
   },
   ru: {
     // Navbar
@@ -323,6 +385,68 @@ const translations: Record<string, Record<string, string>> = {
     // Contact Modal
     'contact.title': 'Связаться',
     'contact.phone': 'Телефон',
+    'contact.telegram': 'Telegram',
+    'contact.whatsapp': 'WhatsApp',
+    'contact.email': 'Email',
+    'contact.noData': 'Данные не найдены',
+
+    // Favorites
+    'favorites.title': 'Избранные проекты',
+    'favorites.empty': 'Нет избранных проектов',
+    'favorites.viewAll': 'Смотреть проекты',
+
+    // Notifications
+    'notifications.title': 'Уведомления',
+    'notifications.loading': 'Загрузка...',
+    'notifications.empty': 'Нет уведомлений',
+    'notifications.markAllRead': 'Отметить все как прочитанные',
+
+    // Profile & Auth
+    'profile.user': 'Пользователь',
+    'profile.logout': 'Выйти',
+    'profile.confirmLogout': 'Вы действительно хотите выйти из системы?',
+    'profile.signOut': 'Выход из системы',
+
+    // Theme
+    'theme.light': 'Светлая тема',
+    'theme.dark': 'Темная тема',
+
+    // Categories
+    'category.business': 'Бизнес и Автоматизация',
+    'category.sales': 'Продажи и Маркетинг',
+    'category.finance': 'Финансовые Технологии',
+    'category.education': 'Образование и Обучение',
+    'category.ai': 'AI и Автоматические Помощники',
+    'category.mobile': 'Мобильные и Веб Приложения',
+    'category.support': 'Поддержка',
+    'category.logistics': 'Логистика и Доставка',
+    'category.industry': 'Промышленность и Производство',
+
+    // Subcategories
+    'subcategory.crm': 'CRM',
+    'subcategory.erp': 'ERP',
+    'subcategory.warehouse': 'Управление складом',
+    'subcategory.ecommerce': 'E-commerce',
+    'subcategory.pos': 'POS системы',
+    'subcategory.smm': 'SMM',
+    'subcategory.seo': 'SEO',
+    'subcategory.fintech': 'Fintech',
+    'subcategory.banking': 'Банкинг',
+    'subcategory.payment': 'Платежные системы',
+    'subcategory.lms': 'LMS',
+    'subcategory.online': 'Онлайн курсы',
+    'subcategory.chatbot': 'Чатбот',
+    'subcategory.aiml': 'AI/ML',
+    'subcategory.automation': 'Автоматизация',
+    'subcategory.frontend': 'Фронтенд',
+    'subcategory.backend': 'Бэкенд',
+    'subcategory.mobile_apps': 'Мобильные приложения',
+    'subcategory.helpdesk': 'Helpdesk',
+    'subcategory.call': 'Колл-центр',
+    'subcategory.delivery': 'Доставка',
+    'subcategory.tracking': 'Отслеживание',
+    'subcategory.monitoring': 'Мониторинг производства',
+    'subcategory.quality': 'Контроль качества',
   },
   en: {
     // Navbar
@@ -475,6 +599,68 @@ const translations: Record<string, Record<string, string>> = {
     // Contact Modal
     'contact.title': 'Contact Us',
     'contact.phone': 'Phone',
+    'contact.telegram': 'Telegram',
+    'contact.whatsapp': 'WhatsApp',
+    'contact.email': 'Email',
+    'contact.noData': 'No data found',
+
+    // Favorites
+    'favorites.title': 'Favorite Projects',
+    'favorites.empty': 'No favorite projects',
+    'favorites.viewAll': 'View Projects',
+
+    // Notifications
+    'notifications.title': 'Notifications',
+    'notifications.loading': 'Loading...',
+    'notifications.empty': 'No notifications',
+    'notifications.markAllRead': 'Mark all as read',
+
+    // Profile & Auth
+    'profile.user': 'User',
+    'profile.logout': 'Logout',
+    'profile.confirmLogout': 'Are you sure you want to logout?',
+    'profile.signOut': 'Sign Out',
+
+    // Theme
+    'theme.light': 'Light Mode',
+    'theme.dark': 'Dark Mode',
+
+    // Categories
+    'category.business': 'Business & Automation',
+    'category.sales': 'Sales & Marketing',
+    'category.finance': 'Financial Technologies',
+    'category.education': 'Education & Learning',
+    'category.ai': 'AI & Automation Assistants',
+    'category.mobile': 'Mobile & Web Applications',
+    'category.support': 'Support',
+    'category.logistics': 'Logistics & Delivery',
+    'category.industry': 'Industry & Manufacturing',
+
+    // Subcategories
+    'subcategory.crm': 'CRM',
+    'subcategory.erp': 'ERP',
+    'subcategory.warehouse': 'Warehouse Management',
+    'subcategory.ecommerce': 'E-commerce',
+    'subcategory.pos': 'POS Systems',
+    'subcategory.smm': 'SMM',
+    'subcategory.seo': 'SEO',
+    'subcategory.fintech': 'Fintech',
+    'subcategory.banking': 'Banking',
+    'subcategory.payment': 'Payment Systems',
+    'subcategory.lms': 'LMS',
+    'subcategory.online': 'Online Courses',
+    'subcategory.chatbot': 'Chatbot',
+    'subcategory.aiml': 'AI/ML',
+    'subcategory.automation': 'Automation',
+    'subcategory.frontend': 'Frontend',
+    'subcategory.backend': 'Backend',
+    'subcategory.mobile_apps': 'Mobile Apps',
+    'subcategory.helpdesk': 'Helpdesk',
+    'subcategory.call': 'Call Center',
+    'subcategory.delivery': 'Delivery',
+    'subcategory.tracking': 'Tracking',
+    'subcategory.monitoring': 'Production Monitoring',
+    'subcategory.quality': 'Quality Control',
   },
 }
 

@@ -3,8 +3,10 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { Project, getImageUrl } from '@/services/adminApi'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function FavoritesDropdown() {
+  const { t } = useLanguage()
   const [showDropdown, setShowDropdown] = useState(false)
   const [favorites, setFavorites] = useState<Project[]>([])
   const [mounted, setMounted] = useState(false)
@@ -98,7 +100,7 @@ export default function FavoritesDropdown() {
       {showDropdown && (
         <div className="fixed right-0 top-14 w-[40%] max-w-[400px] bg-white rounded-l-xl shadow-2xl border border-slate-100 z-50 max-h-[80vh] overflow-hidden flex flex-col">
           <div className="p-3 sm:p-4 border-b border-slate-100 flex items-center justify-between">
-            <h3 className="font-semibold text-sm sm:text-base text-slate-800">Sevimli loyihalar</h3>
+            <h3 className="font-semibold text-sm sm:text-base text-slate-800">{t('favorites.title')}</h3>
             <button
               onClick={() => setShowDropdown(false)}
               className="text-slate-500 hover:text-slate-700"
@@ -114,13 +116,13 @@ export default function FavoritesDropdown() {
                 <svg className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                 </svg>
-                <p className="mb-3 sm:mb-4 text-xs sm:text-sm">Sevimli loyihalar yo'q</p>
+                <p className="mb-3 sm:mb-4 text-xs sm:text-sm">{t('favorites.empty')}</p>
                 <Link
                   href="/marketplace"
                   onClick={() => setShowDropdown(false)}
                   className="text-xs sm:text-sm text-indigo-600 hover:text-indigo-700 font-medium"
                 >
-                  Loyihalarni ko'rish
+                  {t('favorites.viewAll')}
                 </Link>
               </div>
             ) : (

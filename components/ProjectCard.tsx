@@ -31,25 +31,22 @@ export default function ProjectCard({ project }: ProjectCardProps) {
     return String(item)
   }
 
-  // Kategoriya tarjimalari
-  const categoryTranslations: Record<string, { ru: string; en: string }> = {
-    'Biznes va Avtomatlashtirish': { ru: 'Бизнес и Автоматизация', en: 'Business & Automation' },
-    'Savdo va Marketing': { ru: 'Продажи и Маркетинг', en: 'Sales & Marketing' },
-    'AI va Avtomatik Yordamchilar': { ru: 'AI и Автоматические помощники', en: 'AI & Automatic Assistants' },
-    'Mobil va Veb Ilovalar': { ru: 'Мобильные и Веб приложения', en: 'Mobile & Web Apps' },
-    "Ta'lim va O'rganish": { ru: 'Образование и Обучение', en: 'Education & Learning' },
-    'Frontend': { ru: 'Фронтенд', en: 'Frontend' },
-    'Mobile': { ru: 'Мобильные', en: 'Mobile' },
-    'AI/ML': { ru: 'AI/ML', en: 'AI/ML' },
+  // Kategoriya tarjima kalitlarini olish
+  const categoryKeyMap: Record<string, string> = {
+    'Biznes va Avtomatlashtirish': 'category.business',
+    'Savdo va Marketing': 'category.sales',
+    'AI va Avtomatik Yordamchilar': 'category.ai',
+    'Mobil va Veb Ilovalar': 'category.mobile',
+    "Ta'lim va O'rganish": 'category.education',
+    'Moliyaviy Texnologiyalar': 'category.finance',
+    'Support': 'category.support',
+    'Logistika va Yetkazib Berish': 'category.logistics',
+    'Sanoat va Ishlab Chiqarish': 'category.industry',
   }
 
   const getCategoryName = (categoryUz: string): string => {
-    const trans = categoryTranslations[categoryUz]
-    if (trans) {
-      if (language.code === 'ru') return trans.ru
-      if (language.code === 'en') return trans.en
-    }
-    return categoryUz
+    const key = categoryKeyMap[categoryUz]
+    return key ? t(key) : categoryUz
   }
 
   const projectName = getLocalizedField(project.name_uz, project.name_ru, project.name_en)
