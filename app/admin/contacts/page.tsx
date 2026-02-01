@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
-import { FooterContact, adminApi } from '@/services/adminApi'
+import adminApi, { FooterContact } from '@/services/adminApi'
 
 interface ContactFormData {
   contact_type: string
