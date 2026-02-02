@@ -12,7 +12,7 @@ import axios, { AxiosInstance } from 'axios'
 // KONFIGURATSIYA
 // =============================================================================
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.aytix.uz/api/v1'
 // BACKEND_URL ni API_URL dan olamiz (/api/v1 ni olib tashlab)
 const BACKEND_URL = API_URL.replace('/api/v1', '')
 
