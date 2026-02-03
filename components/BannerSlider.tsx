@@ -86,7 +86,7 @@ export default function BannerSlider() {
   // Server-side va mount bo'lmagan holat - loading ko'rsatish
   if (!mounted || loading) {
     return (
-      <div className="relative bg-gradient-to-r from-indigo-600 to-purple-600 overflow-hidden aspect-[2/1] sm:aspect-[3/1] md:aspect-[4/1] flex items-center justify-center">
+      <div className="relative bg-gradient-to-r from-indigo-600 to-purple-600 overflow-hidden h-[200px] sm:h-[250px] md:h-[300px] lg:h-[350px] flex items-center justify-center">
         <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-4 border-white border-t-transparent"></div>
       </div>
     )
@@ -97,79 +97,62 @@ export default function BannerSlider() {
     return null
   }
 
+  // Joriy banner
+  const currentBanner = banners[currentIndex]
+  const imageUrl = getImageUrl(currentBanner.image_url)
+  const videoUrl = getImageUrl(currentBanner.video_url)
+  const isVideo = videoUrl && (videoUrl.endsWith('.mp4') || videoUrl.endsWith('.webm') || videoUrl.endsWith('.ogg'))
+
   return (
     <div
-      className="relative group overflow-hidden aspect-[3/1]"
+      className="relative group overflow-hidden"
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
     >
-      {/* Banners container */}
-      <div
-        className="flex transition-transform duration-500 ease-in-out h-full"
-        style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-      >
-        {banners.map((banner) => {
-          const imageUrl = getImageUrl(banner.image_url)
-          const videoUrl = getImageUrl(banner.video_url)
-          const isVideo = videoUrl && (videoUrl.endsWith('.mp4') || videoUrl.endsWith('.webm') || videoUrl.endsWith('.ogg'))
+      {/* Banner media */}
+      {isVideo ? (
+        <video
+          key={currentBanner.id}
+          src={videoUrl}
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="w-full h-auto block transition-opacity duration-500"
+        />
+      ) : imageUrl ? (
+        <img
+          key={currentBanner.id}
+          src={imageUrl}
+          alt={currentBanner.title_uz}
+          className="w-full h-auto block transition-opacity duration-500"
+        />
+      ) : null}
 
-          return (
-            <div
-              key={banner.id}
-              className="relative flex-shrink-0 w-full h-full"
+      {/* Overlay gradient - matn o'qilishi uchun */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-transparent" />
+
+      {/* Content */}
+      <div className="absolute inset-0 w-full px-4 sm:px-16 md:px-20 flex items-end justify-start pb-4 sm:pb-6 md:pb-8">
+        <div className="max-w-lg text-white text-left">
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2 line-clamp-2 whitespace-pre-line">
+            {language.code === 'ru' && currentBanner.title_ru ? currentBanner.title_ru : language.code === 'en' && currentBanner.title_en ? currentBanner.title_en : currentBanner.title_uz}
+          </h2>
+          {(currentBanner.description_uz || currentBanner.description_ru || currentBanner.description_en) && (
+            <p className="text-sm sm:text-base md:text-lg mb-2 sm:mb-4 line-clamp-2 hidden sm:block whitespace-pre-line">
+              {language.code === 'ru' && currentBanner.description_ru ? currentBanner.description_ru : language.code === 'en' && currentBanner.description_en ? currentBanner.description_en : currentBanner.description_uz}
+            </p>
+          )}
+          {currentBanner.link_url && (
+            <Link
+              href={currentBanner.link_url}
+              className="px-4 sm:px-6 py-2 sm:py-3 bg-white text-indigo-600 font-semibold rounded-lg sm:rounded-xl hover:bg-indigo-50 transition-all inline-block text-xs sm:text-sm"
             >
-              {/* Background gradient */}
-              <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600" />
-
-              {/* Banner video */}
-              {isVideo && (
-                <video
-                  src={videoUrl}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  className="absolute inset-0 w-full h-full object-contain object-center"
-                />
-              )}
-
-              {/* Banner rasm yoki GIF */}
-              {!isVideo && imageUrl && (
-                <img
-                  src={imageUrl}
-                  alt={banner.title_uz}
-                  className="absolute inset-0 w-full h-full object-contain object-center"
-                />
-              )}
-
-              {/* Overlay gradient - matn o'qilishi uchun */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-transparent" />
-
-              {/* Content */}
-              <div className="relative w-full px-4 sm:px-16 md:px-20 h-full flex items-end justify-start pb-4 sm:pb-6 md:pb-8">
-                <div className="max-w-lg text-white text-left">
-                  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2 line-clamp-2 whitespace-pre-line">
-                    {language.code === 'ru' && banner.title_ru ? banner.title_ru : language.code === 'en' && banner.title_en ? banner.title_en : banner.title_uz}
-                  </h2>
-                  {(banner.description_uz || banner.description_ru || banner.description_en) && (
-                    <p className="text-sm sm:text-base md:text-lg mb-2 sm:mb-4 line-clamp-2 hidden sm:block whitespace-pre-line">
-                      {language.code === 'ru' && banner.description_ru ? banner.description_ru : language.code === 'en' && banner.description_en ? banner.description_en : banner.description_uz}
-                    </p>
-                  )}
-                  {banner.link_url && (
-                    <Link
-                      href={banner.link_url}
-                      className="px-4 sm:px-6 py-2 sm:py-3 bg-white text-indigo-600 font-semibold rounded-lg sm:rounded-xl hover:bg-indigo-50 transition-all inline-block text-xs sm:text-sm"
-                    >
-                      {t('banner.details')} →
-                    </Link>
-                  )}
-                </div>
-              </div>
-            </div>
-          )
-        })}
+              {t('banner.details')} →
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Dots indicator */}
