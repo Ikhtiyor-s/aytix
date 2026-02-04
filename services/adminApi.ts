@@ -23,7 +23,7 @@ const adminApi: AxiosInstance = axios.create({
 
 /**
  * Rasm URL-ni to'liq formatga o'zgartirish.
- * /uploads/... -> http://localhost:8000/uploads/...
+ * /uploads/... -> https://api.aytix.uz/uploads/...
  */
 export const getImageUrl = (url: string | null): string | null => {
   if (!url) return null

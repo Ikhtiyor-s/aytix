@@ -12,7 +12,7 @@ import axios, { AxiosInstance } from 'axios'
 // KONFIGURATSIYA
 // =============================================================================
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.aytix.uz/api/v1'
 // BACKEND_URL ni API_URL dan olamiz (/api/v1 ni olib tashlab)
 const BACKEND_URL = API_URL.replace('/api/v1', '')
 
@@ -23,7 +23,7 @@ const adminApi: AxiosInstance = axios.create({
 
 /**
  * Rasm URL-ni to'liq formatga o'zgartirish.
- * /uploads/... -> http://localhost:8000/uploads/...
+ * /uploads/... -> https://api.aytix.uz/uploads/...
  */
 export const getImageUrl = (url: string | null): string | null => {
   if (!url) return null
