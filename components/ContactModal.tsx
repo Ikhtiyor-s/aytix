@@ -42,7 +42,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
   useEffect(() => {
     const loadContacts = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'https://api.aytix.uz'
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'http://api.aytix.uz'
         const response = await fetch(`${apiUrl}/api/v1/footer/public`)
         const data: FooterPublicData = await response.json()
         setContacts(data.contacts || [])

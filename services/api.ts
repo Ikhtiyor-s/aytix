@@ -1,7 +1,7 @@
 import axios from 'axios'
 import Cookies from 'js-cookie'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.aytix.uz/api/v1'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://api.aytix.uz/api/v1'
 
 const api = axios.create({
   baseURL: API_URL,
