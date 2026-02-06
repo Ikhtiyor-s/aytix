@@ -86,8 +86,8 @@ export default function BannerSlider() {
   // Server-side va mount bo'lmagan holat - loading ko'rsatish
   if (!mounted || loading) {
     return (
-      <div className="relative bg-gradient-to-r from-indigo-600 to-purple-600 overflow-hidden h-[200px] sm:h-[250px] md:h-[300px] lg:h-[350px] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-4 border-white border-t-transparent"></div>
+      <div className="relative bg-gradient-to-r from-indigo-600 to-purple-600 overflow-hidden w-full aspect-[1920/480] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-10 w-10 border-4 border-white border-t-transparent"></div>
       </div>
     )
   }
@@ -97,62 +97,70 @@ export default function BannerSlider() {
     return null
   }
 
-  // Joriy banner
-  const currentBanner = banners[currentIndex]
-  const imageUrl = getImageUrl(currentBanner.image_url)
-  const videoUrl = getImageUrl(currentBanner.video_url)
-  const isVideo = videoUrl && (videoUrl.endsWith('.mp4') || videoUrl.endsWith('.webm') || videoUrl.endsWith('.ogg'))
-
   return (
     <div
-      className="relative group overflow-hidden"
+      className="relative group overflow-hidden w-full"
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
     >
-      {/* Banner media */}
-      {isVideo ? (
-        <video
-          key={currentBanner.id}
-          src={videoUrl}
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="w-full h-auto block transition-opacity duration-500"
-        />
-      ) : imageUrl ? (
-        <img
-          key={currentBanner.id}
-          src={imageUrl}
-          alt={currentBanner.title_uz}
-          className="w-full h-auto block transition-opacity duration-500"
-        />
-      ) : null}
+      {/* Slides container */}
+      <div
+        className="flex transition-transform duration-700 ease-in-out"
+        style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+      >
+        {banners.map((banner) => {
+          const bannerImg = getImageUrl(banner.image_url)
+          const bannerVideo = getImageUrl(banner.video_url)
+          const isBannerVideo = bannerVideo && (bannerVideo.endsWith('.mp4') || bannerVideo.endsWith('.webm') || bannerVideo.endsWith('.ogg'))
 
-      {/* Overlay gradient - matn o'qilishi uchun */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-transparent" />
+          return (
+            <div key={banner.id} className="relative w-full flex-shrink-0 aspect-[1920/480] bg-black">
+              {/* Banner media */}
+              {isBannerVideo ? (
+                <video
+                  src={bannerVideo}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="w-full h-full object-contain"
+                />
+              ) : bannerImg ? (
+                <img
+                  src={bannerImg}
+                  alt={banner.title_uz}
+                  className="w-full h-full object-contain"
+                />
+              ) : null}
 
-      {/* Content */}
-      <div className="absolute inset-0 w-full px-4 sm:px-16 md:px-20 flex items-end justify-start pb-4 sm:pb-6 md:pb-8">
-        <div className="max-w-lg text-white text-left">
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2 line-clamp-2 whitespace-pre-line">
-            {language.code === 'ru' && currentBanner.title_ru ? currentBanner.title_ru : language.code === 'en' && currentBanner.title_en ? currentBanner.title_en : currentBanner.title_uz}
-          </h2>
-          {(currentBanner.description_uz || currentBanner.description_ru || currentBanner.description_en) && (
-            <p className="text-sm sm:text-base md:text-lg mb-2 sm:mb-4 line-clamp-2 hidden sm:block whitespace-pre-line">
-              {language.code === 'ru' && currentBanner.description_ru ? currentBanner.description_ru : language.code === 'en' && currentBanner.description_en ? currentBanner.description_en : currentBanner.description_uz}
-            </p>
-          )}
-          {currentBanner.link_url && (
-            <Link
-              href={currentBanner.link_url}
-              className="px-4 sm:px-6 py-2 sm:py-3 bg-white text-indigo-600 font-semibold rounded-lg sm:rounded-xl hover:bg-indigo-50 transition-all inline-block text-xs sm:text-sm"
-            >
-              {t('banner.details')} →
-            </Link>
-          )}
-        </div>
+              {/* Overlay gradient */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-transparent" />
+
+              {/* Content */}
+              <div className="absolute inset-0 w-full px-[4%] flex items-end justify-start pb-[3%]">
+                <div className="max-w-[40%] text-white text-left">
+                  <h2 className="text-[clamp(14px,2.5vw,40px)] font-bold mb-[0.5%] line-clamp-2 whitespace-pre-line">
+                    {language.code === 'ru' && banner.title_ru ? banner.title_ru : language.code === 'en' && banner.title_en ? banner.title_en : banner.title_uz}
+                  </h2>
+                  {(banner.description_uz || banner.description_ru || banner.description_en) && (
+                    <p className="text-[clamp(10px,1.5vw,18px)] mb-[2%] line-clamp-2 whitespace-pre-line">
+                      {language.code === 'ru' && banner.description_ru ? banner.description_ru : language.code === 'en' && banner.description_en ? banner.description_en : banner.description_uz}
+                    </p>
+                  )}
+                  {banner.link_url && (
+                    <Link
+                      href={banner.link_url}
+                      className="px-[1.5vw] py-[0.8vw] bg-white text-indigo-600 font-semibold rounded-lg hover:bg-indigo-50 transition-all inline-block text-[clamp(10px,1.2vw,14px)]"
+                    >
+                      {t('banner.details')} →
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </div>
+          )
+        })}
       </div>
 
       {/* Dots indicator */}
@@ -177,17 +185,17 @@ export default function BannerSlider() {
         <>
           <button
             onClick={goToPrev}
-            className="hidden lg:flex absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/20 backdrop-blur-sm hover:bg-white/50 rounded-full items-center justify-center transition-all hover:scale-110 z-10 opacity-0 group-hover:opacity-100"
+            className="absolute left-[1%] top-1/2 -translate-y-1/2 w-[2.5vw] h-[2.5vw] min-w-[28px] min-h-[28px] bg-white/20 backdrop-blur-sm hover:bg-white/50 rounded-full flex items-center justify-center transition-all hover:scale-110 z-10 opacity-0 group-hover:opacity-100"
           >
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-[1.5vw] h-[1.5vw] min-w-[14px] min-h-[14px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"/>
             </svg>
           </button>
           <button
             onClick={goToNext}
-            className="hidden lg:flex absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/20 backdrop-blur-sm hover:bg-white/50 rounded-full items-center justify-center transition-all hover:scale-110 z-10 opacity-0 group-hover:opacity-100"
+            className="absolute right-[1%] top-1/2 -translate-y-1/2 w-[2.5vw] h-[2.5vw] min-w-[28px] min-h-[28px] bg-white/20 backdrop-blur-sm hover:bg-white/50 rounded-full flex items-center justify-center transition-all hover:scale-110 z-10 opacity-0 group-hover:opacity-100"
           >
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-[1.5vw] h-[1.5vw] min-w-[14px] min-h-[14px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"/>
             </svg>
           </button>

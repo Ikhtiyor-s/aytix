@@ -12,9 +12,9 @@ import axios, { AxiosInstance } from 'axios'
 // KONFIGURATSIYA
 // =============================================================================
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://api.aytix.uz/api/v1'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api/v1'
 // BACKEND_URL ni API_URL dan olamiz (/api/v1 ni olib tashlab)
-const BACKEND_URL = API_URL.replace('/api/v1', '')
+const BACKEND_URL = API_URL.startsWith('/') ? '' : API_URL.replace('/api/v1', '')
 
 const adminApi: AxiosInstance = axios.create({
   baseURL: API_URL,
@@ -119,7 +119,7 @@ export const categoryProjectsService = {
    */
   async getCategories(isActive?: boolean): Promise<CategoryProject[]> {
     const params = isActive !== undefined ? { is_active: isActive } : {}
-    const { data } = await adminApi.get<CategoryProject[]>('/project-categories', { params })
+    const { data } = await adminApi.get<CategoryProject[]>('/project-categories/', { params })
     return data
   },
 
@@ -216,7 +216,7 @@ export const projectsService = {
    * - search: Qidirish
    */
   async getProjects(params?: ProjectsParams): Promise<Project[]> {
-    const { data } = await adminApi.get<Project[]>('/projects', { params })
+    const { data } = await adminApi.get<Project[]>('/projects/', { params })
     return data
   },
 

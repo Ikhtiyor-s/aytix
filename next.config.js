@@ -4,9 +4,23 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  async rewrites() {
+    return {
+      beforeFiles: [],
+      afterFiles: [
+        {
+          source: '/api/v1/:path*',
+          destination: 'http://localhost:8000/api/v1/:path*',
+        },
+      ],
+      fallback: [
+        {
+          source: '/uploads/:path*',
+          destination: 'https://api.aytix.uz/uploads/:path*',
+        },
+      ],
+    }
+  },
 }
 
 module.exports = nextConfig
-
-
-
