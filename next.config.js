@@ -14,7 +14,7 @@ const nextConfig = {
         },
         {
           source: '/uploads/:path*',
-          destination: 'https://api.aytix.uz/uploads/:path*',
+          destination: 'http://api.aytix.uz/uploads/:path*',
         },
       ],
       fallback: [],
