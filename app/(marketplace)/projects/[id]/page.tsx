@@ -115,6 +115,25 @@ export default function ProjectDetailPage() {
     return media
   }, [project])
 
+  // Avtomatik rasm aylanishi (har 4 sekundda, faqat rasm bo'lganda)
+  useEffect(() => {
+    if (allMedia.length <= 1) return
+    // Agar hozirgi media video bo'lsa, avto-aylanishni to'xtatish
+    if (allMedia[currentImageIndex]?.type === 'video') return
+
+    const interval = setInterval(() => {
+      setCurrentImageIndex(prev => {
+        const next = (prev + 1) % allMedia.length
+        // Videoni o'tkazib yuborish (avto-aylanishda)
+        if (allMedia[next]?.type === 'video') {
+          return (next + 1) % allMedia.length
+        }
+        return next
+      })
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [allMedia.length, allMedia, currentImageIndex])
+
   useEffect(() => {
     if (params.id && !hasFetchedRef.current) {
       hasFetchedRef.current = true
@@ -261,21 +280,30 @@ export default function ProjectDetailPage() {
                     </h2>
                     <div className="relative">
                       <div className="relative rounded-lg sm:rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-700 aspect-[16/7]">
-                        {allMedia[currentImageIndex]?.type === 'video' ? (
-                          <video
-                            controls
-                            className="w-full h-full object-contain"
-                            src={allMedia[currentImageIndex].url}
+                        {allMedia.map((media, idx) => (
+                          <div
+                            key={idx}
+                            className={`absolute inset-0 transition-opacity duration-700 ${
+                              idx === currentImageIndex ? 'opacity-100 z-[1]' : 'opacity-0 z-0'
+                            }`}
                           >
-                            Brauzeringiz video formatini qo'llab-quvvatlamaydi.
-                          </video>
-                        ) : (
-                          <img
-                            src={allMedia[currentImageIndex]?.url}
-                            alt={`${getLocalizedField(project.name_uz, project.name_ru, project.name_en)} - ${currentImageIndex + 1}`}
-                            className="w-full h-full object-contain"
-                          />
-                        )}
+                            {media.type === 'video' ? (
+                              <video
+                                controls={idx === currentImageIndex}
+                                className="w-full h-full object-contain"
+                                src={media.url}
+                              >
+                                Brauzeringiz video formatini qo'llab-quvvatlamaydi.
+                              </video>
+                            ) : (
+                              <img
+                                src={media.url}
+                                alt={`${getLocalizedField(project.name_uz, project.name_ru, project.name_en)} - ${idx + 1}`}
+                                className="w-full h-full object-contain"
+                              />
+                            )}
+                          </div>
+                        ))}
                         {allMedia.length > 1 && (
                           <>
                             <button
@@ -340,7 +368,7 @@ export default function ProjectDetailPage() {
 
                 {/* Technologies */}
                 {project.technologies && project.technologies.length > 0 && (
-                  <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
+                  <div className="hidden sm:block bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
                     <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">{t('project.technologies')}</h2>
                     <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {project.technologies.map((tech, index) => (

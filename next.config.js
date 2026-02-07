@@ -12,13 +12,12 @@ const nextConfig = {
           source: '/api/v1/:path*',
           destination: 'http://localhost:8000/api/v1/:path*',
         },
-      ],
-      fallback: [
         {
           source: '/uploads/:path*',
           destination: 'https://api.aytix.uz/uploads/:path*',
         },
       ],
+      fallback: [],
     }
   },
 }

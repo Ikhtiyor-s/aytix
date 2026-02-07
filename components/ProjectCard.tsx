@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Project, getImageUrl } from '@/services/adminApi'
 import { useLanguage } from '@/contexts/LanguageContext'
 
@@ -12,6 +12,7 @@ interface ProjectCardProps {
 export default function ProjectCard({ project }: ProjectCardProps) {
   const { t, language } = useLanguage()
   const [isFavorite, setIsFavorite] = useState(false)
+  const [currentImgIndex, setCurrentImgIndex] = useState(0)
 
   // Tilga qarab nom va tavsifni olish
   const getLocalizedField = (fieldUz: string, fieldRu?: string | null, fieldEn?: string | null) => {
@@ -107,6 +108,31 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
   const badge = getBadge()
 
+  // Barcha rasmlarni yig'ish (image_url + images array)
+  const allImages = useMemo(() => {
+    const imgs: string[] = []
+    if (project.image_url) {
+      const url = getImageUrl(project.image_url)
+      if (url) imgs.push(url)
+    }
+    if (project.images && Array.isArray(project.images)) {
+      project.images.forEach(img => {
+        const url = getImageUrl(img)
+        if (url) imgs.push(url)
+      })
+    }
+    return imgs
+  }, [project.image_url, project.images])
+
+  // Rasmlar avtomatik aylanishi (har 3 sekundda)
+  useEffect(() => {
+    if (allImages.length <= 1) return
+    const interval = setInterval(() => {
+      setCurrentImgIndex(prev => (prev + 1) % allImages.length)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [allImages.length])
+
   return (
     <Link
       href={`/projects/${project.id}`}
@@ -114,12 +140,32 @@ export default function ProjectCard({ project }: ProjectCardProps) {
     >
       {/* Rasm qismi - fixed height */}
       <div className="relative aspect-[16/10] overflow-hidden flex-shrink-0">
-        {project.image_url ? (
-          <img
-            src={getImageUrl(project.image_url) || ''}
-            alt={projectName}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-          />
+        {allImages.length > 0 ? (
+          <div className="relative w-full h-full">
+            {allImages.map((imgUrl, idx) => (
+              <img
+                key={idx}
+                src={imgUrl}
+                alt={`${projectName} - ${idx + 1}`}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+                  idx === currentImgIndex ? 'opacity-100' : 'opacity-0'
+                }`}
+              />
+            ))}
+            {/* Rasm indikatorlari */}
+            {allImages.length > 1 && (
+              <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+                {allImages.map((_, idx) => (
+                  <span
+                    key={idx}
+                    className={`block w-1.5 h-1.5 rounded-full transition-all ${
+                      idx === currentImgIndex ? 'bg-white w-3' : 'bg-white/50'
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         ) : (
           <div className={`w-full h-full bg-gradient-to-br ${project.color || 'from-indigo-500 to-purple-600'} flex items-center justify-center`}>
             <span className="text-6xl text-white/80">
@@ -133,7 +179,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </div>
         )}
         {badge && (
-          <span className={`absolute top-2 sm:top-3 left-2 sm:left-3 px-2 sm:px-3 py-0.5 sm:py-1 ${badge.color} text-[10px] sm:text-xs font-bold rounded-full`}>
+          <span className={`absolute top-2 sm:top-3 left-2 sm:left-3 px-2 sm:px-3 py-0.5 sm:py-1 ${badge.color} text-[10px] sm:text-xs font-bold rounded-full z-10`}>
             {badge.text}
           </span>
         )}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import Link from 'next/link'
 import { bannersService, getImageUrl, Banner } from '@/services/adminApi'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -14,6 +14,8 @@ export default function BannerSlider() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [touchStart, setTouchStart] = useState<number | null>(null)
   const [touchEnd, setTouchEnd] = useState<number | null>(null)
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false)
+  const videoRefs = useRef<Map<number, HTMLVideoElement>>(new Map())
 
   // Client-side mount
   useEffect(() => {
@@ -49,13 +51,42 @@ export default function BannerSlider() {
     setCurrentIndex((prev) => (prev - 1 + banners.length) % banners.length)
   }, [banners.length])
 
-  // Avtomatik aylanish
+  // Hozirgi banner video ekanligini aniqlash
+  const isCurrentBannerVideo = useCallback(() => {
+    if (!banners[currentIndex]) return false
+    const videoUrl = getImageUrl(banners[currentIndex].video_url)
+    return !!(videoUrl && (videoUrl.endsWith('.mp4') || videoUrl.endsWith('.webm') || videoUrl.endsWith('.ogg')))
+  }, [banners, currentIndex])
+
+  // Video tugaganda keyingi bannerga o'tish
+  const handleVideoEnded = useCallback(() => {
+    setIsVideoPlaying(false)
+    goToNext()
+  }, [goToNext])
+
+  // Hozirgi banner o'zgarganda video holatini yangilash
+  useEffect(() => {
+    if (isCurrentBannerVideo()) {
+      setIsVideoPlaying(true)
+      // Video elementini boshidan boshlash
+      const videoEl = videoRefs.current.get(currentIndex)
+      if (videoEl) {
+        videoEl.currentTime = 0
+        videoEl.play().catch(() => {})
+      }
+    } else {
+      setIsVideoPlaying(false)
+    }
+  }, [currentIndex, isCurrentBannerVideo])
+
+  // Avtomatik aylanish - faqat rasm bannerlarda (video bo'lsa to'xtaydi)
   useEffect(() => {
     if (banners.length <= 1) return
+    if (isVideoPlaying) return
 
     const interval = setInterval(goToNext, 5000)
     return () => clearInterval(interval)
-  }, [banners.length, goToNext])
+  }, [banners.length, goToNext, isVideoPlaying])
 
   // Touch swipe handlers
   const minSwipeDistance = 50
@@ -119,11 +150,14 @@ export default function BannerSlider() {
               {/* Banner media */}
               {isBannerVideo ? (
                 <video
+                  ref={(el) => {
+                    if (el) videoRefs.current.set(banners.indexOf(banner), el)
+                  }}
                   src={bannerVideo}
                   autoPlay
                   muted
-                  loop
                   playsInline
+                  onEnded={handleVideoEnded}
                   className="w-full h-full object-contain"
                 />
               ) : bannerImg ? (

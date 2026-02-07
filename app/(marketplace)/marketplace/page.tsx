@@ -111,7 +111,15 @@ export default function MarketplacePage() {
         search: search || undefined,
         status: 'active',
       })
-      setProjects(data)
+      // TOP va NEW loyihalarni birinchi ko'rsatish
+      const sorted = [...data].sort((a, b) => {
+        if (a.is_top && !b.is_top) return -1
+        if (!a.is_top && b.is_top) return 1
+        if (a.is_new && !b.is_new) return -1
+        if (!a.is_new && b.is_new) return 1
+        return 0
+      })
+      setProjects(sorted)
     } catch (error) {
       console.error('Failed to load projects', error)
       setProjects([])
