@@ -50,12 +50,27 @@ export default function ProjectCard({ project }: ProjectCardProps) {
     return key ? t(key) : categoryUz
   }
 
+  // HTML teglarini va entitylarni olib tashlash
+  const stripHtml = (html: string) => {
+    return html
+      .replace(/<[^>]*>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&[a-zA-Z0-9#]+;/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+  }
+
   const projectName = getLocalizedField(project.name_uz, project.name_ru, project.name_en)
-  const projectDescription = getLocalizedField(
+  const projectDescription = stripHtml(getLocalizedField(
     project.description_uz || '',
     project.description_ru,
     project.description_en
-  )
+  ))
 
   // localStorage dan sevimlilarni tekshirish
   useEffect(() => {

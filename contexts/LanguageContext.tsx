@@ -136,6 +136,10 @@ const translations: Record<string, Record<string, string>> = {
     // Banner
     'banner.details': 'Batafsil',
 
+    // Common
+    'common.showMore': 'Batafsil',
+    'common.showLess': 'Yopish',
+
     // Footer
     'footer.description': 'IT loyihalar marketpleysi',
     'footer.partners': 'Hamkorlar',
@@ -350,6 +354,10 @@ const translations: Record<string, Record<string, string>> = {
     // Banner
     'banner.details': 'Подробнее',
 
+    // Common
+    'common.showMore': 'Подробнее',
+    'common.showLess': 'Свернуть',
+
     // Footer
     'footer.description': 'Маркетплейс IT проектов',
     'footer.partners': 'Партнеры',
@@ -563,6 +571,10 @@ const translations: Record<string, Record<string, string>> = {
 
     // Banner
     'banner.details': 'Details',
+
+    // Common
+    'common.showMore': 'Show more',
+    'common.showLess': 'Show less',
 
     // Footer
     'footer.description': 'IT projects marketplace',

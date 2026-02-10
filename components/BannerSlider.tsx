@@ -179,7 +179,7 @@ export default function BannerSlider() {
                   </h2>
                   {(banner.description_uz || banner.description_ru || banner.description_en) && (
                     <p className="text-[clamp(10px,1.5vw,18px)] mb-[2%] line-clamp-2 whitespace-pre-line">
-                      {language.code === 'ru' && banner.description_ru ? banner.description_ru : language.code === 'en' && banner.description_en ? banner.description_en : banner.description_uz}
+                      {(language.code === 'ru' && banner.description_ru ? banner.description_ru : language.code === 'en' && banner.description_en ? banner.description_en : banner.description_uz || '').replace(/<[^>]*>/g, '').replace(/&[a-zA-Z0-9#]+;/g, ' ').replace(/\s+/g, ' ').trim()}
                     </p>
                   )}
                   {banner.link_url && (
