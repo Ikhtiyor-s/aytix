@@ -360,9 +360,12 @@ export default function ProjectDetailPage() {
                 {/* Description */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
                   <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">{t('product.description')}</h2>
-                  <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-line">
-                    {language.code === 'ru' && project.description_ru ? project.description_ru : language.code === 'en' && project.description_en ? project.description_en : project.description_uz || t('project.noDescription')}
-                  </p>
+                  <div
+                    className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed prose prose-slate dark:prose-invert max-w-none prose-sm sm:prose-base prose-headings:text-slate-900 dark:prose-headings:text-slate-100 prose-a:text-indigo-600 dark:prose-a:text-indigo-400 prose-strong:text-slate-800 dark:prose-strong:text-slate-200"
+                    dangerouslySetInnerHTML={{
+                      __html: (language.code === 'ru' && project.description_ru ? project.description_ru : language.code === 'en' && project.description_en ? project.description_en : project.description_uz || t('project.noDescription'))
+                    }}
+                  />
                 </div>
 
 
