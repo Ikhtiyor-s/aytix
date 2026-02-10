@@ -15,6 +15,11 @@ export default function ProjectDetailPage() {
   const router = useRouter()
   const [project, setProject] = useState<Project | null>(null)
 
+  // HTML dan data-* attributlarni tozalash
+  const cleanHtml = (html: string) => {
+    return html.replace(/\s+data-[\w-]+="[^"]*"/g, '')
+  }
+
   // Tilga qarab maydonni olish
   const getLocalizedField = (fieldUz?: string | null, fieldRu?: string | null, fieldEn?: string | null) => {
     if (language.code === 'ru' && fieldRu) return fieldRu
@@ -378,7 +383,7 @@ export default function ProjectDetailPage() {
                         !isDescriptionExpanded ? 'max-h-[22.5em]' : ''
                       }`}
                       dangerouslySetInnerHTML={{
-                        __html: (language.code === 'ru' && project.description_ru ? project.description_ru : language.code === 'en' && project.description_en ? project.description_en : project.description_uz || t('project.noDescription'))
+                        __html: cleanHtml(language.code === 'ru' && project.description_ru ? project.description_ru : language.code === 'en' && project.description_en ? project.description_en : project.description_uz || t('project.noDescription'))
                       }}
                     />
                     {!isDescriptionExpanded && isDescriptionOverflowing && (
