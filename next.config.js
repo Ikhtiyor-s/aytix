@@ -10,11 +10,11 @@ const nextConfig = {
       afterFiles: [
         {
           source: '/api/v1/:path*',
-          destination: 'http://localhost:8000/api/v1/:path*',
+          destination: 'https://api.aytix.uz/api/v1/:path*',
         },
         {
           source: '/uploads/:path*',
-          destination: 'http://api.aytix.uz/uploads/:path*',
+          destination: 'https://api.aytix.uz/uploads/:path*',
         },
       ],
       fallback: [],
