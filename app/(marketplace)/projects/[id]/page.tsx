@@ -43,6 +43,9 @@ export default function ProjectDetailPage() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [sidebarBottom, setSidebarBottom] = useState<number | null>(null)
   const [showContactModal, setShowContactModal] = useState(false)
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false)
+  const descriptionRef = useRef<HTMLDivElement>(null)
+  const [isDescriptionOverflowing, setIsDescriptionOverflowing] = useState(false)
   const hasFetchedRef = useRef(false)
   const contentRef = useRef<HTMLDivElement>(null)
 
@@ -73,6 +76,14 @@ export default function ProjectDetailPage() {
     handleScroll()
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Description overflow tekshirish
+  useEffect(() => {
+    if (descriptionRef.current) {
+      const el = descriptionRef.current
+      setIsDescriptionOverflowing(el.scrollHeight > el.clientHeight)
+    }
+  }, [project, language])
 
   // localStorage dan sevimlilarni tekshirish
   useEffect(() => {
@@ -360,12 +371,31 @@ export default function ProjectDetailPage() {
                 {/* Description */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
                   <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">{t('product.description')}</h2>
-                  <div
-                    className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed prose prose-slate dark:prose-invert max-w-none prose-sm sm:prose-base prose-headings:text-slate-900 dark:prose-headings:text-slate-100 prose-a:text-indigo-600 dark:prose-a:text-indigo-400 prose-strong:text-slate-800 dark:prose-strong:text-slate-200"
-                    dangerouslySetInnerHTML={{
-                      __html: (language.code === 'ru' && project.description_ru ? project.description_ru : language.code === 'en' && project.description_en ? project.description_en : project.description_uz || t('project.noDescription'))
-                    }}
-                  />
+                  <div className="relative">
+                    <div
+                      ref={descriptionRef}
+                      className={`text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed prose prose-slate dark:prose-invert max-w-none prose-sm sm:prose-base prose-headings:text-slate-900 dark:prose-headings:text-slate-100 prose-a:text-indigo-600 dark:prose-a:text-indigo-400 prose-strong:text-slate-800 dark:prose-strong:text-slate-200 overflow-hidden transition-all duration-300 ${
+                        !isDescriptionExpanded ? 'max-h-[22.5em]' : ''
+                      }`}
+                      dangerouslySetInnerHTML={{
+                        __html: (language.code === 'ru' && project.description_ru ? project.description_ru : language.code === 'en' && project.description_en ? project.description_en : project.description_uz || t('project.noDescription'))
+                      }}
+                    />
+                    {!isDescriptionExpanded && isDescriptionOverflowing && (
+                      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white dark:from-slate-800 to-transparent pointer-events-none" />
+                    )}
+                  </div>
+                  {isDescriptionOverflowing && (
+                    <button
+                      onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
+                      className="mt-3 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium text-sm flex items-center gap-1 transition-colors"
+                    >
+                      {isDescriptionExpanded ? t('common.showLess') || 'Yopish' : t('common.showMore') || 'Batafsil'}
+                      <svg className={`w-4 h-4 transition-transform ${isDescriptionExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  )}
                 </div>
 
 
