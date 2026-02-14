@@ -14,8 +14,12 @@ export default function MarketplacePage() {
   const { t } = useLanguage()
   const searchParams = useSearchParams()
   const [projects, setProjects] = useState<Project[]>([])
-  const [selectedCategory, setSelectedCategory] = useState<string | undefined>()
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | undefined>()
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
+    searchParams.get('category') || undefined
+  )
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | undefined>(
+    searchParams.get('subcategory') || undefined
+  )
   const [search, setSearch] = useState(searchParams.get('search') || '')
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
@@ -61,10 +65,14 @@ export default function MarketplacePage() {
     }
   }, [])
 
-  // URL parametrlari o'zgarganda search state'ni yangilash
+  // URL parametrlari o'zgarganda state'larni yangilash
   useEffect(() => {
     const searchQuery = searchParams.get('search') || ''
+    const categoryParam = searchParams.get('category') || undefined
+    const subcategoryParam = searchParams.get('subcategory') || undefined
     setSearch(searchQuery)
+    setSelectedCategory(categoryParam)
+    setSelectedSubcategory(subcategoryParam)
     setPage(1)
   }, [searchParams])
 
@@ -274,7 +282,11 @@ export default function MarketplacePage() {
             <main className="px-3 sm:px-4 py-4 sm:py-8">
               <div className="mb-4 sm:mb-6 flex items-center justify-between">
                 <h2 className="text-lg sm:text-2xl font-bold text-slate-900 dark:text-slate-100">
-                  {selectedCategory ? selectedCategory : t('marketplace.allProjects')}
+                  {selectedSubcategory
+                    ? selectedSubcategory
+                    : selectedCategory
+                      ? selectedCategory
+                      : t('marketplace.allProjects')}
                 </h2>
                 <span className="text-sm sm:text-base text-slate-600 dark:text-slate-400">{projects.length} {t('marketplace.projects')}</span>
               </div>

@@ -81,6 +81,16 @@ export default function CategoriesSidebar({
     loadProjectCounts()
   }, [])
 
+  // URL parametrlari bilan kelganda kategoriyani avtomatik ochish
+  useEffect(() => {
+    if (selectedCategory && categories.length > 0) {
+      const matchingCat = categories.find(c => c.name_uz === selectedCategory)
+      if (matchingCat) {
+        setExpandedCategory(matchingCat.id)
+      }
+    }
+  }, [selectedCategory, categories])
+
   const loadCategories = async () => {
     try {
       const cats = await categoryProjectsService.getCategories(true)
@@ -127,7 +137,6 @@ export default function CategoriesSidebar({
     } else {
       setExpandedCategory(cat.id)
       onCategorySelect(cat.name_uz)
-      onSubcategorySelect(cat.name_uz, '')
     }
   }
 

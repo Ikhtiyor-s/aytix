@@ -171,15 +171,16 @@ export default function ProjectDetailPage() {
   }
 
   const handleCategorySelect = (categoryName: string | undefined) => {
-    if (categoryName) {
-      router.push(`/marketplace?category=${encodeURIComponent(categoryName)}`)
-    } else {
-      router.push('/marketplace')
-    }
+    setSelectedCategory(categoryName)
+    setSelectedSubcategory(undefined)
   }
 
   const handleSubcategorySelect = (categoryName: string, subcategory: string) => {
-    router.push(`/marketplace?category=${encodeURIComponent(categoryName)}&subcategory=${encodeURIComponent(subcategory)}`)
+    if (subcategory) {
+      router.push(`/marketplace?category=${encodeURIComponent(categoryName)}&subcategory=${encodeURIComponent(subcategory)}`)
+    } else {
+      router.push(`/marketplace?category=${encodeURIComponent(categoryName)}`)
+    }
   }
 
   const toggleFavorite = () => {
@@ -318,7 +319,7 @@ export default function ProjectDetailPage() {
                           <>
                             <button
                               onClick={() => setCurrentImageIndex(prev => prev === 0 ? allMedia.length - 1 : prev - 1)}
-                              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center text-white"
+                              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center text-white z-[2]"
                             >
                               <svg className="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
@@ -326,7 +327,7 @@ export default function ProjectDetailPage() {
                             </button>
                             <button
                               onClick={() => setCurrentImageIndex(prev => prev === allMedia.length - 1 ? 0 : prev + 1)}
-                              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center text-white"
+                              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center text-white z-[2]"
                             >
                               <svg className="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
@@ -335,7 +336,7 @@ export default function ProjectDetailPage() {
                           </>
                         )}
                         {allMedia.length > 1 && (
-                          <div className="absolute bottom-2 sm:bottom-4 right-2 sm:right-4 px-2 sm:px-3 py-0.5 sm:py-1 bg-black/50 rounded-full text-white text-xs sm:text-sm">
+                          <div className="absolute bottom-2 sm:bottom-4 right-2 sm:right-4 px-2 sm:px-3 py-0.5 sm:py-1 bg-black/50 rounded-full text-white text-xs sm:text-sm z-[2]">
                             {currentImageIndex + 1} / {allMedia.length}
                           </div>
                         )}
@@ -372,7 +373,7 @@ export default function ProjectDetailPage() {
                   <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">{t('product.description')}</h2>
                   <div className="relative">
                     <div
-                      className={`text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed prose prose-slate dark:prose-invert max-w-none prose-sm sm:prose-base prose-headings:text-slate-900 dark:prose-headings:text-slate-100 prose-a:text-indigo-600 dark:prose-a:text-indigo-400 prose-strong:text-slate-800 dark:prose-strong:text-slate-200 overflow-hidden transition-all duration-300 ${
+                      className={`text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed prose prose-slate dark:prose-invert max-w-none prose-xs sm:prose-sm prose-headings:text-sm sm:prose-headings:text-base prose-headings:text-slate-900 dark:prose-headings:text-slate-100 prose-a:text-indigo-600 dark:prose-a:text-indigo-400 prose-strong:text-slate-800 dark:prose-strong:text-slate-200 overflow-hidden transition-all duration-300 ${
                         !isDescriptionExpanded ? 'max-h-[22.5em]' : ''
                       }`}
                       dangerouslySetInnerHTML={{
@@ -428,21 +429,6 @@ export default function ProjectDetailPage() {
 
               {/* Right Sidebar */}
               <div className="space-y-4 sm:space-y-6">
-                {/* Stats */}
-                <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
-                  <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">{t('project.stats')}</h3>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm sm:text-base text-slate-600 dark:text-slate-400 flex items-center gap-2">
-                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                      {t('project.views')}
-                    </span>
-                    <span className="font-semibold text-sm sm:text-base text-slate-900 dark:text-slate-100">{project.views}</span>
-                  </div>
-                </div>
-
                 {/* Contact */}
                 <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
                   <button
