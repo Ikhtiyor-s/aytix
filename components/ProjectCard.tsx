@@ -151,7 +151,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   return (
     <Link
       href={`/projects/${project.id}`}
-      className="flex flex-col h-full bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-xl dark:shadow-slate-900/50 transition-all duration-300 overflow-hidden group cursor-pointer"
+      className="flex flex-col h-full bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-xl dark:shadow-slate-900/50 transition-all duration-300 overflow-hidden group cursor-pointer hover:scale-[1.03]"
     >
       {/* Rasm qismi - fixed height */}
       <div className="relative aspect-[16/10] overflow-hidden flex-shrink-0">
@@ -197,6 +197,30 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           <span className={`absolute top-2 sm:top-3 left-2 sm:left-3 px-2 sm:px-3 py-0.5 sm:py-1 ${badge.color} text-[10px] sm:text-xs font-bold rounded-full z-10`}>
             {badge.text}
           </span>
+        )}
+        {/* Verified badge - o'ng yuqori burchak */}
+        {project.is_verified && (
+          <div className="absolute top-0 right-0 z-10">
+            <div className="relative group/verified">
+              <img
+                src="/verified-badge.png"
+                alt="AyTiX Verified"
+                className="w-10 h-10 sm:w-12 sm:h-12 drop-shadow-lg"
+                style={{ animation: 'verifiedSpin 10s ease-in-out infinite' }}
+              />
+              <style>{`
+                @keyframes verifiedSpin {
+                  0%   { transform: rotateY(0deg); }
+                  10%  { transform: rotateY(360deg); }
+                  100% { transform: rotateY(360deg); }
+                }
+              `}</style>
+              {/* Tooltip */}
+              <div className="absolute right-0 top-full mt-1 px-2 py-1 bg-slate-900 text-white text-[10px] rounded whitespace-nowrap opacity-0 group-hover/verified:opacity-100 transition-opacity pointer-events-none">
+                AyTiX Verified
+              </div>
+            </div>
+          </div>
         )}
       </div>
 

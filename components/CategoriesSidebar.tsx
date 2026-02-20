@@ -132,8 +132,8 @@ export default function CategoriesSidebar({
 
   const handleCategoryClick = (cat: CategoryWithSubs) => {
     if (expandedCategory === cat.id) {
+      // Faqat yopish, lekin kategoriya tanlovini saqlash
       setExpandedCategory(null)
-      onCategorySelect(undefined)
     } else {
       setExpandedCategory(cat.id)
       onCategorySelect(cat.name_uz)
