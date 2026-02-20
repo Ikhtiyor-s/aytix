@@ -198,6 +198,23 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             {badge.text}
           </span>
         )}
+        {/* Verified badge - o'ng yuqori burchak */}
+        {project.is_verified && (
+          <div className="absolute top-2 sm:top-3 right-2 sm:right-3 z-10">
+            <div className="relative group/verified">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-blue-900 to-indigo-900 border-2 border-blue-400 shadow-lg shadow-blue-500/50 flex items-center justify-center">
+                <svg viewBox="0 0 24 24" className="w-4 h-4 sm:w-5 sm:h-5" fill="none">
+                  <path d="M12 2L14.5 4.5H18V8L20.5 10.5L18 13V16.5H14.5L12 19L9.5 16.5H6V13L3.5 10.5L6 8V4.5H9.5L12 2Z" fill="#1e3a8a" stroke="#60a5fa" strokeWidth="1"/>
+                  <path d="M8.5 11.5L11 14L15.5 9" stroke="#93c5fd" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              {/* Tooltip */}
+              <div className="absolute right-0 top-full mt-1 px-2 py-1 bg-slate-900 text-white text-[10px] rounded whitespace-nowrap opacity-0 group-hover/verified:opacity-100 transition-opacity pointer-events-none">
+                AyTiX Verified
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Kontent qismi - flex grow */}
