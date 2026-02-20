@@ -217,7 +217,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
               `}</style>
               {/* Tooltip */}
               <div className="absolute right-0 top-full mt-1 px-2 py-1 bg-slate-900 text-white text-[10px] rounded whitespace-nowrap opacity-0 group-hover/verified:opacity-100 transition-opacity pointer-events-none">
-                AyTiX Verified
+                AyTiX tasdiqlaydi
               </div>
             </div>
           </div>
