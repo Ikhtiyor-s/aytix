@@ -286,11 +286,36 @@ export default function ProjectDetailPage() {
                 {/* Rasmlar va Video */}
                 {mounted && allMedia.length > 0 && (
                   <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6">
-                    <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 sm:mb-4">
-                      {getLocalizedField(project.name_uz, project.name_ru, project.name_en)}
-                    </h2>
+                    <div className="flex items-center gap-3 mb-3 sm:mb-4">
+                      <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100">
+                        {getLocalizedField(project.name_uz, project.name_ru, project.name_en)}
+                      </h2>
+                      {project.is_verified && (
+                        <div className="flex items-center gap-1.5 flex-shrink-0" title="AyTiX Verified">
+                          <img src="/verified-badge.png" alt="AyTiX Verified" className="w-7 h-7" style={{ animation: 'verifiedSpin 10s ease-in-out infinite' }} />
+                          <span className="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/40 px-2 py-0.5 rounded-full">VERIFIED</span>
+                          <style>{`
+                            @keyframes verifiedSpin {
+                              0%   { transform: rotateY(0deg); }
+                              10%  { transform: rotateY(360deg); }
+                              100% { transform: rotateY(360deg); }
+                            }
+                          `}</style>
+                        </div>
+                      )}
+                    </div>
                     <div className="relative">
                       <div className="relative rounded-lg sm:rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-700 aspect-[16/7]">
+                        {project.is_verified && (
+                          <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10" title="AyTiX Verified">
+                            <img
+                              src="/verified-badge.png"
+                              alt="AyTiX Verified"
+                              className="w-10 h-10 sm:w-14 sm:h-14 drop-shadow-2xl"
+                              style={{ animation: 'verifiedSpin 10s ease-in-out infinite' }}
+                            />
+                          </div>
+                        )}
                         {allMedia.map((media, idx) => (
                           <div
                             key={idx}
