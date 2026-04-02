@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { projectsService, Project } from '@/services/adminApi'
 import BannerSlider from '@/components/BannerSlider'
@@ -11,6 +11,14 @@ import Loading from '@/components/ui/Loading'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function MarketplacePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 dark:bg-slate-900" />}>
+      <MarketplaceContent />
+    </Suspense>
+  )
+}
+
+function MarketplaceContent() {
   const { t } = useLanguage()
   const searchParams = useSearchParams()
   const [projects, setProjects] = useState<Project[]>([])
