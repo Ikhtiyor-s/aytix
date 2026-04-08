@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  aytix-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aytix-frontend-new
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=/api/v1
+      - API_PROXY_URL=${API_PROXY_URL:-http://host.docker.internal:10018}
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  # Backend service (requires separate backend repository)
+  # aytix-backend:
+  #   image: python:3.11-slim
+  #   container_name: aytix-backend
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     - DATABASE_URL=postgresql://postgres:postgres@aytix-db:5432/marketplace
+  #     - SECRET_KEY=your-secret-key-change-in-production
+  #     - ALGORITHM=HS256
+  #     - ACCESS_TOKEN_EXPIRE_MINUTES=30
+  #     - REFRESH_TOKEN_EXPIRE_DAYS=7
+  #     - CORS_ORIGINS=["http://localhost:3000"]
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - aytix-db
+  #   restart: unless-stopped
+
+  # Database service (uncomment to use)
+  # aytix-db:
+  #   image: postgres:15-alpine
+  #   container_name: aytix-db
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #     - POSTGRES_DB=marketplace
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+
+# volumes:
+#   postgres_data:
